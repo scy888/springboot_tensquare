@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tensquare.article.dao.TeacherAndStudentDao">
+    <insert id="addStudentIdAndTeacherId" >
+        insert into tb_teacher_student(teacher_id,student_id) values (#{teacherId},#{studentId})
+    </insert>
+    <select id="getTeacherIdByStudentId" parameterType="string" resultType="map">
+        select teacher_id from tb_teacher_student where student_id=#{studentId}
+    </select>
+    <delete id="deleteRelation" parameterType="string">
+        delete from tb_teacher_student where student_id in
+        <if test="idArray!=null and idArray.length>0">
+            <foreach collection="idArray" open="(" item="studentId" separator="," close=")">
+                #{studentId}
+            </foreach>
+        </if>
+    </delete>
+    <delete id="deleteRelations" parameterType="string">
+        delete from tb_teacher_student where student_id=#{studentId}
+    </delete>
+</mapper>

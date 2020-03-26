@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tensquare.article.dao.SalvageDao">
+<insert id="addSalvageList" parameterType="map">
+    insert into tb_salvage (salvage_id,seria_no,salvage_name,status_code,status_value,
+                             damage_start_date,damage_day,damage_end_date,salvage_desc,salvage_web) values
+    <if test="salvageList.size()>0 and salvageList!=null">
+        <foreach collection="salvageList" open="" item="item" separator="," close="">
+            (#{item.salvageId},#{item.seriaNo},#{item.salvageName},#{item.statusCode},#{item.statusValue},
+             #{item.damageStartDate},#{item.damageDay},#{item.damageEndDate},#{item.salvageDesc},#{item.salvageWeb})
+        </foreach>
+    </if>
+</insert>
+    <select id="getSalvagePageInfo"  resultType="salvage">
+        select salvage_id salvageId,seria_no seriaNo,salvage_name salvageName,status_code statusCode,
+                status_value statusValue,damage_start_date damageStarDate,damage_day damageDay,
+                damage_end_date damageEndDate,salvage_desc salvageDesc,salvage_web salvageWeb
+                from tb_salvage
+                <where>
+                    <if test="statusCode!=null and statusCode!=''">
+                       status_code=#{statusCode}
+                    </if>
+                </where>
+    </select>
+</mapper>

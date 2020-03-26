@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tensquare.article.dao.SpectionDao">
+    <insert id="addSpection" parameterType="spection">
+        insert into tb_spection(spection_id,spection_name,spection_code,spection_date) values
+                              (#{spectionId},#{spectionName},#{spectionCode},#{spectionDate})
+    </insert>
+    <delete id="deleteSpectionByIds" parameterType="list">
+        delete from tb_spection where spection_id in
+        <foreach collection="idList" open="(" item="item" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <update id="updateSpection" parameterType="map">
+        update tb_spection
+        <set>
+        <if test="spectionName!=''and spectionName!=null">
+            spection_name=#{spectionName},
+        </if>
+        <if test="spectionCode!=''and spectionCode!=null">
+            spection_code=#{spectionCode},
+        </if>
+            <if test="spectionDate!=null">
+                spection_date=#{spectionDate}
+            </if>
+    </set>
+        where spection_id=#{spectionId}
+    </update>
+    <select id="selectAllSpection" resultType="map">
+        select /*spection_id spectionId,
+                spection_name spectionName,
+                spection_code spectionCode,
+                spection_date spectionDate*/
+                *
+                from tb_spection
+    </select>
+    <select id="findAllSpection" resultType="spection">
+        select spection_id spectionId,
+                spection_name spectionName,
+                spection_code spectionCode,
+                spection_date spectionDate
+                from tb_spection
+    </select>
+    <delete id="delteSpectionByIds" parameterType="list">
+        delete from tb_spection where spection_id in
+        <foreach collection="ids" open="(" item="item" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <delete id="deleteSpectionbyId" parameterType="string">
+               delete from tb_spection where spection_id=#{spectionId}
+    </delete>
+    <select id="getOptionList" parameterType="java.util.Date" resultType="spection">
+         select spection_id spectionId,
+                spection_name spectionName,
+                spection_code spectionCode,
+                spection_date spectionDate
+                from tb_spection
+                where spection_date=#{spectionDate}
+    </select>
+</mapper>

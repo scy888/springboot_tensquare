@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tensquare.article.dao.TeacherDao">
+    <insert id="addTeacherList" parameterType="teacher">
+        insert into tb_teacher(teacher_id,teacher_name,teacher_sex,teacher_desc) values
+        <if test="teacherList!=null and teacherList.size()>0">
+            <foreach collection="teacherList" open="" item="teacher" separator="," close="">
+                (#{teacher.teacherId},#{teacher.teacherName},#{teacher.teacherSex},#{teacher.teacherDesc})
+            </foreach>
+        </if>
+    </insert>
+    <delete id="deleteTeacherById" parameterType="string">
+        delete from tb_teacher where teacher_id=#{teacherId}
+    </delete>
+    <select id="selectTeacherById" parameterType="string" resultType="teacher">
+        select teacher_id teacherId,teacher_name teacherName,
+                teacher_sex teacherSex,teacher_desc teacherDesc
+                from tb_teacher where teacher_id=#{teacherId}
+    </select>
+</mapper>

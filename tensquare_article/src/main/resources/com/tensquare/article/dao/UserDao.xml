@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tensquare.article.dao.UserDao">
+   <insert id="addUserArray" parameterType="user">
+       insert into tb_user(user_id,user_name,pass_word,reg_date,
+                            phone,sex,birthday,status)values
+       <if test="users!=null and users.length>0">
+      <foreach collection="users" open="" item="user" separator="," close="">
+          (#{user.userId},#{user.userName},#{user.passWord},#{user.regDate},
+           #{user.phone},#{user.sex},#{user.birthday},#{user.status})
+      </foreach>
+       </if>
+   </insert>
+    <select id="login" resultType="user">
+        select user_name userName,pass_word passWord
+         from tb_user where user_name=#{userName}
+    </select>
+    <select id="selectUserList" resultType="user">
+        select user_id userId,user_name userName,pass_word passWord,reg_date regDate,
+               phone phone,sex sex,birthday birthday,
+               case status when '0' then '在线' when '1' then '不在线' else '无法判断' end status
+               from tb_user
+    </select>
+    <insert id="registerUser" parameterType="user">
+         insert into tb_user(user_id,user_name,pass_word,reg_date,phone,sex,birthday,status) values
+                             (#{userId},#{userName},#{passWord},#{regDate},#{phone},#{sex},#{birthday},#{status})
+    </insert>
+</mapper>

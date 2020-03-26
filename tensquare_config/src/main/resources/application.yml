@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: tensquare-config
+  cloud:
+    config:
+      server:
+        git:
+          #git上的配置文件目录
+          #username
+          #password
+          #如果有私有仓库里加上username和password
+          uri: https://gitee.com/scy666/sz_java57.git
+server:
+  port: 12000

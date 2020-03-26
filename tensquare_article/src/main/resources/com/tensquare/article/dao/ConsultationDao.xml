@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tensquare.article.dao.ConsultationDao">
+<insert id="addConsultationList" parameterType="consultation">
+    <if test="consultationList!=null and consultationList.size()>0">
+        <foreach collection="consultationList" open="" item="item" separator=";" close="">
+            insert into tb_consultation(consultation_id,consultation_um,consultation_name,
+                                         phone,consultation_type,role,mail_order)values
+            (#{item.consultationId},#{item.consultationUm},#{item.consultationName},#{item.phone},
+             #{item.consultationType},#{item.role},#{item.mailOrder})
+        </foreach>
+    </if>
+</insert>
+    <select id="selectConsultation" resultType="consultation">
+        select consultation_id consultationId,
+                consultation_um consultationUm,
+                consultation_name consultationName,
+                phone phone,
+                case consultation_type when '1' then '立案合议' when '2' then '结案合议'
+                                        when '3' then '过程合议' when '4' then '支付合议'
+                                        else '不需要合议' end consultationType,
+                role role,
+                mail_order mailOrder
+                 from tb_consultation
+    </select>
+
+</mapper>

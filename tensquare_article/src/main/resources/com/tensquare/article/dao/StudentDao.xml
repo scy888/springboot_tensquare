@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tensquare.article.dao.StudentDao">
+   <insert id="addStudentList" parameterType="student">
+       <if test="studentList!=null and studentList.size()>0">
+           <foreach collection="studentList" open="" item="student" separator=";" close="">
+               insert into tb_student(student_id,student_name,student_sex,student_desc) values
+               (#{student.studentId},#{student.studentName},#{student.studentSex},#{student.studentDesc})
+           </foreach>
+       </if>
+   </insert>
+    <insert id="addStudentIdAndTeacherId" >
+        insert into tb_teacher_student(teacher_id,student_id) values (#{teacherId},#{studentId})
+    </insert>
+    <delete id="deleteStudentByIds" parameterType="string">
+        delete from tb_student where student_id in
+        <if test="idArray!=null and idArray.length>0">
+            <foreach collection="idArray" open="(" item="studentId" separator="," close=")">
+                #{studentId}
+            </foreach>
+        </if>
+    </delete>
+    <select id="selectAllStudent" resultMap="studentAndTeacher">
+        select s.*,t.* from tb_student s left join tb_teacher_student ts
+        on s.student_id=ts.student_id left join tb_teacher t
+        on ts.teacher_id=t.teacher_id
+    </select>
+    <resultMap id="studentAndTeacher" type="student">
+        <id property="studentId" column="student_id"/>
+        <result property="studentName" column="student_name"/>
+        <result property="studentSex" column="student_sex"/>
+        <result property="studentDesc" column="student_desc"/>
+        <collection property="teacherList" ofType="teacher">
+            <id property="teacherId" column="teacher_id"/>
+            <result property="teacherName" column="teacher_name"/>
+            <result property="teacherSex" column="teacher_sex"/>
+            <result property="teacherDesc" column="teacher_desc"/>
+        </collection>
+    </resultMap>
+    <select id="selectStudent" resultType="student">
+        select student_id studentId,student_name studentName,
+                student_sex studentSex,student_desc studentDesc
+                from tb_student
+    </select>
+    <select id="getStudentIdByStudentName" parameterType="string" resultType="map">
+        select student_id studentId from tb_student where student_name=#{studentName}
+    </select>
+    <update id="updateStudentListById" parameterType="student">
+        <if test="studentList!=null and studentList.size()>0">
+            <foreach collection="studentList" open="" item="student" separator=";" close="">
+                update tb_student
+                <set>
+                    <if test="student.studentName!=null and student.studentName!=''">
+                    student_name=#{student.studentName},
+                </if>
+                    <if test="student.studentSex!=null and student.studentSex!=''">
+                        student_sex=#{student.studentSex},
+                    </if>
+                    <if test="student.studentDesc!=null and student.studentDesc!=''">
+                        student_desc=#{student.studentDesc}
+                    </if>
+                </set>
+                where student_id=#{student.studentId}
+            </foreach>
+        </if>
+
+    </update>
+</mapper>

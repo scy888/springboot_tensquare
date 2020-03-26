@@ -1,0 +1,92 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.tensquare</groupId>
+    <artifactId>tensquare_parent</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+  <artifactId>tensquare_article</artifactId>
+  <dependencies>
+ 		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+		</dependency>
+	  <!--mybatis起步依赖-->
+	  <dependency>
+		  <groupId>org.mybatis.spring.boot</groupId>
+		  <artifactId>mybatis-spring-boot-starter</artifactId>
+		  <version>1.1.1</version>
+	  </dependency>
+		<dependency>
+			<groupId>com.tensquare</groupId>
+			<artifactId>tensquare_common</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+	  <dependency>
+		  <groupId>com.mangofactory</groupId>
+		  <artifactId>swagger-springmvc</artifactId>
+		  <version>1.0.2</version>
+	  </dependency>
+	  <dependency>
+		  <groupId>org.springframework.boot</groupId>
+		  <artifactId>spring-boot-starter-data-redis</artifactId>
+	  </dependency>
+	  <dependency>
+		  <groupId>org.springframework.cloud</groupId>
+		  <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+	  </dependency>
+	  <dependency>
+		  <groupId>org.springframework</groupId>
+		  <artifactId>spring-test</artifactId>
+		 <!-- <version>5.2.0.BUILD-SNAPSHOT</version>
+		  <scope>compile</scope>-->
+	  </dependency>
+	  <dependency>
+		  <groupId>org.mongodb</groupId>
+		  <artifactId>mongodb-driver</artifactId>
+		  <version>3.6.3</version>
+	  </dependency>
+      <dependency>
+          <groupId>com.github.pagehelper</groupId>
+          <artifactId>pagehelper</artifactId>
+          <version>5.1.10</version>
+          <scope>compile</scope>
+      </dependency>
+
+	<!--  <dependency>
+		  <groupId>org.apache.poi</groupId>
+		  <artifactId>poi</artifactId>
+		  <version>3.14</version>
+	  </dependency>
+	  <dependency>
+		  <groupId>org.apache.poi</groupId>
+		  <artifactId>poi-ooxml-schemas</artifactId>
+		  <version>3.14</version>
+	  </dependency>
+	  <dependency>
+		  <groupId>org.apache.poi</groupId>
+		  <artifactId>poi-ooxml</artifactId>
+		  <version>3.14</version>
+	  </dependency>-->
+
+
+	  <!-- 分页插件pagehelper -->
+	 <!-- <dependency>
+		  <groupId>com.github.pagehelper</groupId>
+		  <artifactId>pagehelper-spring-boot-autoconfigure</artifactId>
+		  <version>1.2.3</version>
+	  </dependency>
+	  <dependency>
+		  <groupId>com.github.pagehelper</groupId>
+		  <artifactId>pagehelper-spring-boot-starter</artifactId>
+		  <version>1.2.3</version>
+	  </dependency>
+-->
+	  <!-- 分页插件pagehelper -->
+
+  </dependencies>
+</project>

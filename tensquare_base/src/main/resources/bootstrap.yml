@@ -1,0 +1,7 @@
+spring:
+  cloud:
+    config:
+      name: base #在码云文件上的名字有关name+ profile组成配置文件名称
+      profile: dev
+      label: master #git上的哪个分支
+      uri: http://127.0.0.1:12000 #请求上的配置中心

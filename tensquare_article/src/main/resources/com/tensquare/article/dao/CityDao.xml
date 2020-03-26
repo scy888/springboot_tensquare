@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tensquare.article.dao.CityDao">
+    <select id="findAll" resultType="city">
+        select
+         provinceId,
+         province_name provinceName,
+         province_short provinceShort,
+         province_status provinceStatus,
+         province_desc provinceDesc,
+         province_date provinceDate
+          from tb_province
+    </select>
+    <insert id="addCity" parameterType="city">
+        insert into tb_city (city_id,province_id,city_name,city_short,city_code,city_desc,city_date) values
+                             (#{cityId},#{provinceId},#{cityName},#{cityShort},#{cityCode},#{cityDesc},#{cityDate})
+    </insert>
+    <select id="selectById" parameterType="string" resultType="city">
+        select city_id cityId,
+                province_id provinceId,
+                city_name cityName,
+                city_short cityShort,
+                city_code cityCode,
+                city_desc cityDesc,
+                city_date cityDate
+                from tb_city where province_id=#{provinceId}
+    </select>
+    <delete id="deletelList" parameterType="string">
+        delete from tb_city where province_id=#{provinceId}
+    </delete>
+    <insert id="saveCityList" parameterType="city">
+        insert into tb_city (city_id,province_id,city_name,city_short,city_code,city_desc,city_date) values
+        <if test="cityList.size()>0 and cityList!=null">
+            <foreach collection="cityList" open="" separator="," item="item" close="">
+                (#{item.cityId},#{item.provinceId},#{item.cityName},#{item.cityShort},#{item.cityCode},#{item.cityDesc},#{item.cityDate})
+            </foreach>
+        </if>
+    </insert>
+    <delete id="delectByIds" parameterType="string">
+        delete from tb_city where province_id in
+        <foreach collection="idList" open="(" item="item" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <delete id="delectByProvinceId" parameterType="string">
+        delete from tb_city where city_id in
+        <foreach collection="idList" open="(" item="item" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <insert id="addCityList" parameterType="map">
+        insert into tb_city (city_id,province_id,city_name,city_short,city_code,city_desc,city_date) values
+        <if test="cityList.size()>0 and cityList!=null">
+            <foreach collection="cityList" open="" separator="," item="item" close="">
+                (#{item.cityId},#{item.provinceId},#{item.cityName},#{item.cityShort},#{item.cityCode},#{item.cityDesc},#{item.cityDate})
+            </foreach>
+        </if>
+    </insert>
+    <select id="getProvinceIdByCityId" parameterType="string" resultType="map">
+        select province_id from tb_city where city_id=#{cityId}
+    </select>
+    <select id="getCityIdAndProvinceIdByCityName" parameterType="string" resultType="map">
+        select city_id,province_id from tb_city where city_name=#{cityName}
+    </select>
+    <update id="updateCityList" parameterType="city">
+        <if test="cityList!=null and cityList.size()>0">
+            <foreach collection="cityList" open="" item="city" separator=";" close="">
+                update tb_city
+                <set>
+                    <if test="city.provinceId!=null and city.provinceId!=''">
+                        province_id=#{city.provinceId},
+                    </if>
+                    <if test="city.cityName!=null and city.cityName!=''">
+                       city_name=#{city.cityName},
+                    </if>
+                    <if test="city.cityCode!=null and city.cityCode!=''">
+                       city_code=#{city.cityCode},
+                    </if>
+                    <if test="city.cityShort!=null and city.cityShort!=''">
+                        city_short=#{city.cityShort},
+                    </if>
+                    <if test="city.cityDesc!=null and city.cityDesc!=''">
+                       city_desc=#{city.cityDesc},
+                    </if>
+                    <if test="city.cityDate!=null ">
+                        city_date=#{city.cityDate},
+                    </if>
+                </set>
+                where city_id=#{city.cityId}
+            </foreach>
+        </if>
+    </update>
+</mapper>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tensquare.article.dao.InsuredDao">
+    <insert id="addInsured" parameterType="map">
+        insert into tb_insured (insured_id,policy_no,insured_name,id_card,iphone,sex,birthday,age,conclusion_code,conclusion_value,conclusion_reason,insured_desc)values
+        (#{insuredId},#{policyNo},#{insuredName},#{idCard},#{map1.iphone},#{sex},#{birthday},#{age},#{map2.conclusionCode},#{map2.conclusionValue},#{map2.conclusionReason},#{map2.insuredDesc})
+    </insert>
+    <select id="selectInsuredList" resultType="insured">
+    select insured_id insuredId,
+            policy_no policyNo,
+            insured_name insuredName,
+            id_card idCard,
+            iphone iphone,
+            sex sex,
+            birthday birthday,
+            age age,
+            conclusion_code   conclusionCode,
+            conclusion_value  conclusionValue,
+            conclusion_reason conclusionReason,
+            insured_desc insuredDesc
+            from tb_insured
+    </select>
+</mapper>

@@ -1,0 +1,53 @@
+server: 
+  port: 9004
+spring: 
+  application:  
+    name: tensquare-article #指定服务名
+  datasource:  
+    driverClassName: com.mysql.jdbc.Driver
+    #url: jdbc:mysql://192.168.25.128:3306/tensquare_article?characterEncoding=UTF8
+    url: jdbc:mysql://localhost:3306/tensquare?allowMultiQueries=true
+    username: root
+    password: root
+  jpa: 
+    database: MySQL
+    show-sql: true
+  redis:
+    host: localhost
+  activemq:
+    broker-url: tcp://localhost:61616
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:6868/eureka
+  instance:
+    prefer-ip-address: true
+
+ #pagehelper: # pageHelper分页配置
+   #helper-dialect: mysql
+   #reasonable: true
+   #support-methods-arguments: true
+mybatis:
+  type-aliases-package: com.tensquare.article.pojo
+  mapper-locations: classpath:com/tensquare/article/dao/*Dao.xml
+
+scy: 盛重阳
+option_desc_one: {人民公社: 应城市,李白故居: 安陆市}
+option_desc_two: {羊台山: 龙安区,红树林: 福田区}
+
+option_desc_one1:
+  汤池温泉: 应城市
+  董永公园: 孝感市
+
+option_desc_two1:
+ 平安大厦: 宝安区
+ 世界之窗: 南山区
+
+ccb: http://www.ccb.com.con
+abc: http://www.abc.com.con
+icbc: http://www.icbc.com.cn
+cmb: http://www.cmb.com.cn
+
+claimppt_j2ee.http.hostUrl: http://localhost:9004/spection
+request_rel_read_timeout: 30000
+request_rel_connect_timeout: 30000

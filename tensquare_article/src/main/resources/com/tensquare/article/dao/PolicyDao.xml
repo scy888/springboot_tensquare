@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tensquare.article.dao.PolicyDao">
+    <insert id="addPolicyList" parameterType="policy" >
+        insert into tb_policy (policy_id,policy_no,insured_name,accident_reason,accident_date,case_status,case_value,
+                    settlend_amount,outstand_amount,pay_amount,currency_code,currency_desc,exchange_rate,settlend_rate,outstand_rate) values
+                    <foreach collection="policyList" open="" item="item" separator="," close="">
+                        (#{item.policyId},#{item.policyNo},#{item.insuredName},#{item.accidentReason},#{item.accidentDate},#{item.caseStatus},#{item.caseValue},
+                        #{item.settlendAmount},#{item.outstandAmount},#{item.payAmount},#{item.currencyCode},#{item.currencyDesc},#{item.exchangeRate},#{item.settlendRate},#{item.outstandRate})
+                    </foreach>
+    </insert>
+    <select id="selectPoicyList" resultType="policy">
+      select policy_id policyId,policy_no policyNo,insured_name insuredName,
+             accident_reason accidentReason,accident_date accidentDate,case_status caseStatus,
+             case_value caseValue,settlend_amount settlendAmount,outstand_amount outstandAmount,
+             pay_amount payAmount,currency_code currencyCode,currency_desc currencyDesc,
+             exchange_rate exchangeRate,settlend_rate settlendRate,outstand_rate outstandRate
+             from tb_policy
+    </select>
+    <update id="updatePolicy" parameterType="policy">
+        update tb_policy set settlend_amount=#{settlendAmount},outstand_amount=#{outstandAmount},
+                             pay_amount=#{payAmount},settlend_rate=#{settlendRate},outstand_rate=#{outstandRate}
+                             where policy_id=#{policyId}
+    </update>
+    <delete id="deletePolicyById" parameterType="policy">
+        delete from tb_policy where policy_id=#{policyId}
+    </delete>
+</mapper>

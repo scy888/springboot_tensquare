@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tensquare.article.dao.OptionDao">
+  <insert id="addOptionList" parameterType="list">
+      insert into tb_option(option_id,spection_id,option_name,option_status,option_desc,option_date) values
+      <foreach collection="optionList" open="" item="item" separator="," close="">
+          (#{item.optionId},#{item.spectionId},#{item.optionName},#{item.optionStatus},#{item.optionDesc},#{item.optionDate})
+      </foreach>
+  </insert>
+    <delete id="deleteOptionByRelationId" parameterType="list">
+        delete from tb_option where spection_id in
+        <foreach collection="idList" open="(" item="item" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <delete id="deleteOptionBySpectionId" parameterType="string">
+                delete from tb_option where spection_id=#{spectionId}
+    </delete>
+    <select id="selectOptionListBySpectionId" parameterType="string" resultType="map">
+        select /*option_id optionId,
+                spection_id spectionId,
+                option_name optionName,
+                option_status optionStatus,
+                option_desc optionDesc,
+                option_date optionDate*/
+                *
+                from tb_option where spection_id=#{spection_id}
+    </select>
+    <select id="findSpectionListById" resultType="option">
+         select option_id optionId,
+                spection_id spectionId,
+                option_name optionName,
+                option_status optionStatus,
+                option_desc optionDesc,
+                option_date optionDate
+                from tb_option where spection_id=#{spectionId}
+    </select>
+    <insert id="addOption" parameterType="map">
+             insert into tb_option(option_id,spection_id,option_name,option_status,option_desc,option_date) values
+                          (#{optionId},#{spectionId},#{optionName},#{optionStatus},#{optionDesc},#{optionDate})
+    </insert>
+    <delete id="deleteOptionBySpectionIds" parameterType="list">
+        delete from tb_option where spection_id in
+        <foreach collection="ids" open="(" item="item" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <update id="updateOption" parameterType="option" >
+        update tb_option
+        <set>
+            <if test="optionId!=''and optionId!=null">
+                option_id=#{optionId},
+            </if>
+        <if test="optionName!=''and optionName!=null">
+            option_name=#{optionName},
+        </if>
+            <if test="optionStatus!=''and optionStatus!=null">
+                option_status=#{optionStatus},
+            </if>
+            <if test="optionDesc!=''and optionDesc!=null">
+                option_desc=#{optionDesc},
+            </if>
+            <if test="optionDate!=null">
+                option_date=#{optionDate}
+            </if>
+    </set>
+        where spection_id=#{spectionId}
+    </update>
+    <select id="selectAllOption" resultType="option">
+       select option_id optionId,
+                spection_id spectionId,
+                option_name optionName,
+                option_status optionStatus,
+                option_desc optionDesc,
+                option_date optionDate
+                from tb_option
+    </select>
+    <select id="getTatolCount" resultType="int">
+        select count(1) from tb_option
+    </select>
+    <select id="selectPage" resultType="option">
+         select option_id optionId,
+                spection_id spectionId,
+                option_name optionName,
+                option_status optionStatus,
+                option_desc optionDesc,
+                option_date optionDate
+                from tb_option limit #{index},#{pageSize}
+    </select>
+    <select id="getOptionListByStatus" parameterType="string" resultType="option">
+         select option_id optionId,
+                spection_id spectionId,
+                option_name optionName,
+                option_status optionStatus,
+                option_desc optionDesc,
+                option_date optionDate
+                from tb_option
+                where option_status in
+                <if test="optionStatusList.size()>0 and optionStatusList!=null">
+                    <foreach collection="optionStatusList" open="(" item="item" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </if>
+    </select>
+    <update id="updateOptionList" parameterType="option">
+        <foreach collection="optionList" open="" separator=";" item="item" close="">
+            update tb_option set option_desc=#{item.optionDesc} where option_id=#{item.optionId}
+        </foreach>
+    </update>
+</mapper>

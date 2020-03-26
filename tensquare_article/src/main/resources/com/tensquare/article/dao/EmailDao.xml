@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tensquare.article.dao.EmailDao">
+<insert id="addEmail" parameterType="email">
+    insert into tb_email(subject,message,send_um,send_date,to_name,cc_name) values
+                         (#{subject},#{message},#{sendUm},#{sendDate},#{toName},#{ccName})
+</insert>
+</mapper>

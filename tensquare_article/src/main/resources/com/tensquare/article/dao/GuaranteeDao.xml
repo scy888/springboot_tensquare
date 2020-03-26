@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tensquare.article.dao.GuaranteeDao">
+<insert id="addGuaranteeList" parameterType="entity.Guarantee">
+    insert into tb_guarantee (guarantee_id,policy_no,insured_name,accident_date,accident_date_str,product_class,guarantee_seria_no) values
+    <foreach collection="guaranteeList" open="" item="item" separator="," close="">
+        (#{item.guaranteeId},#{item.policyNo},#{item.insuredName},#{item.accidentDate},
+        #{item.accidentDateStr},#{item.productClass},#{item.guaranteeSeriaNo})
+    </foreach>
+</insert>
+    <select id="selectGuaranteeList" resultType="entity.Guarantee">
+        select guarantee_id guaranteeId,
+                policy_no policyNo,
+                insured_name insuredName,
+                accident_date accidentDate,
+                accident_date_str accidentDateStr,
+                product_class productClass,
+                guarantee_seria_no guaranteeSeriaNo
+                from tb_guarantee
+    </select>
+    <select id="getGuaranteeList"  resultType="entity.Guarantee">
+         select guarantee_id guaranteeId,
+                policy_no policyNo,
+                insured_name insuredName,
+                accident_date accidentDate,
+                accident_date_str accidentDateStr,
+                product_class productClass,
+                guarantee_seria_no guaranteeSeriaNo
+                from tb_guarantee
+                where accident_date in
+                <if test="dateList!=null and dateList.size()>0">
+                    <foreach collection="dateList" open="(" item="item" separator="," close=")">
+                        STR_TO_DATE(#{item},'%Y-%m-%d %H:%i:%s')
+                    </foreach>
+                </if>
+    </select>
+
+    <select id="getGuaranteeList2" resultType="entity.Guarantee">
+         select guarantee_id guaranteeId,
+                policy_no policyNo,
+                insured_name insuredName,
+                accident_date accidentDate,
+                accident_date_str accidentDateStr,
+                product_class productClass,
+                guarantee_seria_no guaranteeSeriaNo
+                from tb_guarantee
+                where accident_date &gt;= /*<![CDATA[>=]]>*/ STR_TO_DATE(#{startDate},'%Y-%m-%d %H:%i:%s')
+               and accident_date &lt;= /*<![CDATA[<=]]>*/ STR_TO_DATE(#{endDate},'%Y-%m-%d %H:%i:%s')
+    </select>
+</mapper>

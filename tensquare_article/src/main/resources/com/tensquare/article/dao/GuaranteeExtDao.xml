@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tensquare.article.dao.GuaranteeExtDao">
+   <insert id="addGuaranteeExtList" parameterType="entity.GuaranteeExt">
+       insert into tb_guaranteeext (guaranteeExt_id,guarantee_id,ext_key,ext_value) values
+       <foreach collection="guaranteeExtList" open="" item="item" separator="," close="">
+           (#{item.guaranteeExtId},#{item.guaranteeId},#{item.extKey},#{item.extValue})
+       </foreach>
+   </insert>
+    <select id="selectGuaranteeExtList" parameterType="string" resultType="entity.GuaranteeExt">
+        select guaranteeExt_id guaranteeExtId,
+                guarantee_id guaranteeId,
+                ext_key extKey,
+                ext_value extValue
+                from tb_guaranteeext
+    </select>
+</mapper>

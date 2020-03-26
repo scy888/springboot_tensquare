@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tensquare.article.dao.RiskBackDao">
+<insert id="addRiskBackList" parameterType="riskBack">
+    insert into tb_risk_back (risk_back_id,report_no,status_desc,insured_id_card,plate_number,
+                              risk_drive_tel,risk_back_code,risk_back_value,risk_list_type,
+                              effective_date,failure_date,valid_flag) values
+           <if test="riskBackList.size()>0 and riskBackList!=null">
+               <foreach collection="riskBackList" open="" item="item" separator="," close="">
+                   (#{item.riskBackId},#{item.reportNo},#{item.statusDesc},#{item.insuredIdCard},#{item.plateNumber},
+                   #{item.riskDriveTel},#{item.riskBackCode},#{item.riskBackValue},#{item.riskListType},
+                   #{item.effectiveDate},#{item.failureDate},#{item.validFlag})
+               </foreach>
+           </if>
+</insert>
+    <select id="getPlateNumberList"  resultType="string">
+        select plate_number from tb_risk_back
+    </select>
+    <select id="getDriveTelList"  resultType="string">
+        select risk_drive_tel from tb_risk_back
+    </select>
+    <select id="getIdCardList"  resultType="string">
+        select insured_id_card from tb_risk_back
+    </select>
+    <select id="selectThreeParams2" resultType="riskBack">
+        select risk_back_id riskBackId,report_no reportNo,status_desc statusDesc,
+               insured_id_card insuredIdCard,plate_number plateNumber,risk_drive_tel riskDriveTel,
+               risk_back_code riskBackCode,risk_back_value riskBackValue,risk_list_type riskListType,
+               effective_date effectiveDate,failure_date failureDate,valid_flag validFlag
+               from tb_risk_back
+
+       <where>
+           <if test="insuredIdCardList!=null" >
+
+               <foreach collection="insuredIdCardList" open="insured_id_card in(" item="insuredIdCard" separator="," close=")">
+                   #{insuredIdCard}
+               </foreach>
+           </if>
+           <if test=" riskDriveTelList!=null">
+
+               <foreach collection="riskDriveTelList" open="and risk_drive_tel in(" item="riskDriveTel" separator="," close=")">
+                   #{riskDriveTel}
+               </foreach>
+           </if>
+           <if test=" plateNumberList!=null">
+
+               <foreach collection="plateNumberList" open=" and plate_number in(" item="plateNumber" separator="," close=")">
+                   #{plateNumber}
+               </foreach>
+           </if>
+       </where>
+    </select>
+    <update id="updateRiskBacklist" parameterType="riskBack">
+        <if test="paramList.size()>0 and paramList!=null">
+            <foreach collection="paramList" open="" item="item" separator=";" close="">
+                update tb_risk_back set risk_list_type=#{item.riskListType},valid_flag=#{item.validFlag},
+                                         effective_date=#{item.effectiveDate},failure_date=#{item.failureDate}
+                 where risk_back_code=#{item.riskBackCode}
+            </foreach>
+        </if>
+
+    </update>
+</mapper>
