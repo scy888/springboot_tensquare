@@ -788,7 +788,20 @@ public class SpectionController {
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponeData<>(false,StatusCode.ADDFALSE , ResultMessage.ADDFALSE+e.getMessage());
+        }
+    }
+    @RequestMapping("/addListCase")
+    public ResponeData<Void> addListCase(@RequestBody Map<String,List<PreCase>> map){
+        try {
+            logge.info("map{}:"+JSON.toJSONString(map));
+            List<PreCase> caseList = map.get("caseList");
+            spectionServince.addListCase(caseList);
+            return new ResponeData<Void>(true,StatusCode.ADDSUCCESS , ResultMessage.ADDSUCCESS);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponeData<>(false,StatusCode.ADDFALSE , ResultMessage.ADDFALSE+e.getMessage());
 
         }
+
     }
 }

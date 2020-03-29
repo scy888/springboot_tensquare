@@ -15,6 +15,7 @@ import entity.GuaranteeExt;
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.poi.ss.formula.functions.T;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,6 +92,8 @@ public class SpectionServinceImpl implements SpectionServince {
     private TeacherAndStudentDao teacherAndStudentDao;
     @Autowired
     private WeightDao weightDao;
+    @Autowired
+    private PreCaseDao preCaseDao;
     @Autowired
     private IdWorker idWorker;
     @Autowired
@@ -1574,6 +1577,72 @@ public class SpectionServinceImpl implements SpectionServince {
             sqlSession.close();
         }
         logger.info("花费了:"+(System.currentTimeMillis()-start)+"毫秒");
+    }
+
+    @Override
+    public void addListCase(List<PreCase> caseList) {
+        long start = System.currentTimeMillis();
+        Calendar calendar=Calendar.getInstance();
+        calendar.setTime(new Date(2020-1900,3-1,25,15,16,17));
+        SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.BATCH, false);
+        PreCaseDao precaseMapper = sqlSession.getMapper(PreCaseDao.class);
+        try {
+            for (int i = 0; i < caseList.size(); i++) {
+                PreCase preCase = caseList.get(i);
+                preCase.setPreCaseId(idWorker.nextId()+"");
+                calendar.add(Calendar.DAY_OF_MONTH, 2);
+                preCase.setDownLineSchedul(setDownLineSchedul(preCase.getIsOnLine(),calendar.getTime()));
+                preCase.setAccidentLevel(setAccidentLevel(preCase.getDeathPeople(),preCase.getHurtPeople()));
+                precaseMapper.addCase(preCase);
+                if (i % 100 == 0 || i == caseList.size()-1){
+                    sqlSession.commit();
+                    sqlSession.clearCache();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            sqlSession.rollback();
+        } finally {
+            sqlSession.close();
+        }
+        logger.info("花费了:"+(System.currentTimeMillis()-start)+"毫秒");
+    }
+
+    private String setAccidentLevel(String deathPeople, String hurtPeople) {
+        Integer deathPeopleInt = Integer.valueOf(deathPeople);
+        Integer hurtPeopleInt = Integer.valueOf(hurtPeople);
+        String accidentLevel="";
+       if (deathPeopleInt>30||hurtPeopleInt>100){
+           accidentLevel="特别重大事故";
+       }
+       else if ((deathPeopleInt>=10&&deathPeopleInt<=30)||(hurtPeopleInt>=50&&hurtPeopleInt<=100)){
+           accidentLevel="重大事故";
+
+       }
+       else if ((deathPeopleInt>=3&&deathPeopleInt<10)||(hurtPeopleInt>=10&&hurtPeopleInt<50)){
+           accidentLevel="较大事故";
+
+       }
+       else if (deathPeopleInt<3||hurtPeopleInt<10){
+           accidentLevel="一般事故";
+
+       }
+        return accidentLevel;
+    }
+
+    private String setDownLineSchedul(String isOnLine,Date date) {
+
+        String downLineSchedul="";
+        if ("1".equals(isOnLine)){
+            downLineSchedul="已在线,无需展开下线计划";
+        }
+        else {
+          Calendar calendar=Calendar.getInstance();
+            calendar.setTime(date);
+            calendar.add(Calendar.HOUR_OF_DAY, 2);
+            downLineSchedul=DateUtil.DateToStr(date,DateUtil.FORMATTWO )+"--"+DateUtil.DateToStr(calendar.getTime(),DateUtil.FORMATTWO );
+        }
+        return downLineSchedul;
     }
 
     private String setWeightValue(String weightKey) {
