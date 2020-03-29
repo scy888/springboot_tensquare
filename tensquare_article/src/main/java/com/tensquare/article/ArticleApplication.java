@@ -5,8 +5,6 @@ import common.JwtUtils;
 import common.Md5Utils;
 import common.NumUtils;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
@@ -24,28 +22,34 @@ import utils.IdWorker;
 @EnableEurekaClient
 public class ArticleApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(ArticleApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(ArticleApplication.class, args);
+    }
 
-	@Bean
-	public IdWorker idWorkker(){
-		return new IdWorker(1, 1);
-	}
-	@Bean
-	public NumUtils numUtils(){
-		return new NumUtils();
-	}
-	@Bean
-	public BCryptPasswordEncoder bCryptPasswordEncoder(){
-		return new BCryptPasswordEncoder();
-	}
-	@Bean
-	public JwtUtils jwtUtils(){
-		return new JwtUtils();
-	}
-	@Bean
-	public Md5Utils md5Utils() {return new Md5Utils();}
+    @Bean
+    public IdWorker idWorkker() {
+        return new IdWorker(1, 1);
+    }
+
+    @Bean
+    public NumUtils numUtils() {
+        return new NumUtils();
+    }
+
+    @Bean
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public JwtUtils jwtUtils() {
+        return new JwtUtils();
+    }
+
+    @Bean
+    public Md5Utils md5Utils() {
+        return new Md5Utils();
+    }
 	/*@Bean
 	public PageHelper pageHelper(){
 		PageHelper pageHelper=new PageHelper();
@@ -56,9 +60,9 @@ public class ArticleApplication {
 		return pageHelper;
 	}*/
 
-	@Test
-	public void test(){
-		System.out.println(CaseReasonEnum.getEnumByStatusCode("CCB"));
-		System.out.println(CaseReasonEnum.getEnumByNameDesc("踩踏事故"));
-	}
+    @Test
+    public void test() {
+        System.out.println(CaseReasonEnum.getEnumByStatusCode("CCB"));
+        System.out.println(CaseReasonEnum.getEnumByNameDesc("踩踏事故"));
+    }
 }

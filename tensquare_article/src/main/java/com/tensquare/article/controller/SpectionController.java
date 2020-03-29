@@ -727,7 +727,7 @@ public class SpectionController {
          * @Description: 注册验证码
          * @methodName: registerCode
          * @Param: [ipAdress]
-         * @return: java.util.Map<java.lang.String , java.lang.Object>
+         * @return: java.util.Map<java.lang.String               ,               java.lang.Object>
          * @Author: scyang
          * @Date: 2020/3/15 17:06
          */
@@ -745,8 +745,8 @@ public class SpectionController {
     public Map<String, Object> selectStudentListByJ2ee() throws ClaimpptException {
         Integer pageNum = 2;
         Integer pageSize = 2;
-        Map<String,Object> map=new HashMap<>();
-        Map<String,Object> pageBean=new HashMap<>();
+        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> pageBean = new HashMap<>();
         pageBean.put("pageBean", map);
         map.put("pageNum", pageNum);
         map.put("pageSize", pageSize);
@@ -756,14 +756,14 @@ public class SpectionController {
         jsonObject.put("pageSize", pageSize);
         JSONObject pageBean=new JSONObject();
         pageBean.put("pageBean", jsonObject);*/
-       //Sat Feb 01 19:25:36 CST 2020
+        //Sat Feb 01 19:25:36 CST 2020
         // ResponeData responeData = httpRestOperations.getForObject("/selectAllStudent", ResponeData.class);
         //"http://localhost:9004/spection/pageBean/" + pageNum + "/" + pageSize
         //1725-08-12 00:00:00
-        Date spectionDate=new Date(1358-1900,5-1,25);
-        String depart="2";
-        ResponeData responeData2 = HttpRest4J2eeUtils.getInstance().getForObject("http://localhost:9004/spection/departmentCode/{depart}", HttpMethod.GET, ResponeData.class,depart);
-        ResponeData responeData1 = HttpRest4J2eeUtils.getInstance().postForObject("http://localhost:9004/spection/pageBean" , HttpMethod.POST,JSON.toJSONString(pageBean), ResponeData.class);
+        Date spectionDate = new Date(1358 - 1900, 5 - 1, 25);
+        String depart = "2";
+        ResponeData responeData2 = HttpRest4J2eeUtils.getInstance().getForObject("http://localhost:9004/spection/departmentCode/{depart}", HttpMethod.GET, ResponeData.class, depart);
+        ResponeData responeData1 = HttpRest4J2eeUtils.getInstance().postForObject("http://localhost:9004/spection/pageBean", HttpMethod.POST, JSON.toJSONString(pageBean), ResponeData.class);
 
         logge.info("responeData2{}:" + JSON.toJSONString(responeData2));
         List<Department> departmentList = (List<Department>) responeData2.getData();
