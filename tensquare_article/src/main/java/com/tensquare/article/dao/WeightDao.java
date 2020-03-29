@@ -1,5 +1,7 @@
 package com.tensquare.article.dao;
 
+import com.tensquare.article.pojo.WeightSetting;
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -10,6 +12,7 @@ import org.apache.ibatis.annotations.Mapper;
  * @describe:
  */
 @Mapper
-public interface WeightDao {
-
+public interface WeightDao {//CURRENT_TIMESTAMP
+     @Insert("insert into tb_weight(weight_id,weight_key,weight_value,create_date) values(#{weightId},#{weightKey},#{weightValue},CURRENT_TIMESTAMP)")
+    void addWeight(WeightSetting weightSetting);
 }

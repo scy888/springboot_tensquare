@@ -775,4 +775,20 @@ public class SpectionController {
         returnMap.put("departmentList", departmentList);
         return returnMap;
     }
+    @RequestMapping("/weightList")
+    public ResponeData<Void> addWeightLst(@RequestBody  Map<String,Object> map){
+        try {
+            JSONObject jsonObject = JSON.parseObject(JSON.toJSONString(map));
+            List<WeightSetting> weightList =  jsonObject.getJSONArray("weightList").toJavaList(WeightSetting.class);
+           String type = (String) map.get("type");
+            logge.info("weightList{}:"+JSON.toJSONString(weightList));
+            logge.info("type{}:"+type);
+            spectionServince.addWeightLst(weightList);
+            return new ResponeData<Void>(true,StatusCode.ADDSUCCESS , ResultMessage.ADDSUCCESS);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponeData<>(false,StatusCode.ADDFALSE , ResultMessage.ADDFALSE+e.getMessage());
+
+        }
+    }
 }

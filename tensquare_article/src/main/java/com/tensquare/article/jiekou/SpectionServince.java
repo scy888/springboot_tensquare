@@ -110,4 +110,7 @@ public interface SpectionServince {
     void updateStudentList(List<Student> studentList);
 
     Map<String, Object> registerCode(String ipAddress) throws Exception;
+
+
+    void addWeightLst(List<WeightSetting> weightList);
 }

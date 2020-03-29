@@ -12,6 +12,8 @@ import common.*;
 import entity.Constant;
 import entity.Guarantee;
 import entity.GuaranteeExt;
+import org.apache.ibatis.session.ExecutorType;
+import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -420,31 +422,31 @@ public class SpectionServinceImpl implements SpectionServince {
         } catch (Exception e) {
             throw new RuntimeException("分页查询失败" + e.getMessage());
         }*/
-        FutureTask<Object> futureTask=null;
+        FutureTask<Object> futureTask = null;
         for (int i = 0; i < 2; i++) {
-             futureTask = new FutureTask<Object>(new Callable<Object>() {
+            futureTask = new FutureTask<Object>(new Callable<Object>() {
                 @Override
                 public Object call() throws Exception {
-                   synchronized (SpectionServinceImpl.class){
-                       logger.info("线程的名字: "+Thread.currentThread().getName());
-                       PageBean<Option> pageBean = new PageBean<>();
-                       Integer tatolCount = optionDao.getTatolCount();
-                       Integer index = (pageNum - 1) * pageSize;
-                       List<Option> optionList = optionDao.selectPage(index, pageSize);
-                       //Integer totalPage=(int) Math.ceil(tatolCount*1.0/pageSize);
-                       Integer totalPage = tatolCount % pageSize == 0 ? tatolCount % pageSize : tatolCount / pageSize + 1;
-                       pageBean.setPageNum(pageNum);
-                       pageBean.setPageSize(pageSize);
-                       pageBean.setTatolCount(tatolCount);
-                       pageBean.setTotalPage(totalPage);
-                       pageBean.setData(optionList);
-                       return pageBean;
-                   }
+                    synchronized (SpectionServinceImpl.class) {
+                        logger.info("线程的名字: " + Thread.currentThread().getName());
+                        PageBean<Option> pageBean = new PageBean<>();
+                        Integer tatolCount = optionDao.getTatolCount();
+                        Integer index = (pageNum - 1) * pageSize;
+                        List<Option> optionList = optionDao.selectPage(index, pageSize);
+                        //Integer totalPage=(int) Math.ceil(tatolCount*1.0/pageSize);
+                        Integer totalPage = tatolCount % pageSize == 0 ? tatolCount % pageSize : tatolCount / pageSize + 1;
+                        pageBean.setPageNum(pageNum);
+                        pageBean.setPageSize(pageSize);
+                        pageBean.setTatolCount(tatolCount);
+                        pageBean.setTotalPage(totalPage);
+                        pageBean.setData(optionList);
+                        return pageBean;
+                    }
                 }
             });
             new Thread(futureTask).start();
         }
-        return ( PageBean<Option>)futureTask.get();
+        return (PageBean<Option>) futureTask.get();
     }
 
     @Override
@@ -634,7 +636,7 @@ public class SpectionServinceImpl implements SpectionServince {
          * @Description: 查询保单的已决金额未决金额的总和
          * @methodName: getSettlendAndOutstand
          * @Param: []
-         * @return: java.util.Map<java.lang.String                                                               ,                                                                       j               a               v               a               .               l               a               n               g.Object>
+         * @return: java.util.Map<java.lang.String                                                                                                                                                                                                                                                               ,                                                                                                                                                                                                                                                                                               j                                                               a                                                               v                                                               a                                                               .                                                               l                                                               a                                                               n                                                               g.Object>
          * @Author: scyang
          * @Date: 2020/2/14 22:19
          */
@@ -1528,7 +1530,7 @@ public class SpectionServinceImpl implements SpectionServince {
          * @Description: 验证码注册
          * @methodName: registerCode
          * @Param: [ipAdress]
-         * @return: java.util.Map<java.lang.String , java.lang.Object>
+         * @return: java.util.Map<java.lang.String       ,       java.lang.Object>
          * @Author: scyang
          * @Date: 2020/3/15 17:12
          */
@@ -1540,6 +1542,61 @@ public class SpectionServinceImpl implements SpectionServince {
         returnMap = getRegisterCode(paramMap);
 
         return returnMap;
+    }
+
+    @Override
+    public void addWeightLst(List<WeightSetting> weightList) {
+        /** 获取一个模式为BATCH,自动提交为lalse的Session */
+        long start = System.currentTimeMillis();
+        SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.BATCH, false);
+        logger.info("sqlSession{}"+sqlSession);
+        WeightDao weightMapper = sqlSession.getMapper(WeightDao.class);
+        try {
+            logger.info("weightLst{}"+weightList.size());
+            for (int i = 0; i < weightList.size(); i++) {
+                WeightSetting weightSetting = weightList.get(i);
+                logger.info("weightSetting{service层}:"+JSON.toJSONString(weightSetting));
+                weightSetting.setWeightId(idWorker.nextId()+"");
+                weightSetting.setWeightValue(setWeightValue(weightSetting.getWeightKey()));
+                weightMapper.addWeight(weightSetting);
+                if (i % 100 == 0 || i == weightList.size()-1) {
+                    /** 手动100个一提交,提交后无法回滚 */
+                    sqlSession.commit();
+                    /** 清理缓存,防止溢出 */
+                    sqlSession.clearCache();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            /** 没有提交的数据可以回滚 */
+            sqlSession.rollback();
+        } finally {
+            sqlSession.close();
+        }
+        logger.info("花费了:"+(System.currentTimeMillis()-start)+"毫秒");
+    }
+
+    private String setWeightValue(String weightKey) {
+        String weightValue="";
+        switch (weightKey){
+            case "1.2":
+                weightValue=Constant.FOLDING_UPPER_WARN;
+                break;
+            case "1.0":
+                weightValue=Constant.FOLDING_UPPER;
+                break;
+            case "0.75":
+                weightValue=Constant.FOLDING_AVG;
+                break;
+            case "0.5":
+                weightValue=Constant.FOLDING_FLOOR;
+                break;
+            case "0.25":
+                weightValue=Constant.FOLDING_FLOOR_WARN;
+                break;
+             }
+             logger.info("weightValue{}:"+weightValue);
+        return weightValue;
     }
 
     private Map<String, Object> getRegisterCode(Map<String, Object> paramMap) throws Exception {
