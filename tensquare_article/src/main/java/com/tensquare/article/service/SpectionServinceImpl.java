@@ -12,6 +12,7 @@ import common.*;
 import entity.Constant;
 import entity.Guarantee;
 import entity.GuaranteeExt;
+import org.apache.ibatis.session.SqlSessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,11 +88,15 @@ public class SpectionServinceImpl implements SpectionServince {
     @Autowired
     private TeacherAndStudentDao teacherAndStudentDao;
     @Autowired
+    private WeightDao weightDao;
+    @Autowired
     private IdWorker idWorker;
     @Autowired
     private JmsTemplate jmsTemplate;
     @Autowired
     private NumUtils numUtils;
+    @Autowired
+    private SqlSessionFactory sqlSessionFactory;
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     private static final String OPTION_STATUS_ONE = "1";

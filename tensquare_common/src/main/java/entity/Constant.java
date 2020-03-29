@@ -81,4 +81,12 @@ public class Constant {
     public static final String CONSULTATION_TYPE_SETTLE="2";/** 结案合议 */
     public static final String CONSULTATION_TYPE_COURSE="3";/** 过程合议 */
     public static final String CONSULTATION_TYPE_ALIPAY="4";/** 支付合议 */
+
+    /**  全国折标件均值 */
+    public static final String FOLDING_UPPER_WARN="均衡度上限预警阀值";
+    public static final String FOLDING_UPPER="均衡度上限阀值";
+    public static final String FOLDING_FLOOR_WARN="均衡度下限预警阀值";
+    public static final String FOLDING_FLOOR="均衡度下限阀值";
+    public static final String FOLDING_AVG="均衡度平均值";
+
 }
