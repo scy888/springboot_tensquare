@@ -42,7 +42,9 @@ public class ReflectServinceImpl extends WebApplicationObjectSupport implements 
     }
 
     @Override
-    public Object reflectMethodByOneParam(String beanName, String methodName, Object paramObject) throws ClaimpptException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public Object reflectMethodByOneParam(String beanName, String methodName, Object paramObject) throws
+            ClaimpptException, NoSuchMethodException,
+            InvocationTargetException, IllegalAccessException {
         if (StringUtils.isEmpyStr(beanName)||StringUtils.isEmpyStr(methodName)){
             throw new ClaimpptException("传入的反射beanName和methodName不能为空!!!");
         }
@@ -58,7 +60,11 @@ public class ReflectServinceImpl extends WebApplicationObjectSupport implements 
     }
 
     @Override
-    public Object reflectMethodByAnyParams(String beanName, String methodName, Object... paramObject) throws InvocationTargetException, ClaimpptException, IllegalAccessException, NoSuchMethodException {
+    public Object reflectMethodByAnyParams(String beanName, String methodName, Object... paramObject)
+            throws InvocationTargetException,
+            ClaimpptException,
+            IllegalAccessException,
+            NoSuchMethodException {
 
         return this.reflectMethodByOneParam(beanName, methodName, paramObject);
     }
