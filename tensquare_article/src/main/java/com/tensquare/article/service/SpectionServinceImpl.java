@@ -1549,6 +1549,14 @@ public class SpectionServinceImpl implements SpectionServince {
 
     @Override
     public void addWeightLst(List<WeightSetting> weightList) {
+        /**
+         * @Description: 批量添加
+         * @methodName: addWeightLst
+         * @Param: [weightList]
+         * @return: void
+         * @Author: scyang
+         * @Date: 2020/3/31 21:35
+         */
         /** 获取一个模式为BATCH,自动提交为lalse的Session */
         long start = System.currentTimeMillis();
         SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.BATCH, false);
