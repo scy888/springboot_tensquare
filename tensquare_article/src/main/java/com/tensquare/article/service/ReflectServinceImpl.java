@@ -98,8 +98,8 @@ public class ReflectServinceImpl extends WebApplicationObjectSupport implements 
                 tagert= method.invoke(object,paramList.toArray(new Object[paramList.size()]));
             }
             else {
-                method = clazz.getDeclaredMethod(methodName);
-                tagert= method.invoke(object);
+                method = clazz.getDeclaredMethod(methodName,new Class[]{});
+                tagert= method.invoke(object,new Object[]{});
             }
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
