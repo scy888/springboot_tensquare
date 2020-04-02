@@ -2,7 +2,6 @@ package common;
 
 import java.util.ArrayList;
 import java.util.List;
-
 /**
  * @author: scyang
  * @program: tensquare_parent
@@ -21,7 +20,6 @@ public class ReflectUtils {
         V v=null;
         Class<T> clazz = (Class<T>) t.getClass();
         T instance = clazz.newInstance();
-        if (params!=null&&params.length>0){
             List<Class> calssList=new ArrayList<>();
             List<Object> paramList=new ArrayList<>();
             for (Object param : params) {
@@ -30,12 +28,6 @@ public class ReflectUtils {
             }
             v= (V) clazz.getDeclaredMethod(methodName, calssList.toArray(new Class[calssList.size()]))
                     .invoke(instance,paramList.toArray(new Object[paramList.size()]));
-        }
-        else {
-          v= (V) clazz.getDeclaredMethod(methodName,new Class[]{})
-                    .invoke(instance,new Object[]{});
-        }
         return v;
     }
-
 }
