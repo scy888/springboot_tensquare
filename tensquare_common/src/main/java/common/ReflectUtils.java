@@ -1,7 +1,10 @@
 package common;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.ResourceBundle;
+
 /**
  * @author: scyang
  * @program: tensquare_parent
@@ -29,5 +32,28 @@ public class ReflectUtils {
             v= (V) clazz.getDeclaredMethod(methodName, calssList.toArray(new Class[calssList.size()]))
                     .invoke(instance,paramList.toArray(new Object[paramList.size()]));
         return v;
+    }
+
+    public Object reflectMethodByParams(String baseName,String keyName,String methodName,Object...params) throws Exception {
+        ResourceBundle bundle = ResourceBundle.getBundle(baseName);
+        Enumeration<String> keys = bundle.getKeys();
+        Object target=null;
+        while (keys.hasMoreElements()){
+            String key = keys.nextElement();
+            if (keyName.equals(key)){
+                String className = bundle.getString(key);
+                Class<?> clazz = Class.forName(className);
+                List<Class> classList=new ArrayList<>();
+                List<Object> paramsList=new ArrayList<>();
+                for (Object param : params) {
+                    classList.add(param.getClass());
+                    paramsList.add(param);
+                }
+                target=clazz.getDeclaredMethod(methodName,classList.toArray(new Class[classList.size()]))
+                        .invoke(clazz.newInstance(),paramsList.toArray(new Object[paramsList.size()]));
+                break;
+            }
+        }
+        return target;
     }
 }
