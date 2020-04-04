@@ -97,10 +97,10 @@ public class ReflectServinceImpl extends WebApplicationObjectSupport implements 
                 method = clazz.getDeclaredMethod(methodName, classList.toArray(new Class[classList.size()]));
                 tagert= method.invoke(object,paramList.toArray(new Object[paramList.size()]));
             }
-            else {
+            /*else {
                 method = clazz.getDeclaredMethod(methodName,new Class[]{});
                 tagert= method.invoke(object,new Object[]{});
-            }
+            }*/
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
             throw new ClaimpptException("反射调用失败 "+e.getMessage());
