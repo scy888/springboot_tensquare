@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
 import com.tensquare.article.jiekou.HttpRestOperations;
 import com.tensquare.article.jiekou.ProvinceServince;
+import com.tensquare.article.jiekou.ReflectServince;
 import com.tensquare.article.jiekou.SpectionServince;
 import com.tensquare.article.pojo.*;
 import com.tensquare.article.service.ProvinceServinceImpl;
@@ -22,6 +23,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -42,6 +45,11 @@ public class SpectionController {
     private static final Logger logge = LoggerFactory.getLogger(SpectionController.class);
     @Autowired
     private SpectionServince spectionServince;
+    @Autowired
+    private ReflectServince reflectServince;
+    @Autowired
+    @Qualifier("provinceCotroller")
+    private ProvinceCotroller provinceCotroller;
     @Autowired
     @Qualifier("httpRest4ClaimpptJ2ee")
     private HttpRestOperations httpRestOperations;
@@ -348,6 +356,49 @@ public class SpectionController {
         } catch (Exception e) {
             return new ResponeData<>(false, StatusCode.QUERYSFALSE, ResultMessage.QUERYSFALSE + e.getMessage());
         }
+    }
+
+    @RequestMapping("/exportExcelInsured")
+    public ResponeData<Void> exportExcelInsured(HttpServletResponse response) throws Exception {
+        try {
+            List<Insured> insuredList = this.selectInsuredList().getData();
+            /** 导出数据的集合,用map装,一个字段一个key */
+            List<Object> exportDataList = getDataList(insuredList);
+            /** 导出数据名称 */
+            String fileName = "人伤信息表";
+            /** 设置小标题行 */
+            String[] headers = {"人伤主键id", "保单号", "人伤姓名", "身份证号", "手机号", "出生日期",
+                    "年龄", "性别", "赔付状态", "赔付结论", "赔付理由", "人伤描叙"};
+            /** 设置对应的列 */
+            String[] exportFields = {"insuredId", "policyNo", "insuredName", "idCard", "iphone", "birthday",
+                    "age", "sex", "conclusionCode", "conclusionValue", "conclusionReason", "insuredDesc"};
+            ExportExcelUtils.exportExcel(response, fileName, headers, exportDataList, exportFields);
+            return new ResponeData<Void>(true, StatusCode.QUERYSUCCESS, ResultMessage.QUERYSUCCESS);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ResponeData<>(false, StatusCode.QUERYSFALSE, ResultMessage.QUERYSFALSE + e.getMessage());
+        }
+    }
+
+    private List<Object> getDataList(List<Insured> insuredList) {
+        List<Map<String,Object>> returnList=new ArrayList<>();
+        for (Insured insured : insuredList) {
+            Map<String,Object> returnMap=new HashMap<>();
+            returnMap.put("insuredId",insured.getInsuredId());
+            returnMap.put("age",insured.getAge() );
+            returnMap.put("birthday",insured.getBirthday());
+            returnMap.put("conclusionValue", insured.getConclusionValue());
+            returnMap.put("conclusionCode",insured.getConclusionCode() );
+            returnMap.put("conclusionReason", insured.getConclusionReason());
+            returnMap.put("idCard",insured.getIdCard() );
+            returnMap.put("insuredDesc", insured.getInsuredDesc());
+            returnMap.put("insuredName", insured.getInsuredName());
+            returnMap.put("iphone",insured.getIphone() );
+            returnMap.put("policyNo", insured.getPolicyNo());
+            returnMap.put("sex",insured.getSex());
+            returnList.add(returnMap);
+        }
+        return Collections.singletonList(returnList);
     }
 
     @RequestMapping("/addRiskBackList")
@@ -692,7 +743,6 @@ public class SpectionController {
             e.printStackTrace();
             return new ResponeData(false, StatusCode.DELETEFALSE, ResultMessage.DELETEFALSE);
         }
-
     }
 
     @RequestMapping(value = "/selectAllStudent", method = RequestMethod.GET)
@@ -727,7 +777,7 @@ public class SpectionController {
          * @Description: 注册验证码
          * @methodName: registerCode
          * @Param: [ipAdress]
-         * @return: java.util.Map<java.lang.String               ,               java.lang.Object>
+         * @return: java.util.Map<java.lang.String                               ,                               java.lang.Object>
          * @Author: scyang
          * @Date: 2020/3/15 17:06
          */
@@ -775,33 +825,43 @@ public class SpectionController {
         returnMap.put("departmentList", departmentList);
         return returnMap;
     }
+
     @RequestMapping("/weightList")
-    public ResponeData<Void> addWeightLst(@RequestBody  Map<String,Object> map){
+    public ResponeData<Void> addWeightLst(@RequestBody Map<String, Object> map) {
         try {
             JSONObject jsonObject = JSON.parseObject(JSON.toJSONString(map));
-            List<WeightSetting> weightList =  jsonObject.getJSONArray("weightList").toJavaList(WeightSetting.class);
-           String type = (String) map.get("type");
-            logge.info("weightList{}:"+JSON.toJSONString(weightList));
-            logge.info("type{}:"+type);
+            List<WeightSetting> weightList = jsonObject.getJSONArray("weightList").toJavaList(WeightSetting.class);
+            String type = (String) map.get("type");
+            logge.info("weightList{}:" + JSON.toJSONString(weightList));
+            logge.info("type{}:" + type);
             spectionServince.addWeightLst(weightList);
-            return new ResponeData<Void>(true,StatusCode.ADDSUCCESS , ResultMessage.ADDSUCCESS);
+            return new ResponeData<Void>(true, StatusCode.ADDSUCCESS, ResultMessage.ADDSUCCESS);
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponeData<>(false,StatusCode.ADDFALSE , ResultMessage.ADDFALSE+e.getMessage());
+            return new ResponeData<>(false, StatusCode.ADDFALSE, ResultMessage.ADDFALSE + e.getMessage());
         }
     }
+
     @RequestMapping("/addListCase")
-    public ResponeData<Void> addListCase(@RequestBody Map<String,List<PreCase>> map){
+    public ResponeData<Void> addListCase(@RequestBody Map<String, List<PreCase>> map) {
         try {
-            logge.info("map{}:"+JSON.toJSONString(map));
+            logge.info("map{}:" + JSON.toJSONString(map));
             List<PreCase> caseList = map.get("caseList");
             spectionServince.addListCase(caseList);
-            return new ResponeData<Void>(true,StatusCode.ADDSUCCESS , ResultMessage.ADDSUCCESS);
+            return new ResponeData<Void>(true, StatusCode.ADDSUCCESS, ResultMessage.ADDSUCCESS);
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponeData<>(false,StatusCode.ADDFALSE , ResultMessage.ADDFALSE+e.getMessage());
+            return new ResponeData<>(false, StatusCode.ADDFALSE, ResultMessage.ADDFALSE + e.getMessage());
 
         }
+    }
 
+    @RequestMapping("/reflectInvoking/{provinceName}/{provinceStatus}")
+    public ResponeData reflectInvoking(@PathVariable String provinceName,
+                                       @PathVariable String provinceStatus) throws Exception {
+        // Object object =reflectServince.reflectMethodByAnyParams("provinceServinceImpl", "findAll");
+        Object object = ReflectUtils.getInstance().reflectMethodByParams(provinceCotroller, "selectByNameAndCode", provinceName, provinceStatus);
+        //Object object = ReflectUtils.getInstance().reflectMethodByParams("beanFactory", "provinceController", "selectByNameAndCode", provinceName, provinceStatus);
+        return new ResponeData(true, StatusCode.QUERYSUCCESS, ResultMessage.QUERYSUCCESS, object);
     }
 }

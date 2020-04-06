@@ -1,5 +1,9 @@
 package common;
 
+import org.apache.poi.ss.formula.functions.T;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -13,25 +17,33 @@ import java.util.ResourceBundle;
  * @describe: 反射调用工具类
  */
 public class ReflectUtils {
+    private static final Logger logger= LoggerFactory.getLogger(ReflectUtils.class);
     private static final ReflectUtils instance_=new ReflectUtils();
 
     public static ReflectUtils getInstance(){
         return instance_;
     }
 
-    public <T,V> V reflectMethodByParams(T t,String methodName,Object...params) throws Exception {
-        V v=null;
-        Class<T> clazz = (Class<T>) t.getClass();
-        T instance = clazz.newInstance();
+    public Object reflectMethodByParams(Object object, String methodName, Object...params) throws Exception {
+        Object target=null;
+        Class clazz = object.getClass();
+        Object instance = clazz.newInstance();
             List<Class> calssList=new ArrayList<>();
             List<Object> paramList=new ArrayList<>();
             for (Object param : params) {
                 calssList.add(param.getClass());
                 paramList.add(param);
             }
-            v= (V) clazz.getDeclaredMethod(methodName, calssList.toArray(new Class[calssList.size()]))
-                    .invoke(instance,paramList.toArray(new Object[paramList.size()]));
-        return v;
+        try {
+            target= clazz.getDeclaredMethod(methodName, calssList.toArray(new Class[calssList.size()]))
+                    .invoke(object,paramList.toArray(new Object[paramList.size()]));
+            logger.info("{target}"+target);
+
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            logger.info("{reflectUtils}:此处接收被调用方法内部未被捕获的异常");
+        }
+        return target;
     }
 
     public Object reflectMethodByParams(String baseName,String keyName,String methodName,Object...params) throws Exception {
