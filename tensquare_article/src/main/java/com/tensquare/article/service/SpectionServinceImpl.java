@@ -95,6 +95,8 @@ public class SpectionServinceImpl implements SpectionServince {
     @Autowired
     private PreCaseDao preCaseDao;
     @Autowired
+    private OutBreakDao outBreakDao;
+    @Autowired
     private IdWorker idWorker;
     @Autowired
     private JmsTemplate jmsTemplate;
@@ -1614,6 +1616,56 @@ public class SpectionServinceImpl implements SpectionServince {
             sqlSession.close();
         }
         logger.info("花费了:"+(System.currentTimeMillis()-start)+"毫秒");
+    }
+
+    @Override
+    public void addOutBreakList(List<OutBreak> outBreakList) {
+        /**
+         * @Description: 添加疫情信息
+         * @methodName: addOutBreakList
+         * @Param: [outBreakList]
+         * @return: void
+         * @Author: scyang
+         * @Date: 2020/4/7 21:14
+         */
+        if (!CollectionsUtils.isListEmpty(outBreakList)){
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(new Date(2020-1900, 1-1,29 ));
+            for (OutBreak outBreak : outBreakList) {
+                outBreak.setOutBreakId(idWorker.nextId()+"");
+                outBreak.setArriveDate(calendar.getTime());
+                outBreak.setLeaveDate(setLeaveDate(outBreak.getArriveDate(),outBreak.getSupportDays()));
+                outBreak.setSubsidySum(outBreak.getSubsidyAmount().
+                        multiply( new BigDecimal(outBreak.getNurseCount())).
+                        setScale(2,BigDecimal.ROUND_HALF_DOWN ));
+                outBreak.setRate(setRate(outBreak.getSubsidyAmount(),outBreak.getSubsidySum()));
+                calendar.add(Calendar.DAY_OF_MONTH, -1);
+            }
+        outBreakDao.addOutBreakList(outBreakList);
+        }
+    }
+
+    private String setRate(BigDecimal subsidyAmount, BigDecimal subsidySum) {
+        /** 设置百分比 */
+        BigDecimal divide = subsidyAmount.divide(subsidySum, 6, BigDecimal.ROUND_HALF_UP);
+        logger.info("divide{}:"+divide);
+        DecimalFormat decimalFormat=new DecimalFormat("0.0000%");
+        return decimalFormat.format(divide);
+    }
+
+    private Date setLeaveDate(Date arriveDate, BigDecimal supportDays) {
+        /**
+         * @Description: 设置撤离时间
+         * @methodName: setLeaveDate
+         * @Param: [arriveDate, supportDays]
+         * @return: java.util.Date
+         * @Author: scyang
+         * @Date: 2020/4/7 21:24
+         */
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(arriveDate);
+        calendar.add(Calendar.DAY_OF_MONTH, Integer.valueOf(String.valueOf(supportDays)));
+        return calendar.getTime();
     }
 
     private String setAccidentLevel(String deathPeople, String hurtPeople) {

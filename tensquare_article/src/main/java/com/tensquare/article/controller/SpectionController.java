@@ -864,4 +864,18 @@ public class SpectionController {
         //Object object = ReflectUtils.getInstance().reflectMethodByParams("beanFactory", "provinceController", "selectByNameAndCode", provinceName, provinceStatus);
         return new ResponeData(true, StatusCode.QUERYSUCCESS, ResultMessage.QUERYSUCCESS, object);
     }
+
+    @PostMapping("/addOutBreakList")
+    public ResponeData<Void> addOutBreakList(@RequestBody Map<String,List<OutBreak>> paramMap){
+        logge.info("paramMap{}:"+JSON.toJSONString(paramMap));
+        List<OutBreak> outBreakList = paramMap.get("outBreakList");
+        try {
+            logge.info("outBreakList{}:"+JSON.toJSONString(outBreakList));
+            spectionServince.addOutBreakList(outBreakList);
+            return new ResponeData<Void>(true, StatusCode.ADDSUCCESS, ResultMessage.ADDSUCCESS);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponeData<>(false, StatusCode.ADDFALSE, ResultMessage.ADDFALSE+e.getMessage());
+        }
+    }
 }

@@ -14,7 +14,6 @@ import java.util.Date;
 public class OutBreak implements Serializable {
 
     private static final long serialVersionUID = -4681486622769086923L;
-    /** 主键 */
     private String outBreakId;
     /** 支援城市 */
     private String supportCity;
@@ -28,14 +27,12 @@ public class OutBreak implements Serializable {
     private Date leaveDate;
     /** 支援天数 */
     private BigDecimal supportDays;
-    /** 医护人数 */
     private int nurseCount;
     /** 补贴金额 */
     private BigDecimal subsidyAmount;
     /** 补贴总金额 */
     private BigDecimal subsidySum;
-    /** 百分比 */
-    private BigDecimal rate;
+    private String rate;
 
 
     public String getOutBreakId() {
@@ -118,11 +115,11 @@ public class OutBreak implements Serializable {
         this.subsidySum = subsidySum;
     }
 
-    public BigDecimal getRate() {
+    public String getRate() {
         return rate;
     }
 
-    public void setRate(BigDecimal rate) {
+    public void setRate(String rate) {
         this.rate = rate;
     }
 }

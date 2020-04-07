@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tensquare.article.dao.OutBreakDao">
+    <insert id="addOutBreakList" parameterType="outBreak" >
+        insert into tb_out_break (out_break_id,support_city,hospital_name,own_city,arrive_date,
+                                   leave_date,support_days,nurse_count,subsidy_amount,subsidy_sum,rate) values
+                                   <if test="outBreakList!=null and outBreakList.size()>0">
+                                       <foreach collection="outBreakList" open="" item="item" separator="," close="">
+                                           (#{item.outBreakId},#{item.supportCity},#{item.hospitalName},#{item.ownCity},#{item.arriveDate},
+                                           #{item.leaveDate},#{item.supportDays},#{item.nurseCount},#{item.subsidyAmount},#{item.subsidySum},#{item.rate})
+                                       </foreach>
+                                   </if>
+    </insert>
+</mapper>

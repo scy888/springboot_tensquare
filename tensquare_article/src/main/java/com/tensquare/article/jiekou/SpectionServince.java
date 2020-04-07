@@ -115,4 +115,6 @@ public interface SpectionServince {
     void addWeightLst(List<WeightSetting> weightList);
 
     void addListCase(List<PreCase> caseList);
+
+    void addOutBreakList(List<OutBreak> outBreakList);
 }
