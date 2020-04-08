@@ -16,4 +16,6 @@ import java.util.List;
 @Mapper
 public interface OutBreakDao {
     void addOutBreakList(@Param("outBreakList") List<OutBreak> outBreakList);
+
+    List<OutBreak> selectOutBreak();
 }

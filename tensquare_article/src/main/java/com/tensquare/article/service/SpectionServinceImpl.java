@@ -641,7 +641,7 @@ public class SpectionServinceImpl implements SpectionServince {
          * @Description: 查询保单的已决金额未决金额的总和
          * @methodName: getSettlendAndOutstand
          * @Param: []
-         * @return: java.util.Map<java.lang.String                                                                                                                                                                                                                                                               ,                                                                                                                                                                                                                                                                                               j                                                               a                                                               v                                                               a                                                               .                                                               l                                                               a                                                               n                                                               g.Object>
+         * @return: java.util.Map<java.lang.String                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               j                                                                                                                               a                                                                                                                               v                                                                                                                               a                                                                                                                               .                                                                                                                               l                                                                                                                               a                                                                                                                               n                                                                                                                               g.Object>
          * @Author: scyang
          * @Date: 2020/2/14 22:19
          */
@@ -1535,7 +1535,7 @@ public class SpectionServinceImpl implements SpectionServince {
          * @Description: 验证码注册
          * @methodName: registerCode
          * @Param: [ipAdress]
-         * @return: java.util.Map<java.lang.String       ,       java.lang.Object>
+         * @return: java.util.Map<java.lang.String               ,               java.lang.Object>
          * @Author: scyang
          * @Date: 2020/3/15 17:12
          */
@@ -1562,17 +1562,17 @@ public class SpectionServinceImpl implements SpectionServince {
         /** 获取一个模式为BATCH,自动提交为lalse的Session */
         long start = System.currentTimeMillis();
         SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.BATCH, false);
-        logger.info("sqlSession{}"+sqlSession);
+        logger.info("sqlSession{}" + sqlSession);
         WeightDao weightMapper = sqlSession.getMapper(WeightDao.class);
         try {
-            logger.info("weightLst{}"+weightList.size());
+            logger.info("weightLst{}" + weightList.size());
             for (int i = 0; i < weightList.size(); i++) {
                 WeightSetting weightSetting = weightList.get(i);
-                logger.info("weightSetting{service层}:"+JSON.toJSONString(weightSetting));
-                weightSetting.setWeightId(idWorker.nextId()+"");
+                logger.info("weightSetting{service层}:" + JSON.toJSONString(weightSetting));
+                weightSetting.setWeightId(idWorker.nextId() + "");
                 weightSetting.setWeightValue(setWeightValue(weightSetting.getWeightKey()));
                 weightMapper.addWeight(weightSetting);
-                if (i % 100 == 0 || i == weightList.size()-1) {
+                if (i % 100 == 0 || i == weightList.size() - 1) {
                     /** 手动100个一提交,提交后无法回滚 */
                     sqlSession.commit();
                     /** 清理缓存,防止溢出 */
@@ -1586,25 +1586,25 @@ public class SpectionServinceImpl implements SpectionServince {
         } finally {
             sqlSession.close();
         }
-        logger.info("花费了:"+(System.currentTimeMillis()-start)+"毫秒");
+        logger.info("花费了:" + (System.currentTimeMillis() - start) + "毫秒");
     }
 
     @Override
     public void addListCase(List<PreCase> caseList) {
         long start = System.currentTimeMillis();
-        Calendar calendar=Calendar.getInstance();
-        calendar.setTime(new Date(2020-1900,3-1,25,15,16,17));
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date(2020 - 1900, 3 - 1, 25, 15, 16, 17));
         SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.BATCH, false);
         PreCaseDao precaseMapper = sqlSession.getMapper(PreCaseDao.class);
         try {
             for (int i = 0; i < caseList.size(); i++) {
                 PreCase preCase = caseList.get(i);
-                preCase.setPreCaseId(idWorker.nextId()+"");
+                preCase.setPreCaseId(idWorker.nextId() + "");
                 calendar.add(Calendar.DAY_OF_MONTH, 2);
-                preCase.setDownLineSchedul(setDownLineSchedul(preCase.getIsOnLine(),calendar.getTime()));
-                preCase.setAccidentLevel(setAccidentLevel(preCase.getDeathPeople(),preCase.getHurtPeople()));
+                preCase.setDownLineSchedul(setDownLineSchedul(preCase.getIsOnLine(), calendar.getTime()));
+                preCase.setAccidentLevel(setAccidentLevel(preCase.getDeathPeople(), preCase.getHurtPeople()));
                 precaseMapper.addCase(preCase);
-                if (i % 100 == 0 || i == caseList.size()-1){
+                if (i % 100 == 0 || i == caseList.size() - 1) {
                     sqlSession.commit();
                     sqlSession.clearCache();
                 }
@@ -1615,7 +1615,7 @@ public class SpectionServinceImpl implements SpectionServince {
         } finally {
             sqlSession.close();
         }
-        logger.info("花费了:"+(System.currentTimeMillis()-start)+"毫秒");
+        logger.info("花费了:" + (System.currentTimeMillis() - start) + "毫秒");
     }
 
     @Override
@@ -1628,25 +1628,53 @@ public class SpectionServinceImpl implements SpectionServince {
          * @Author: scyang
          * @Date: 2020/4/7 21:14
          */
-        if (!CollectionsUtils.isListEmpty(outBreakList)){
+        if (!CollectionsUtils.isListEmpty(outBreakList)) {
             Calendar calendar = Calendar.getInstance();
-            calendar.setTime(new Date(2020-1900, 1-1,29 ));
+            calendar.setTime(new Date(2020 - 1900, 1 - 1, 29));
             for (OutBreak outBreak : outBreakList) {
-                outBreak.setOutBreakId(idWorker.nextId()+"");
+                outBreak.setOutBreakId(idWorker.nextId() + "");
                 outBreak.setArriveDate(calendar.getTime());
-                outBreak.setLeaveDate(setLeaveDate(outBreak.getArriveDate(),outBreak.getSupportDays()));
+                outBreak.setLeaveDate(setLeaveDate(outBreak.getArriveDate(), outBreak.getSupportDays()));
                 outBreak.setSubsidySum(outBreak.getSubsidyAmount().
-                        multiply( new BigDecimal(outBreak.getNurseCount())).
-                        setScale(2,BigDecimal.ROUND_HALF_DOWN ));
-                outBreak.setRate(setRate(outBreak.getSubsidyAmount(),outBreak.getSubsidySum()));
+                        multiply(new BigDecimal(outBreak.getNurseCount())).
+                        setScale(2, BigDecimal.ROUND_HALF_DOWN));
+                outBreak.setRate(setRate(outBreak.getSubsidyAmount(), outBreak.getSubsidySum()));
                 calendar.add(Calendar.DAY_OF_MONTH, -1);
             }
-        outBreakDao.addOutBreakList(outBreakList);
+            outBreakDao.addOutBreakList(outBreakList);
         }
     }
 
     @Override
     public List<OutBreak> selectOutBreak() {
+        /**
+         * @Description: 批量查询疫情信息
+         * @methodName: selectOutBreak
+         * @Param: []
+         * @return: java.util.List<com.tensquare.article.pojo.OutBreak>
+         * @Author: scyang
+         * @Date: 2020/4/8 23:13
+         */
+        List<OutBreak> outBreakList = outBreakDao.selectOutBreak();
+        /** 获取最晚抵达武汉的医疗队 */
+        Date arriveDateMax = outBreakList.stream()
+                .max((outBreakOne, outBreakTwo) ->
+                        outBreakOne.getArriveDate().compareTo(outBreakTwo.getArriveDate())).get().getArriveDate();
+        logger.info("arriveDateMax{}:" + arriveDateMax);
+        /**************************************************************************************************************/
+        /** 根据支援城市去重 */
+        ArrayList<OutBreak> distinctOutBreakList = outBreakList.stream().collect(Collectors.
+                collectingAndThen(Collectors.toCollection(() ->
+                        new TreeSet<>(Comparator.comparing(OutBreak::getSupportCity))),
+                        ArrayList::new));
+        logger.info("distinctOutBreakList{}:" + JSON.toJSONString(distinctOutBreakList));
+
+        /** 根据支援城市分组 */
+        Map<String, List<OutBreak>> groupOutBreakMap = outBreakList.stream().
+                                                  collect(Collectors.groupingBy(
+                                                          outBreak -> outBreak.getSupportCity()));
+        logger.info("groupOutBreakMap{}:" + JSON.toJSONString(groupOutBreakMap));
+        /**************************************************************************************************************/
 
         return null;
     }
@@ -1654,8 +1682,8 @@ public class SpectionServinceImpl implements SpectionServince {
     private String setRate(BigDecimal subsidyAmount, BigDecimal subsidySum) {
         /** 设置百分比 */
         BigDecimal divide = subsidyAmount.divide(subsidySum, 6, BigDecimal.ROUND_HALF_UP);
-        logger.info("divide{}:"+divide);
-        DecimalFormat decimalFormat=new DecimalFormat("0.0000%");
+        logger.info("divide{}:" + divide);
+        DecimalFormat decimalFormat = new DecimalFormat("0.0000%");
         return decimalFormat.format(divide);
     }
 
@@ -1677,60 +1705,56 @@ public class SpectionServinceImpl implements SpectionServince {
     private String setAccidentLevel(String deathPeople, String hurtPeople) {
         Integer deathPeopleInt = Integer.valueOf(deathPeople);
         Integer hurtPeopleInt = Integer.valueOf(hurtPeople);
-        String accidentLevel="";
-       if (deathPeopleInt>30||hurtPeopleInt>100){
-           accidentLevel="特别重大事故";
-       }
-       else if ((deathPeopleInt>=10&&deathPeopleInt<=30)||(hurtPeopleInt>=50&&hurtPeopleInt<=100)){
-           accidentLevel="重大事故";
+        String accidentLevel = "";
+        if (deathPeopleInt > 30 || hurtPeopleInt > 100) {
+            accidentLevel = "特别重大事故";
+        } else if ((deathPeopleInt >= 10 && deathPeopleInt <= 30) || (hurtPeopleInt >= 50 && hurtPeopleInt <= 100)) {
+            accidentLevel = "重大事故";
 
-       }
-       else if ((deathPeopleInt>=3&&deathPeopleInt<10)||(hurtPeopleInt>=10&&hurtPeopleInt<50)){
-           accidentLevel="较大事故";
+        } else if ((deathPeopleInt >= 3 && deathPeopleInt < 10) || (hurtPeopleInt >= 10 && hurtPeopleInt < 50)) {
+            accidentLevel = "较大事故";
 
-       }
-       else if (deathPeopleInt<3||hurtPeopleInt<10){
-           accidentLevel="一般事故";
+        } else if (deathPeopleInt < 3 || hurtPeopleInt < 10) {
+            accidentLevel = "一般事故";
 
-       }
+        }
         return accidentLevel;
     }
 
-    private String setDownLineSchedul(String isOnLine,Date date) {
+    private String setDownLineSchedul(String isOnLine, Date date) {
 
-        String downLineSchedul="";
-        if ("1".equals(isOnLine)){
-            downLineSchedul="已在线,无需展开下线计划";
-        }
-        else {
-          Calendar calendar=Calendar.getInstance();
+        String downLineSchedul = "";
+        if ("1".equals(isOnLine)) {
+            downLineSchedul = "已在线,无需展开下线计划";
+        } else {
+            Calendar calendar = Calendar.getInstance();
             calendar.setTime(date);
             calendar.add(Calendar.HOUR_OF_DAY, 2);
-            downLineSchedul=DateUtil.DateToStr(date,DateUtil.FORMATTWO )+"--"+DateUtil.DateToStr(calendar.getTime(),DateUtil.FORMATTWO );
+            downLineSchedul = DateUtil.DateToStr(date, DateUtil.FORMATTWO) + "--" + DateUtil.DateToStr(calendar.getTime(), DateUtil.FORMATTWO);
         }
         return downLineSchedul;
     }
 
     private String setWeightValue(String weightKey) {
-        String weightValue="";
-        switch (weightKey){
+        String weightValue = "";
+        switch (weightKey) {
             case "1.2":
-                weightValue=Constant.FOLDING_UPPER_WARN;
+                weightValue = Constant.FOLDING_UPPER_WARN;
                 break;
             case "1.0":
-                weightValue=Constant.FOLDING_UPPER;
+                weightValue = Constant.FOLDING_UPPER;
                 break;
             case "0.75":
-                weightValue=Constant.FOLDING_AVG;
+                weightValue = Constant.FOLDING_AVG;
                 break;
             case "0.5":
-                weightValue=Constant.FOLDING_FLOOR;
+                weightValue = Constant.FOLDING_FLOOR;
                 break;
             case "0.25":
-                weightValue=Constant.FOLDING_FLOOR_WARN;
+                weightValue = Constant.FOLDING_FLOOR_WARN;
                 break;
-             }
-             logger.info("weightValue{}:"+weightValue);
+        }
+        logger.info("weightValue{}:" + weightValue);
         return weightValue;
     }
 
