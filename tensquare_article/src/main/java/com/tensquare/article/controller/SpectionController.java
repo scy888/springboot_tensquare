@@ -866,16 +866,27 @@ public class SpectionController {
     }
 
     @PostMapping("/addOutBreakList")
-    public ResponeData<Void> addOutBreakList(@RequestBody Map<String,List<OutBreak>> paramMap){
-        logge.info("paramMap{}:"+JSON.toJSONString(paramMap));
+    public ResponeData<Void> addOutBreakList(@RequestBody Map<String,List<OutBreak>> paramMap) {
+        logge.info("paramMap{}:" + JSON.toJSONString(paramMap));
         List<OutBreak> outBreakList = paramMap.get("outBreakList");
         try {
-            logge.info("outBreakList{}:"+JSON.toJSONString(outBreakList));
+            logge.info("outBreakList{}:" + JSON.toJSONString(outBreakList));
             spectionServince.addOutBreakList(outBreakList);
             return new ResponeData<Void>(true, StatusCode.ADDSUCCESS, ResultMessage.ADDSUCCESS);
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponeData<>(false, StatusCode.ADDFALSE, ResultMessage.ADDFALSE+e.getMessage());
+            return new ResponeData<>(false, StatusCode.ADDFALSE, ResultMessage.ADDFALSE + e.getMessage());
+        }
+    }
+    @RequestMapping("/selectOutBreak")
+    public ResponeData<List<OutBreak>> selectOutBreak(){
+        try {
+            List<OutBreak> outBreakList= spectionServince.selectOutBreak();
+            logge.info("outBreakList{controller层}:"+JSON.toJSONString(outBreakList));
+            return new ResponeData<List<OutBreak>>(true,StatusCode.QUERYSUCCESS ,ResultMessage.QUERYSUCCESS,outBreakList );
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponeData<>(false,StatusCode.QUERYSFALSE ,ResultMessage.QUERYSFALSE+e.getMessage() );
         }
     }
 }

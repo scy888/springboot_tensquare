@@ -117,4 +117,6 @@ public interface SpectionServince {
     void addListCase(List<PreCase> caseList);
 
     void addOutBreakList(List<OutBreak> outBreakList);
+
+    List<OutBreak> selectOutBreak();
 }

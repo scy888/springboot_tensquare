@@ -1645,6 +1645,12 @@ public class SpectionServinceImpl implements SpectionServince {
         }
     }
 
+    @Override
+    public List<OutBreak> selectOutBreak() {
+
+        return null;
+    }
+
     private String setRate(BigDecimal subsidyAmount, BigDecimal subsidySum) {
         /** 设置百分比 */
         BigDecimal divide = subsidyAmount.divide(subsidySum, 6, BigDecimal.ROUND_HALF_UP);
