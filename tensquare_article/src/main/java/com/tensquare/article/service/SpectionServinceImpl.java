@@ -1661,6 +1661,63 @@ public class SpectionServinceImpl implements SpectionServince {
                 .max((outBreakOne, outBreakTwo) ->
                         outBreakOne.getArriveDate().compareTo(outBreakTwo.getArriveDate())).get().getArriveDate();
         logger.info("arriveDateMax{}:" + arriveDateMax);
+        /** 最后支援武汉的四家医疗队 */
+        List<Date> dateList=new ArrayList<>();
+        Date date=null;
+        List<OutBreak> fourOutBreakList=new ArrayList<>();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(arriveDateMax);
+
+        for (int i = 0; i < 4; i++) {
+            date=calendar.getTime();
+            dateList.add(date);
+            calendar.add(Calendar.DAY_OF_MONTH, -1);
+        }
+        logger.info("dateList{}:"+dateList);
+        for (OutBreak outBreak : outBreakList) {
+            Date arriveDate = outBreak.getArriveDate();
+            for (Date date_ : dateList) {
+                if (arriveDate.compareTo(date_)==0){
+                    fourOutBreakList.add(outBreak);
+                    break;
+                }
+            }
+        }
+        logger.info("fourOutBreakList{合并前}:"+JSON.toJSONString(fourOutBreakList));
+
+        /** 排除这四家医疗队 */
+        List<OutBreak> lessOutBreakList=new ArrayList<>(outBreakList);
+        lessOutBreakList.removeAll(fourOutBreakList);
+        logger.info("lessOutBreakList{}:"+JSON.toJSONString(lessOutBreakList));
+        /** 剩余四支医疗队按支援的时间从小到大的排序 */
+
+        logger.info("剩余四支医疗队按支援的时间从小到大的排序打印开始...");
+        lessOutBreakList.stream().distinct().filter(
+                        outBreak->!"武汉市".equals(outBreak.getSupportCity()))
+                         .sorted((outBreakOne,outBreakTwo)-> (int) (outBreakOne.getArriveDate().getTime()
+                                  -outBreakTwo.getArriveDate().getTime()))
+                         .collect(Collectors.toList()).forEach(System.out::println);
+        logger.info("剩余四支医疗队按支援的时间从小到大的排序打印结束...");
+
+        /** 补贴金额相等的合并,并移除掉 */
+        for (int i = fourOutBreakList.size()-1; i >= 0; i--) {
+            BigDecimal subsidyAmountMove = fourOutBreakList.get(i).getSubsidyAmount();
+            BigDecimal subsidySumMove = fourOutBreakList.get(i).getSubsidySum();
+            for (int j = 0; j < i; j++) {
+                BigDecimal subsidyAmountAdd = fourOutBreakList.get(j).getSubsidyAmount();
+                BigDecimal subsidySumAdd = fourOutBreakList.get(j).getSubsidySum();
+                if (subsidyAmountMove.compareTo(subsidyAmountAdd)==0){
+                    subsidyAmountAdd=subsidyAmountAdd.add(subsidyAmountMove).setScale(2, BigDecimal.ROUND_HALF_UP);
+                    subsidySumAdd=subsidySumAdd.add(subsidySumMove).setScale(2, BigDecimal.ROUND_HALF_UP);
+                    fourOutBreakList.get(j).setSubsidyAmount(subsidyAmountAdd);
+                    fourOutBreakList.get(j).setSubsidySum(subsidySumAdd);
+                    fourOutBreakList.remove(i);
+                    break;
+                }
+            }
+        }
+        logger.info("fourOutBreakList{合并后}:"+JSON.toJSONString(fourOutBreakList));
+
         /**************************************************************************************************************/
         /** 根据支援城市去重 */
         ArrayList<OutBreak> distinctOutBreakList = outBreakList.stream().collect(Collectors.
@@ -1676,7 +1733,7 @@ public class SpectionServinceImpl implements SpectionServince {
         logger.info("groupOutBreakMap{}:" + JSON.toJSONString(groupOutBreakMap));
         /**************************************************************************************************************/
 
-        return null;
+        return outBreakList;
     }
 
     private String setRate(BigDecimal subsidyAmount, BigDecimal subsidySum) {

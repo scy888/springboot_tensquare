@@ -3,6 +3,7 @@ package com.tensquare.article.pojo;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.StringJoiner;
 
 /**
  * @author: scyang
@@ -25,7 +26,6 @@ public class OutBreak implements Serializable {
     private Date arriveDate;
     /** 撤离时间 */
     private Date leaveDate;
-    /** 支援天数 */
     private BigDecimal supportDays;
     private int nurseCount;
     /** 补贴金额 */
@@ -34,6 +34,12 @@ public class OutBreak implements Serializable {
     private BigDecimal subsidySum;
     private String rate;
 
+    public OutBreak() {
+    }
+
+    public OutBreak(Date arriveDate) {
+        this.arriveDate = arriveDate;
+    }
 
     public String getOutBreakId() {
         return outBreakId;
@@ -121,5 +127,22 @@ public class OutBreak implements Serializable {
 
     public void setRate(String rate) {
         this.rate = rate;
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", OutBreak.class.getSimpleName() + "[", "]")
+                .add("outBreakId='" + outBreakId + "'")
+                .add("supportCity='" + supportCity + "'")
+                .add("hospitalName='" + hospitalName + "'")
+                .add("ownCity='" + ownCity + "'")
+                .add("arriveDate=" + arriveDate)
+                .add("leaveDate=" + leaveDate)
+                .add("supportDays=" + supportDays)
+                .add("nurseCount=" + nurseCount)
+                .add("subsidyAmount=" + subsidyAmount)
+                .add("subsidySum=" + subsidySum)
+                .add("rate='" + rate + "'")
+                .toString();
     }
 }

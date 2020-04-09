@@ -11,4 +11,19 @@
                                        </foreach>
                                    </if>
     </insert>
+    <select id="selectOutBreak" resultType="outBreak">
+        select out_break_id  outBreakId,
+               support_city   supportCity,
+               hospital_name  hospitalName,
+               own_city       ownCity,
+               arrive_date    arriveDate,
+               leave_date     leaveDate,
+               support_days   supportDays,
+               nurse_count    nurseCount,
+               subsidy_amount subsidyAmount,
+               subsidy_sum    subsidySum,
+               rate           rate
+               from tb_out_break
+
+    </select>
 </mapper>
