@@ -866,9 +866,15 @@ public class SpectionController {
     }
 
     @PostMapping("/addOutBreakList")
-    public ResponeData<Void> addOutBreakList(@RequestBody Map<String,List<OutBreak>> paramMap) {
-        logge.info("paramMap{}:" + JSON.toJSONString(paramMap));
-        List<OutBreak> outBreakList = paramMap.get("outBreakList");
+    public ResponeData<Void> addOutBreakList(/*@RequestBody Map<String,List<OutBreak>> paramMap*/
+                                             /*@RequestBody String paramJson*/
+                                           @RequestBody Map<String,Object> map) {
+       // List<OutBreak> outBreakList = JSON.parseObject(paramJson).getJSONArray("outBreakList").toJavaList(OutBreak.class);
+
+       /* logge.info("paramMap{}:" + JSON.toJSONString(paramMap));
+        List<OutBreak> outBreakList = paramMap.get("outBreakList");*/
+
+        List<OutBreak> outBreakList = JSON.parseObject(JSON.toJSONString(map)).getJSONArray("outBreakList").toJavaList(OutBreak.class);
         try {
             logge.info("outBreakList{}:" + JSON.toJSONString(outBreakList));
             spectionServince.addOutBreakList(outBreakList);
