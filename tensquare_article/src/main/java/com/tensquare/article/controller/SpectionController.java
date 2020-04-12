@@ -7,6 +7,9 @@ import com.tensquare.article.jiekou.HttpRestOperations;
 import com.tensquare.article.jiekou.ProvinceServince;
 import com.tensquare.article.jiekou.ReflectServince;
 import com.tensquare.article.jiekou.SpectionServince;
+import com.tensquare.article.pingan.CoinsShare;
+import com.tensquare.article.pingan.PaymentItem;
+import com.tensquare.article.pingan.Settlenment;
 import com.tensquare.article.pojo.*;
 import com.tensquare.article.service.ProvinceServinceImpl;
 import com.tensquare.article.service.SpectionServinceImpl;
@@ -381,21 +384,21 @@ public class SpectionController {
     }
 
     private List<Object> getDataList(List<Insured> insuredList) {
-        List<Map<String,Object>> returnList=new ArrayList<>();
+        List<Map<String, Object>> returnList = new ArrayList<>();
         for (Insured insured : insuredList) {
-            Map<String,Object> returnMap=new HashMap<>();
-            returnMap.put("insuredId",insured.getInsuredId());
-            returnMap.put("age",insured.getAge() );
-            returnMap.put("birthday",insured.getBirthday());
+            Map<String, Object> returnMap = new HashMap<>();
+            returnMap.put("insuredId", insured.getInsuredId());
+            returnMap.put("age", insured.getAge());
+            returnMap.put("birthday", insured.getBirthday());
             returnMap.put("conclusionValue", insured.getConclusionValue());
-            returnMap.put("conclusionCode",insured.getConclusionCode() );
+            returnMap.put("conclusionCode", insured.getConclusionCode());
             returnMap.put("conclusionReason", insured.getConclusionReason());
-            returnMap.put("idCard",insured.getIdCard() );
+            returnMap.put("idCard", insured.getIdCard());
             returnMap.put("insuredDesc", insured.getInsuredDesc());
             returnMap.put("insuredName", insured.getInsuredName());
-            returnMap.put("iphone",insured.getIphone() );
+            returnMap.put("iphone", insured.getIphone());
             returnMap.put("policyNo", insured.getPolicyNo());
-            returnMap.put("sex",insured.getSex());
+            returnMap.put("sex", insured.getSex());
             returnList.add(returnMap);
         }
         return Collections.singletonList(returnList);
@@ -777,7 +780,7 @@ public class SpectionController {
          * @Description: 注册验证码
          * @methodName: registerCode
          * @Param: [ipAdress]
-         * @return: java.util.Map<java.lang.String                               ,                               java.lang.Object>
+         * @return: java.util.Map<java.lang.String                                                                                                                               ,                                                                                                                               java.lang.Object>
          * @Author: scyang
          * @Date: 2020/3/15 17:06
          */
@@ -867,9 +870,9 @@ public class SpectionController {
 
     @PostMapping("/addOutBreakList")
     public ResponeData<Void> addOutBreakList(/*@RequestBody Map<String,List<OutBreak>> paramMap*/
-                                             /*@RequestBody String paramJson*/
-                                           @RequestBody Map<String,Object> map) {
-       // List<OutBreak> outBreakList = JSON.parseObject(paramJson).getJSONArray("outBreakList").toJavaList(OutBreak.class);
+            /*@RequestBody String paramJson*/
+            @RequestBody Map<String, Object> map) {
+        // List<OutBreak> outBreakList = JSON.parseObject(paramJson).getJSONArray("outBreakList").toJavaList(OutBreak.class);
 
        /* logge.info("paramMap{}:" + JSON.toJSONString(paramMap));
         List<OutBreak> outBreakList = paramMap.get("outBreakList");*/
@@ -884,15 +887,36 @@ public class SpectionController {
             return new ResponeData<>(false, StatusCode.ADDFALSE, ResultMessage.ADDFALSE + e.getMessage());
         }
     }
+
     @RequestMapping("/selectOutBreak")
-    public ResponeData<List<OutBreak>> selectOutBreak(){
+    public ResponeData<List<OutBreak>> selectOutBreak() {
         try {
-            List<OutBreak> outBreakList= spectionServince.selectOutBreak();
-            logge.info("outBreakList{controller层}:"+JSON.toJSONString(outBreakList));
-            return new ResponeData<List<OutBreak>>(true,StatusCode.QUERYSUCCESS ,ResultMessage.QUERYSUCCESS,outBreakList );
+            List<OutBreak> outBreakList = spectionServince.selectOutBreak();
+            logge.info("outBreakList{controller层}:" + JSON.toJSONString(outBreakList));
+            return new ResponeData<List<OutBreak>>(true, StatusCode.QUERYSUCCESS, ResultMessage.QUERYSUCCESS, outBreakList);
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponeData<>(false,StatusCode.QUERYSFALSE ,ResultMessage.QUERYSFALSE+e.getMessage() );
+            return new ResponeData<>(false, StatusCode.QUERYSFALSE, ResultMessage.QUERYSFALSE + e.getMessage());
         }
     }
+
+    @RequestMapping("/generatePayList")
+    public ResponeData<List<PaymentItem>> generatePayList(@RequestBody String paramJson) {
+        try {
+            JSONObject jsonObject = JSON.parseObject(paramJson);
+            Settlenment settlenment = jsonObject.getJSONObject("settlenment").toJavaObject(Settlenment.class);
+            List<CoinsShare> coinsShareList = jsonObject.getJSONArray("coinsShareList").toJavaList(CoinsShare.class);
+            User user = jsonObject.getJSONObject("user").toJavaObject(User.class);
+            System.out.println(user.getPhone());
+            logge.info("settlenment{}:" + JSON.toJSONString(settlenment));
+            logge.info("coinsShareList{}:" + JSON.toJSONString(coinsShareList));
+            logge.info("user{}:" + JSON.toJSONString(user));
+
+            List<PaymentItem> paymentItemList = spectionServince.generatePayList(settlenment, coinsShareList);
+            return new ResponeData<List<PaymentItem>>(true, StatusCode.QUERYSUCCESS, ResultMessage.QUERYSUCCESS, paymentItemList);
+        } catch (Exception e) {
+            return new ResponeData(false, StatusCode.QUERYSFALSE, ResultMessage.QUERYSFALSE+e.getMessage());
+        }
+    }
+
 }

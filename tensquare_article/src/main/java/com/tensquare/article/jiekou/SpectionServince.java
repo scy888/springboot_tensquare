@@ -1,6 +1,9 @@
 package com.tensquare.article.jiekou;
 
 import com.github.pagehelper.PageInfo;
+import com.tensquare.article.pingan.CoinsShare;
+import com.tensquare.article.pingan.PaymentItem;
+import com.tensquare.article.pingan.Settlenment;
 import com.tensquare.article.pojo.*;
 import common.ClaimpptException;
 import common.PageBean;
@@ -119,4 +122,6 @@ public interface SpectionServince {
     void addOutBreakList(List<OutBreak> outBreakList);
 
     List<OutBreak> selectOutBreak();
+
+    List<PaymentItem> generatePayList(Settlenment settlenment, List<CoinsShare> coinsShareList);
 }

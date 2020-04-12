@@ -7,6 +7,9 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.tensquare.article.dao.*;
 import com.tensquare.article.jiekou.SpectionServince;
+import com.tensquare.article.pingan.CoinsShare;
+import com.tensquare.article.pingan.PaymentItem;
+import com.tensquare.article.pingan.Settlenment;
 import com.tensquare.article.pojo.*;
 import common.*;
 import entity.Constant;
@@ -641,7 +644,7 @@ public class SpectionServinceImpl implements SpectionServince {
          * @Description: 查询保单的已决金额未决金额的总和
          * @methodName: getSettlendAndOutstand
          * @Param: []
-         * @return: java.util.Map<java.lang.String                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               j                                                                                                                               a                                                                                                                               v                                                                                                                               a                                                                                                                               .                                                                                                                               l                                                                                                                               a                                                                                                                               n                                                                                                                               g.Object>
+         * @return: java.util.Map<java.lang.String                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               j                                                                                                                                                                                                                                                               a                                                                                                                                                                                                                                                               v                                                                                                                                                                                                                                                               a                                                                                                                                                                                                                                                               .                                                                                                                                                                                                                                                               l                                                                                                                                                                                                                                                               a                                                                                                                                                                                                                                                               n                                                                                                                                                                                                                                                               g.Object>
          * @Author: scyang
          * @Date: 2020/2/14 22:19
          */
@@ -1535,7 +1538,7 @@ public class SpectionServinceImpl implements SpectionServince {
          * @Description: 验证码注册
          * @methodName: registerCode
          * @Param: [ipAdress]
-         * @return: java.util.Map<java.lang.String               ,               java.lang.Object>
+         * @return: java.util.Map<java.lang.String                               ,                               java.lang.Object>
          * @Author: scyang
          * @Date: 2020/3/15 17:12
          */
@@ -1662,53 +1665,53 @@ public class SpectionServinceImpl implements SpectionServince {
                         outBreakOne.getArriveDate().compareTo(outBreakTwo.getArriveDate())).get().getArriveDate();
         logger.info("arriveDateMax{}:" + arriveDateMax);
         /** 最后支援武汉的四家医疗队 */
-        List<Date> dateList=new ArrayList<>();
-        Date date=null;
-        List<OutBreak> fourOutBreakList=new ArrayList<>();
+        List<Date> dateList = new ArrayList<>();
+        Date date = null;
+        List<OutBreak> fourOutBreakList = new ArrayList<>();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(arriveDateMax);
 
         for (int i = 0; i < 4; i++) {
-            date=calendar.getTime();
+            date = calendar.getTime();
             dateList.add(date);
             calendar.add(Calendar.DAY_OF_MONTH, -1);
         }
-        logger.info("dateList{}:"+dateList);
+        logger.info("dateList{}:" + dateList);
         for (OutBreak outBreak : outBreakList) {
             Date arriveDate = outBreak.getArriveDate();
             for (Date date_ : dateList) {
-                if (arriveDate.compareTo(date_)==0){
+                if (arriveDate.compareTo(date_) == 0) {
                     fourOutBreakList.add(outBreak);
                     break;
                 }
             }
         }
-        logger.info("fourOutBreakList{合并前}:"+JSON.toJSONString(fourOutBreakList));
+        logger.info("fourOutBreakList{合并前}:" + JSON.toJSONString(fourOutBreakList));
 
         /** 排除这四家医疗队 */
-        List<OutBreak> lessOutBreakList=new ArrayList<>(outBreakList);
+        List<OutBreak> lessOutBreakList = new ArrayList<>(outBreakList);
         lessOutBreakList.removeAll(fourOutBreakList);
-        logger.info("lessOutBreakList{}:"+JSON.toJSONString(lessOutBreakList));
+        logger.info("lessOutBreakList{}:" + JSON.toJSONString(lessOutBreakList));
         /** 剩余四支医疗队按支援的时间从小到大的排序 */
 
         logger.info("剩余四支医疗队按支援的时间从小到大的排序打印开始...");
         lessOutBreakList.stream().distinct().filter(
-                        outBreak->!"武汉市".equals(outBreak.getSupportCity()))
-                         .sorted((outBreakOne,outBreakTwo)-> (int) (outBreakOne.getArriveDate().getTime()
-                                  -outBreakTwo.getArriveDate().getTime()))
-                         .collect(Collectors.toList()).forEach(System.out::println);
+                outBreak -> !"武汉市".equals(outBreak.getSupportCity()))
+                .sorted((outBreakOne, outBreakTwo) -> (int) (outBreakOne.getArriveDate().getTime()
+                        - outBreakTwo.getArriveDate().getTime()))
+                .collect(Collectors.toList()).forEach(System.out::println);
         logger.info("剩余四支医疗队按支援的时间从小到大的排序打印结束...");
 
         /** 补贴金额相等的合并,并移除掉 */
-        for (int i = fourOutBreakList.size()-1; i >= 0; i--) {
+        for (int i = fourOutBreakList.size() - 1; i >= 0; i--) {
             BigDecimal subsidyAmountMove = fourOutBreakList.get(i).getSubsidyAmount();
             BigDecimal subsidySumMove = fourOutBreakList.get(i).getSubsidySum();
             for (int j = 0; j < i; j++) {
                 BigDecimal subsidyAmountAdd = fourOutBreakList.get(j).getSubsidyAmount();
                 BigDecimal subsidySumAdd = fourOutBreakList.get(j).getSubsidySum();
-                if (subsidyAmountMove.compareTo(subsidyAmountAdd)==0){
-                    subsidyAmountAdd=subsidyAmountAdd.add(subsidyAmountMove).setScale(2, BigDecimal.ROUND_HALF_UP);
-                    subsidySumAdd=subsidySumAdd.add(subsidySumMove).setScale(2, BigDecimal.ROUND_HALF_UP);
+                if (subsidyAmountMove.compareTo(subsidyAmountAdd) == 0) {
+                    subsidyAmountAdd = subsidyAmountAdd.add(subsidyAmountMove).setScale(2, BigDecimal.ROUND_HALF_UP);
+                    subsidySumAdd = subsidySumAdd.add(subsidySumMove).setScale(2, BigDecimal.ROUND_HALF_UP);
                     fourOutBreakList.get(j).setSubsidyAmount(subsidyAmountAdd);
                     fourOutBreakList.get(j).setSubsidySum(subsidySumAdd);
                     fourOutBreakList.remove(i);
@@ -1716,24 +1719,94 @@ public class SpectionServinceImpl implements SpectionServince {
                 }
             }
         }
-        logger.info("fourOutBreakList{合并后}:"+JSON.toJSONString(fourOutBreakList));
+        logger.info("fourOutBreakList{合并后}:" + JSON.toJSONString(fourOutBreakList));
 
         /**************************************************************************************************************/
         /** 根据支援城市去重 */
         ArrayList<OutBreak> distinctOutBreakList = outBreakList.stream().collect(Collectors.
                 collectingAndThen(Collectors.toCollection(() ->
-                        new TreeSet<>(Comparator.comparing(OutBreak::getSupportCity))),
+                                new TreeSet<>(Comparator.comparing(OutBreak::getSupportCity))),
                         ArrayList::new));
         logger.info("distinctOutBreakList{}:" + JSON.toJSONString(distinctOutBreakList));
 
         /** 根据支援城市分组 */
         Map<String, List<OutBreak>> groupOutBreakMap = outBreakList.stream().
-                                                  collect(Collectors.groupingBy(
-                                                          outBreak -> outBreak.getSupportCity()));
+                collect(Collectors.groupingBy(
+                        outBreak -> outBreak.getSupportCity()));
         logger.info("groupOutBreakMap{}:" + JSON.toJSONString(groupOutBreakMap));
         /**************************************************************************************************************/
 
         return outBreakList;
+    }
+
+    @Override
+    public List<PaymentItem> generatePayList(Settlenment settlenment, List<CoinsShare> coinsShareList) {
+        /**
+         * @Description: 生成赔款的支付共保清单
+         * @methodName: generatePayList
+         * @Param: [settlenment, coinsShareList]
+         * @return: java.util.List<com.tensquare.article.pingan.PaymentItem>
+         * @Author: scyang
+         * @Date: 2020/4/12 9:02
+         */
+        List<PaymentItem> resList = new ArrayList<>();
+        String paySign = settlenment.getPaySign();
+        if (StringUtils.isEqualTwoStr(paySign, Constant.COMMON_N)) {
+            return resList;
+        }
+        List<PaymentItem> paymentItemList = settlenment.getPaymentItemList();
+        /** 只做处理赔款,预赔的*/
+        List<PaymentItem> tempList = new ArrayList<>();
+        for (PaymentItem paymentItem : paymentItemList) {
+            if (Constant.PAYMENT_TYPE_LIST.contains(paymentItem.getPayType())) {
+                tempList.add(paymentItem);
+            }
+        }
+        logger.info("tempList{}:" + JSON.toJSONString(tempList));
+        if (!CollectionsUtils.isListEmpty(tempList)) {
+            resList = getPaymentItemList(tempList, coinsShareList);
+            logger.info("resList{}:" + JSON.toJSONString(resList));
+        }
+        return resList;
+    }
+
+    private List<PaymentItem> getPaymentItemList(List<PaymentItem> tempList, List<CoinsShare> coinsShareList) {
+        /** 赔款总金额 */
+        BigDecimal totalCoinsShareAmount = BigDecimal.ZERO;
+        for (CoinsShare coinsShare : coinsShareList) {
+            if (StringUtils.isEqualTwoStr(Constant.COMMON_Y, coinsShare.getPayType())){
+                totalCoinsShareAmount = totalCoinsShareAmount.add(coinsShare.getCoinsShareAmount()).setScale(2, BigDecimal.ROUND_HALF_UP);
+            }
+        }
+        logger.info("totalCoinsShareAmount{}:" + totalCoinsShareAmount);
+        /** 计算同一笔赔款的支付合计金额 */
+        BigDecimal payAmountSum = BigDecimal.ZERO;
+        for (PaymentItem paymentItem : tempList) {
+            payAmountSum = payAmountSum.add(paymentItem.getPaymentAmount() == null ? BigDecimal.ZERO : paymentItem.getPaymentAmount()).setScale(2, BigDecimal.ROUND_HALF_UP);
+        }
+        logger.info("totalCoinsShareAmount{}:" + totalCoinsShareAmount);
+        if (payAmountSum.compareTo(BigDecimal.ZERO) == 0) {
+            payAmountSum = BigDecimal.ONE;
+        }
+        /** 支付金额合计 */
+        BigDecimal tempAmountSum = BigDecimal.ZERO;
+        /** 汇率合计 */
+        BigDecimal tempRateSum = BigDecimal.ZERO;
+        for (PaymentItem paymentItem : tempList) {
+            /** 支付金额 */
+            BigDecimal amount = BigDecimal.ZERO;
+            /** 汇率 */
+            BigDecimal rate = BigDecimal.ZERO;
+            rate = paymentItem.getPaymentAmount().divide(payAmountSum,2,BigDecimal.ROUND_HALF_UP);
+            logger.info("rate{}:"+rate);
+            amount=totalCoinsShareAmount.multiply(rate).setScale(2,BigDecimal.ROUND_HALF_UP );
+            logger.info("amount{}:"+amount);
+            tempRateSum=tempRateSum.add(rate).setScale(2,BigDecimal.ROUND_HALF_UP );
+            tempAmountSum=tempAmountSum.add(amount).setScale(2,BigDecimal.ROUND_HALF_UP );
+        }
+        logger.info("tempRateSum{}:"+tempRateSum);
+        logger.info("tempAmountSum{}:"+tempAmountSum);
+        return tempList;
     }
 
     private String setRate(BigDecimal subsidyAmount, BigDecimal subsidySum) {
