@@ -121,7 +121,7 @@ public class Md5Utils {
 
     @Test
     public void test04() throws Exception {
-        System.out.println(getPrivateKey("125dfg"));
+        System.out.println(getPublicKey("-----BEGIN PUBLIC KEY-----MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmUWNmE0ksuRDcx5OscRn/ghCndouXqaxNFZM9lDPnmNzFSO2da4qsQEP/TH1TjGzPsrWL9roDhKkX4FfPP8pS9Gz72GBcVyExVvJ3CHFN3lBjRf2EzePL4iC6WpQzAZn/IQiFwLsJc8MjWgglb1PKva5tagBJ+lPUHAiWF8w/wLiT4exEiXZk0h59U1VvgsT8O155Z582R4J6GLkbwJ6Se2rNknFE1Q6BM7LGCWCpGjp/l73RzIPKjJPmAgpOTedAeZ7HKRTD/00b+C6qpWItJWG2Sme4vJGNOMJl4iIa8hRg6hewK1T9a/fIgZ/3Ln+1/k/E6a6C/LcVpR8G6RxNQIDAQAB-----END PUBLIC KEY-----"));
     }
 
     private static PublicKey getPublicKey(String publicKeyStr) throws Exception {

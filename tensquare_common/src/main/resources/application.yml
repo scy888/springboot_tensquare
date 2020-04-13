@@ -1,0 +1,7 @@
+
+encrypt:
+  key-store:
+    location: classpath:/changgou.jks
+    secret: changgou
+    alias: changgou
+    password: changgou
