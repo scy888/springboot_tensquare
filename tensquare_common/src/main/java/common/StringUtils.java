@@ -121,6 +121,38 @@ public class StringUtils {
         return Pattern.compile(regExp).matcher(strCarCard).matches();
     }
 
+    public static boolean isEqualStr(String strOne,String strTwo){
+        /**
+         * @Description: 两个字符串是否相等
+         * @methodName: isEqualStr
+         * @Param: [strOne, strTwo]
+         * @return: boolean
+         * @Author: scyang
+         * @Date: 2020/4/13 20:40
+         */
+        strOne=strOne==null ? "":strOne.trim();
+        strTwo=strTwo==null ? "":strTwo.trim();
+        return strOne.equals(strTwo);
+     }
+     public static String canceNull(String str){
+        /**
+         * @Description: 为null返回""
+         * @methodName: canceNull
+         * @Param: [str]
+         * @return: java.lang.String
+         * @Author: scyang
+         * @Date: 2020/4/13 20:50
+         */
+        return str==null ? "":str.trim();
+     }
+     @Test
+     public void test00(){
+         System.out.println(isEqualStr("a", " a"));
+         System.out.println(isEqualStr(null, null));
+         System.out.println(canceNull(null).length());
+         System.out.println(canceNull(" aa"));
+
+     }
     public static boolean isEqualTwoStr(String str1, String str2) {
         /**
          * @Description: 判断两个字符串是否相等 ""和null视为相等
