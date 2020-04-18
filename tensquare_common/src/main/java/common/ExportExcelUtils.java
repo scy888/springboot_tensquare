@@ -80,7 +80,7 @@ public class ExportExcelUtils {
     private static CellStyle setContextStyle(SXSSFWorkbook workbook) {
         /** 生成并设置另一个样式 */
         CellStyle style_ = workbook.createCellStyle();
-       /* style_.setBorderBottom(CellStyle.BORDER_THIN);
+        /*style_.setBorderBottom(CellStyle.BORDER_THIN);
         style_.setBorderLeft(CellStyle.BORDER_THIN);
         style_.setBorderRight(CellStyle.BORDER_THIN);
         style_.setBorderTop(CellStyle.BORDER_THIN);
@@ -171,7 +171,7 @@ public class ExportExcelUtils {
         CellStyle style = workbook.createCellStyle();
         style.setWrapText(true);/** 自动换行 */
 
-       /* style.setBorderBottom(CellStyle.BORDER_THIN);
+        /*style.setBorderBottom(CellStyle.BORDER_THIN);
         style.setBorderLeft(CellStyle.BORDER_THIN);
         style.setBorderRight(CellStyle.BORDER_THIN);
         style.setBorderTop(CellStyle.BORDER_THIN);

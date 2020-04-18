@@ -121,7 +121,14 @@ public class Md5Utils {
 
     @Test
     public void test04() throws Exception {
-        System.out.println(getPublicKey("-----BEGIN PUBLIC KEY-----MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmUWNmE0ksuRDcx5OscRn/ghCndouXqaxNFZM9lDPnmNzFSO2da4qsQEP/TH1TjGzPsrWL9roDhKkX4FfPP8pS9Gz72GBcVyExVvJ3CHFN3lBjRf2EzePL4iC6WpQzAZn/IQiFwLsJc8MjWgglb1PKva5tagBJ+lPUHAiWF8w/wLiT4exEiXZk0h59U1VvgsT8O155Z582R4J6GLkbwJ6Se2rNknFE1Q6BM7LGCWCpGjp/l73RzIPKjJPmAgpOTedAeZ7HKRTD/00b+C6qpWItJWG2Sme4vJGNOMJl4iIa8hRg6hewK1T9a/fIgZ/3Ln+1/k/E6a6C/LcVpR8G6RxNQIDAQAB-----END PUBLIC KEY-----"));
+        System.out.println(getPublicKey("MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmUWNmE0ksuRDcx5OscRn/ghCndouXqaxNFZM9lDPnmNzFSO2da4qsQEP/TH1TjGzPsrWL9roDhKkX4FfPP8pS9Gz72GBcVyExVvJ3CHFN3lBjRf2EzePL4iC6WpQzAZn/IQiFwLsJc8MjWgglb1PKva5tagBJ+lPUHAiWF8w/wLiT4exEiXZk0h59U1VvgsT8O155Z582R4J6GLkbwJ6Se2rNknFE1Q6BM7LGCWCpGjp/l73RzIPKjJPmAgpOTedAeZ7HKRTD/00b+C6qpWItJWG2Sme4vJGNOMJl4iIa8hRg6hewK1T9a/fIgZ/3Ln+1/k/E6a6C/LcVpR8G6RxNQIDAQAB"));
+        System.out.println("============================================================================================================================================================================================================================================================================================================================================================================================================================================================");
+        System.out.println(getPublicKey("MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDhSzPPnFn41iaz+t4tI4kbaXNuNFOsI8hFeCYtlwPFKRbETHbBS10bMvUbOWLFtRgZV3L924GQ9orbomEmJ1nWyaSO8iBbZAyiWUP5PJJh/b9kHj1MMwG712bGfYYPdjkRprNpzU9w4UBzUMKKUoHU4c/Gbb4XeBK9LNTPWQL4YwIDAQAB"));
+        System.out.println("============================================================================================================================================================================================================================================================================================================================================================================================================================================================");
+        System.out.println(getPublicKey("MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCDdxPnzC2NGMntg2KqGUOmZXMM\n" +
+                "z3x4AgfqGk5H8elAa9/Mlk3FHC6ZJIYe9kwOWxNSExvncVQ6sfCtYAzCy2YwWzfB\n" +
+                "aeIrkU+ruu2RMPU5bFM8LMmhdMDMr2Fgs2/6Wl5845IMKw4lk8ebl8umcwIQRNO+\n" +
+                "0HTg+x/cJTdyDiz68QIDAQAB"));
     }
 
     private static PublicKey getPublicKey(String publicKeyStr) throws Exception {
@@ -160,7 +167,7 @@ public class Md5Utils {
         return new String(bytes, CHARSET_CODING);
     }
 
-    public static boolean getgetSHA256withRSA(String text,String signedData,String publicKeyStr) throws Exception {
+    public static boolean getgetSHA256withRSA(String text, String signedData, String publicKeyStr) throws Exception {
         /**
          * @Description: 判断公钥签名 text待签名的字符串 signseData  privateKeyStr私钥字符串
          * @methodName: getgetSHA256withRSA
@@ -174,8 +181,9 @@ public class Md5Utils {
         PublicKey publicKey = getPublicKey(publicKeyStr);
         signature.initVerify(publicKey);
         signature.update(text.getBytes(CHARSET_CODING));
-       return signature.verify(signedData.getBytes(CHARSET_CODING));
+        return signature.verify(signedData.getBytes(CHARSET_CODING));
     }
+
     private static String doSecure(byte[] plainTestByte, Cipher cipher, int length) throws Exception {
         /**
          * @Description: 对数据分段加解密
