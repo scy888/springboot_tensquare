@@ -8,6 +8,7 @@ import com.tensquare.article.jiekou.ProvinceServince;
 import com.tensquare.article.jiekou.ReflectServince;
 import com.tensquare.article.jiekou.SpectionServince;
 import com.tensquare.article.pingan.CoinsShare;
+import com.tensquare.article.pingan.MsgNotice;
 import com.tensquare.article.pingan.PaymentItem;
 import com.tensquare.article.pingan.Settlenment;
 import com.tensquare.article.pojo.*;
@@ -918,5 +919,15 @@ public class SpectionController {
             return new ResponeData(false, StatusCode.QUERYSFALSE, ResultMessage.QUERYSFALSE+e.getMessage());
         }
     }
-
+ @RequestMapping("/createNotice")
+    public ResponeData<?> createNotice(@RequestBody MsgNotice msgNotice){
+     try {
+         logge.info("msgNotice{}:"+JSON.toJSONString(msgNotice));
+         spectionServince.createNotice(msgNotice);
+         return new ResponeData<>(true, StatusCode.ADDSUCCESS, "消息发送成功");
+     } catch (Exception e) {
+         //e.printStackTrace();
+         return new ResponeData<>(false, StatusCode.ADDFALSE, "消息发送失败 :"+e.getMessage());
+     }
+ }
 }

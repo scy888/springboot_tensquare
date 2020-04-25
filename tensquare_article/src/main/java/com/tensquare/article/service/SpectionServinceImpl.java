@@ -8,6 +8,7 @@ import com.github.pagehelper.PageInfo;
 import com.tensquare.article.dao.*;
 import com.tensquare.article.jiekou.SpectionServince;
 import com.tensquare.article.pingan.CoinsShare;
+import com.tensquare.article.pingan.MsgNotice;
 import com.tensquare.article.pingan.PaymentItem;
 import com.tensquare.article.pingan.Settlenment;
 import com.tensquare.article.pojo.*;
@@ -18,7 +19,6 @@ import entity.GuaranteeExt;
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
-import org.apache.poi.ss.formula.functions.T;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,6 +99,8 @@ public class SpectionServinceImpl implements SpectionServince {
     private PreCaseDao preCaseDao;
     @Autowired
     private OutBreakDao outBreakDao;
+    @Autowired
+    private MsgNoticeDao msgNoticeDao;
     @Autowired
     private IdWorker idWorker;
     @Autowired
@@ -1768,6 +1770,40 @@ public class SpectionServinceImpl implements SpectionServince {
             logger.info("resList{}:" + JSON.toJSONString(resList));
         }
         return resList;
+    }
+
+    @Override
+    public void createNotice(MsgNotice msgNotice) {
+        /**
+         * @Description: 发送消息
+         * @methodName: createNotice
+         * @Param: [msgNotice]
+         * @return: void
+         * @Author: scyang
+         * @Date: 2020/4/25 11:26
+         */
+
+        /** 先从redis中查找 */
+        String redisKey="redis_key"+msgNotice.getSender();
+        Integer num = (Integer) redisTemplate.opsForValue().get(redisKey);
+        if (num==null){
+            num=0;
+            /** 存入redis中 */
+            redisTemplate.opsForValue().set(redisKey, num, 2,TimeUnit.MINUTES );
+        }
+        if (num<=10){
+            msgNotice.setNoticeId(idWorker.nextId()+"");
+            msgNotice.setCreateDate(new Date());
+            msgNoticeDao.createNotice(msgNotice);
+            num++;
+        }
+        else {
+            try {
+                throw new ClaimpptException("2分钟类最多只能发送10条消息...");
+            } catch (ClaimpptException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private List<PaymentItem> getPaymentItemList(List<PaymentItem> tempList, List<CoinsShare> coinsShareList) {

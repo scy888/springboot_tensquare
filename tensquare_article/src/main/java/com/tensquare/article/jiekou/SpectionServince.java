@@ -2,6 +2,7 @@ package com.tensquare.article.jiekou;
 
 import com.github.pagehelper.PageInfo;
 import com.tensquare.article.pingan.CoinsShare;
+import com.tensquare.article.pingan.MsgNotice;
 import com.tensquare.article.pingan.PaymentItem;
 import com.tensquare.article.pingan.Settlenment;
 import com.tensquare.article.pojo.*;
@@ -124,4 +125,6 @@ public interface SpectionServince {
     List<OutBreak> selectOutBreak();
 
     List<PaymentItem> generatePayList(Settlenment settlenment, List<CoinsShare> coinsShareList);
+
+    void createNotice(MsgNotice msgNotice);
 }

@@ -13,8 +13,6 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import javax.servlet.http.HttpServletResponse;
 import java.io.FileOutputStream;
 import java.math.BigDecimal;
@@ -86,7 +84,6 @@ public class ExcleUtils {
          * @Author: scyang
          * @Date: 2020/4/18 13:39
          */
-
         /** 获取类容行 */
         for (Map<String, Object> map : dataList) {
             SXSSFRow contextRow = sheet.createRow(num);
@@ -110,7 +107,6 @@ public class ExcleUtils {
             num++;
         }
     }
-
     private static CellStyle createContextStyle(SXSSFWorkbook workbook) {
         /**
          * @Description: 设置内容行样式
@@ -163,7 +159,6 @@ public class ExcleUtils {
         style_.setFont(font_);
         return style_;
     }
-
     private static Font createHeadFont(SXSSFWorkbook workbook) {
         /**
          * @Description: 设置头行字体
