@@ -16,6 +16,7 @@ public class StringUtils {
      */
     private static final String MASK_TIP = "********************************************";
 
+
     public static String startMask(String strSource, int prefixSize) {
         /**
          * @Description: 保留前prefixSize位数, 剩余掩码:1329705****
@@ -930,6 +931,186 @@ public class StringUtils {
     @Test
     public void test21(){
         System.out.println(validateParamsIsEmpty(null,"aa"));
+    }
+
+    /*******************************************************************************************************************************/
+    public static final List<String> nameList=Arrays.asList( "司马","欧阳","东方","南宫","上官",
+            "夏侯","诸葛","宇文","北堂","西门",
+            "司空","公孙","左丘","长孙","东郭",
+            "皇甫","慕容","令狐","鲜余","百里",
+            "端木","尉迟","长孙","太史","独孤");
+
+    private static String createmask(int length){
+        /**
+         * @Description: 创建掩饰符
+         * @methodName: createmask
+         * @Param: [length]
+         * @return: java.lang.String
+         * @Author: scyang
+         * @Date: 2020/4/3 22:56
+         */
+        StringBuffer sb=new StringBuffer();
+        for (int i = 0; i < length; i++) {
+            sb.append("*");
+        }
+        return sb.toString();
+    }
+    private static boolean isChinese(String plainText){
+        /**a
+         * @Description: 判断是否全是中文
+         * @methodName: isChunese
+         * @Param: [plainText]
+         * @return: boolean
+         * @Author: scyang
+         * @Date: 2020/4/4 0:43
+         */
+        String regExp="^[\\u4e00-\\u9fa5]+$";
+        return plainText.matches(regExp);
+    }
+    private static boolean isEnglish(String plainText){
+        /**
+         * @Description: 判断是否包含英文 字母,数字,下划线至少出现一次
+         * @methodName: isEnglish
+         * @Param: [plainText]
+         * @return: boolean
+         * @Author: scyang
+         * @Date: 2020/4/4 1:11
+         */
+        String regExp="^[a-zA-Z\\s]+$";
+        return plainText.matches(regExp);
+    }
+    public static String firstMask(String plainText,int length){
+
+        /**
+         * @Description: 前length位掩码
+         * @methodName: firstMask
+         * @Param: [plainTest, length]
+         * @return: java.lang.String
+         * @Author: scyang
+         * @Date: 2020/4/3 23:11
+         */
+        plainText=plainText.replaceAll(" ", "").trim();
+        if ("".equals(plainText.trim())||null==plainText){
+            throw new RuntimeException("掩码的字符串不能为空或为null...");
+        }
+        else if (plainText.length()<length){
+            return createmask(plainText.length());
+        }
+        StringBuffer sb=new StringBuffer();
+        return sb.append(createmask(length)).
+                append(plainText.substring(length, plainText.length())).toString();
+    }
+    public static String lastMask(String plainText,int length){
+        /**
+         * @Description: 字符串后length位掩码
+         * @methodName: lastMask
+         * @Param: [plainText, length]
+         * @return: java.lang.String
+         * @Author: scyang
+         * @Date: 2020/4/3 23:31
+         */
+        plainText=plainText.replaceAll(" ", "").trim();
+        if ("".equals(plainText.trim())||null==plainText){
+            throw new RuntimeException("掩码的字符串不能为空或为null...");
+        }
+        else if (plainText.length()<length){
+            return createmask(plainText.length());
+        }
+        return plainText.substring(0, plainText.length()-length)
+                .concat(createmask(length));
+    }
+    public static String middleMask(String plainText,int prefixSize,int suffixSize ){
+        /**
+         * @Description: 中间掩码
+         * @methodName: middleMask
+         * @Param: [plainText, prefixSize, suffixSize]
+         * @return: java.lang.String
+         * @Author: scyang
+         * @Date: 2020/4/3 23:38
+         */
+        plainText=plainText.replaceAll(" ", "").trim();
+        if ("".equals(plainText.trim())||null==plainText){
+            throw new RuntimeException("掩码的字符串不能为空或为null...");
+        }
+        else if (plainText.length()<prefixSize+suffixSize){
+            return createmask(plainText.length());
+        }
+        return plainText.substring(0,prefixSize )
+                .concat(createmask(plainText.length()-prefixSize-suffixSize))
+                .concat(plainText.substring(plainText.length()-suffixSize,plainText.length() ));
+    }
+    public static String mailMask(String plainText){
+        /**
+         * @Description: 邮箱掩码 @前面掩码 如:*******@qq.com
+         * @methodName: mailMask
+         * @Param: [plainText]
+         * @return: java.lang.String
+         * @Author: scyang
+         * @Date: 2020/4/3 23:59
+         */
+        plainText=plainText.replaceAll(" ", "").trim();
+        if ("".equals(plainText)||null==plainText){
+            throw new RuntimeException("掩码的字符串不能为空或为null...");
+        }
+        int index = plainText.indexOf("@");
+        return createmask(index).
+                concat(plainText.substring(index, plainText.length()));
+    }
+    public static String idCardMask(String plainText){
+        /**
+         * @Description: 省份证掩码 如: 422202********3496
+         * @methodName: idCardMask
+         * @Param: [plainText]
+         * @return: java.lang.String
+         * @Author: scyang
+         * @Date: 2020/4/4 0:12
+         */
+        plainText=plainText.replaceAll(" ", "").trim();
+        if ("".equals(plainText)||null==plainText){
+            throw new RuntimeException("掩码的字符串不能为空或为null...");
+        }
+        return plainText.substring(0,6 )
+                .concat(createmask(8))
+                .concat(plainText.substring(14,18 ));
+    }
+    public static String renameMask(String plainText){
+        /**
+         * @Description: 复姓掩码 司马**
+         * @methodName: renameMask
+         * @Param: [plainText]
+         * @return: java.lang.String
+         * @Author: scyang
+         * @Date: 2020/4/4 1:18
+         */
+        plainText=plainText.replaceAll(" ", "").trim();
+        if ("".equals(plainText)||null==plainText){
+            throw new RuntimeException("掩码的字符串不能为空或为null...");
+        }
+        if (plainText.length()>2&&isChinese(plainText)){
+            for (String name : nameList) {
+                if (plainText.contains(name)){
+                    return lastMask(plainText, plainText.length()-2);
+                }
+            }
+        }
+        return null;
+    }
+    @Test
+    public void test25(){
+        System.out.println(createmask(6));
+        System.out.println(firstMask("25", 4));
+        System.out.println(firstMask("13297053048", 4));
+        System.out.println(lastMask("132 9705 3048",4 ));
+        System.out.println(middleMask("132 9705 3048",3 , 4));
+        System.out.println(mailMask("348691356@qq.com"));
+        System.out.println(idCardMask("422202 19910909 3496"));
+        String c=" a b ";
+        System.out.println(c.length());
+        // c=c.replaceAll(" ", "");
+        System.out.println(c);
+        System.out.println(c.trim().length());
+        System.out.println(isChinese(""));
+        System.out.println(renameMask("司马风"));
     }
 }
 

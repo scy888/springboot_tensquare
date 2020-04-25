@@ -479,6 +479,20 @@ public class DateUtil {
        // calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH)+numDate);
         return calendar.getTime();
     }
+    public static Date addDate(Date date,int num){
+        /**
+         * @Description: 时间添加多少天
+         * @methodName: addDate
+         * @Param: [date, num]
+         * @return: java.util.Date
+         * @Author: scyang
+         * @Date: 2020/4/25 16:13
+         */
+        Calendar instance = Calendar.getInstance();
+        instance.setTime(date);
+        instance.add(Calendar.DAY_OF_MONTH, num);
+        return instance.getTime();
+    }
     @Test
     public void test() throws Exception {
         System.out.println(TimeUnit.DAYS.toHours(2));
@@ -487,5 +501,7 @@ public class DateUtil {
         System.out.println(TimeUnit.DAYS.convert(48, TimeUnit.HOURS));
         TimeUnit hours = TimeUnit.HOURS;
         System.out.println(hours);
+        System.out.println("===============================================");
+        System.out.println(addDate(new Date(), -20));
     }
 }

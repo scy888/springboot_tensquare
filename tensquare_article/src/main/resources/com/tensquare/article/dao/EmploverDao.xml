@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tensquare.article.dao.EmploverDao">
+  <insert id="addEmplover" parameterType="com.tensquare.article.pingan.Employer">
+      insert into tb_emplover(emplover_id,user_name,id_card,seria_no,email,start_date,end_date,type_status)values
+      (#{emploverId},#{names},#{idCard},#{seriaNo},#{email},#{startDate},#{endDate},#{types})
+  </insert>
+    <select id="selectEmplover" resultType="com.tensquare.article.pingan.Employer">
+        select emplover_id emploverId,
+                user_name names,
+                id_card idCard,
+                seria_no seriaNo,
+                email email,
+                start_date startDate,
+                end_date endDate,
+                type_status types
+                from tb_emplover group by types
+    </select>
+</mapper>

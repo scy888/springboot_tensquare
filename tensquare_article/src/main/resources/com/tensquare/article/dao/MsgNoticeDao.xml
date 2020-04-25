@@ -3,8 +3,16 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.tensquare.article.dao.MsgNoticeDao">
-   <insert id="createNotice" parameterType="msgNotice" >
+   <insert id="createNotice" parameterType="com.tensquare.article.pingan.MsgNotice" >
        insert into tb_msg_notice(notice_id,sender,create_date,notice_status,notice_title,notice_content,receiver) values
                                  (#{noticeId},#{sender},#{createDate},#{noticeStatus},#{noticeTitle},#{noticeContent},#{receiver})
    </insert>
+    <update id="updateNotice" parameterType="java.lang.String">
+        update tb_msg_notice set notice_status=#{status} where notice_id in
+        <if test="idsList!=null and idsList.size()>0">
+            <foreach collection="idsList" open="(" item="id" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
+    </update>
 </mapper>

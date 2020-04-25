@@ -7,10 +7,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.tensquare.article.dao.*;
 import com.tensquare.article.jiekou.SpectionServince;
-import com.tensquare.article.pingan.CoinsShare;
-import com.tensquare.article.pingan.MsgNotice;
-import com.tensquare.article.pingan.PaymentItem;
-import com.tensquare.article.pingan.Settlenment;
+import com.tensquare.article.pingan.*;
 import com.tensquare.article.pojo.*;
 import common.*;
 import entity.Constant;
@@ -101,6 +98,8 @@ public class SpectionServinceImpl implements SpectionServince {
     private OutBreakDao outBreakDao;
     @Autowired
     private MsgNoticeDao msgNoticeDao;
+    @Autowired
+    private EmploverDao emploverDao;
     @Autowired
     private IdWorker idWorker;
     @Autowired
@@ -646,7 +645,7 @@ public class SpectionServinceImpl implements SpectionServince {
          * @Description: 查询保单的已决金额未决金额的总和
          * @methodName: getSettlendAndOutstand
          * @Param: []
-         * @return: java.util.Map<java.lang.String                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               j                                                                                                                                                                                                                                                               a                                                                                                                                                                                                                                                               v                                                                                                                                                                                                                                                               a                                                                                                                                                                                                                                                               .                                                                                                                                                                                                                                                               l                                                                                                                                                                                                                                                               a                                                                                                                                                                                                                                                               n                                                                                                                                                                                                                                                               g.Object>
+         * @return: java.util.Map<java.lang.String                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               j                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               a                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               v                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               a                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               .                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               l                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               a                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               n                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               g.Object>
          * @Author: scyang
          * @Date: 2020/2/14 22:19
          */
@@ -1540,7 +1539,7 @@ public class SpectionServinceImpl implements SpectionServince {
          * @Description: 验证码注册
          * @methodName: registerCode
          * @Param: [ipAdress]
-         * @return: java.util.Map<java.lang.String                               ,                               java.lang.Object>
+         * @return: java.util.Map<java.lang.String                                                                                                                               ,                                                                                                                               java.lang.Object>
          * @Author: scyang
          * @Date: 2020/3/15 17:12
          */
@@ -1773,7 +1772,7 @@ public class SpectionServinceImpl implements SpectionServince {
     }
 
     @Override
-    public void createNotice(MsgNotice msgNotice) {
+    public void createNotice(MsgNotice msgNotice) throws ClaimpptException {
         /**
          * @Description: 发送消息
          * @methodName: createNotice
@@ -1784,33 +1783,103 @@ public class SpectionServinceImpl implements SpectionServince {
          */
 
         /** 先从redis中查找 */
-        String redisKey="redis_key"+msgNotice.getSender();
+        String redisKey = "redis_key" + msgNotice.getSender();
         Integer num = (Integer) redisTemplate.opsForValue().get(redisKey);
-        if (num==null){
-            num=0;
+        logger.info("num{}:" + num);
+        if (num == null) {
+            num = 1;
             /** 存入redis中 */
-            redisTemplate.opsForValue().set(redisKey, num, 2,TimeUnit.MINUTES );
+            redisTemplate.opsForValue().set(redisKey, num, 2, TimeUnit.MINUTES);
         }
-        if (num<=10){
-            msgNotice.setNoticeId(idWorker.nextId()+"");
+        if (num <= 10) {
+            msgNotice.setNoticeId(idWorker.nextId() + "");
             msgNotice.setCreateDate(new Date());
             msgNoticeDao.createNotice(msgNotice);
             num++;
+            redisTemplate.opsForValue().set(redisKey, num, 2, TimeUnit.MINUTES);
+        } else {
+            throw new ClaimpptException("2分钟类最多只能发送10条消息...");
         }
-        else {
-            try {
-                throw new ClaimpptException("2分钟类最多只能发送10条消息...");
-            } catch (ClaimpptException e) {
-                e.printStackTrace();
-            }
+    }
+
+    @Override
+    public void updateNotice(List<String> idsList, String status) {
+        /**
+         * @Description: 批量修改消息状态
+         * @methodName: updateNotice
+         * @Param: [idsList]
+         * @return: void
+         * @Author: scyang
+         * @Date: 2020/4/25 14:29
+         */
+        msgNoticeDao.updateNotice(idsList, status);
+    }
+
+    @Override
+    public void addEmploverList(List<Employer> emploverList) {
+        /**
+         * @Description: 批量添加雇员信息
+         * @methodName: addEmploverList
+         * @Param: [emploverList]
+         * @return: void
+         * @Author: scyang
+         * @Date: 2020/4/25 15:46
+         */
+        Calendar instance = Calendar.getInstance();
+        for (Employer employer : emploverList) {
+            employer.setEmploverId(idWorker.nextId() + "");
+            employer.setNames(StringUtils.renameMask(employer.getNames()));
+            employer.setIdCard(StringUtils.idCardMask(employer.getIdCard()));
+            employer.setSeriaNo(DateUtil.DateToStr(new Date(), DateUtil.FORMATFIVE) + numUtils.getNum(6));
+            employer.setEmail(StringUtils.mailMask(employer.getEmail()));
+            employer.setStartDate(instance.getTime());
+            employer.setEndDate(DateUtil.addDate(employer.getStartDate(), 5));
+            employer.setTypes(setTypes(employer.getTypes()));
+            instance.add(Calendar.DAY_OF_MONTH, 10);
         }
+        emploverList.stream().forEach(employer -> emploverDao.addEmplover(employer));
+    }
+
+    @Override
+    public List<Employer> selectEmplover() {
+        /**
+         * @Description: 批量查询雇员信息
+         * @methodName: selectEmplover
+         * @Param: []
+         * @return: java.util.List<com.tensquare.article.pingan.Employer>
+         * @Author: scyang
+         * @Date: 2020/4/25 17:27
+         */
+        List<Employer> employerList=emploverDao.selectEmplover();
+        Map<String, List<Employer>> listMap = employerList.stream().distinct().collect(Collectors.groupingBy(emplover -> emplover.getTypes()));
+        logger.info("listMap{}:"+JSON.toJSONString(listMap));
+        /*for (Employer employer : employerList) {
+            employer.setDataMap(listMap);
+        }*/
+        //employerList.stream().forEach(employer->employer.setDataMap(listMap));
+        return employerList;
+    }
+
+    private String setTypes(String types) {
+        String str = "";
+        switch (types) {
+            case "0":
+                str = "在线";
+                break;
+            case "1":
+                str = "下线";
+                break;
+            default:
+                str = "不知道";
+        }
+        return str;
     }
 
     private List<PaymentItem> getPaymentItemList(List<PaymentItem> tempList, List<CoinsShare> coinsShareList) {
         /** 赔款总金额 */
         BigDecimal totalCoinsShareAmount = BigDecimal.ZERO;
         for (CoinsShare coinsShare : coinsShareList) {
-            if (StringUtils.isEqualTwoStr(Constant.COMMON_Y, coinsShare.getPayType())){
+            if (StringUtils.isEqualTwoStr(Constant.COMMON_Y, coinsShare.getPayType())) {
                 totalCoinsShareAmount = totalCoinsShareAmount.add(coinsShare.getCoinsShareAmount()).setScale(2, BigDecimal.ROUND_HALF_UP);
             }
         }
@@ -1833,15 +1902,15 @@ public class SpectionServinceImpl implements SpectionServince {
             BigDecimal amount = BigDecimal.ZERO;
             /** 汇率 */
             BigDecimal rate = BigDecimal.ZERO;
-            rate = paymentItem.getPaymentAmount().divide(payAmountSum,2,BigDecimal.ROUND_HALF_UP);
-            logger.info("rate{}:"+rate);
-            amount=totalCoinsShareAmount.multiply(rate).setScale(2,BigDecimal.ROUND_HALF_UP );
-            logger.info("amount{}:"+amount);
-            tempRateSum=tempRateSum.add(rate).setScale(2,BigDecimal.ROUND_HALF_UP );
-            tempAmountSum=tempAmountSum.add(amount).setScale(2,BigDecimal.ROUND_HALF_UP );
+            rate = paymentItem.getPaymentAmount().divide(payAmountSum, 2, BigDecimal.ROUND_HALF_UP);
+            logger.info("rate{}:" + rate);
+            amount = totalCoinsShareAmount.multiply(rate).setScale(2, BigDecimal.ROUND_HALF_UP);
+            logger.info("amount{}:" + amount);
+            tempRateSum = tempRateSum.add(rate).setScale(2, BigDecimal.ROUND_HALF_UP);
+            tempAmountSum = tempAmountSum.add(amount).setScale(2, BigDecimal.ROUND_HALF_UP);
         }
-        logger.info("tempRateSum{}:"+tempRateSum);
-        logger.info("tempAmountSum{}:"+tempAmountSum);
+        logger.info("tempRateSum{}:" + tempRateSum);
+        logger.info("tempAmountSum{}:" + tempAmountSum);
         return tempList;
     }
 

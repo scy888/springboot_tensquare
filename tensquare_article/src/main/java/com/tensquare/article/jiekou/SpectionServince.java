@@ -1,10 +1,7 @@
 package com.tensquare.article.jiekou;
 
 import com.github.pagehelper.PageInfo;
-import com.tensquare.article.pingan.CoinsShare;
-import com.tensquare.article.pingan.MsgNotice;
-import com.tensquare.article.pingan.PaymentItem;
-import com.tensquare.article.pingan.Settlenment;
+import com.tensquare.article.pingan.*;
 import com.tensquare.article.pojo.*;
 import common.ClaimpptException;
 import common.PageBean;
@@ -126,5 +123,12 @@ public interface SpectionServince {
 
     List<PaymentItem> generatePayList(Settlenment settlenment, List<CoinsShare> coinsShareList);
 
-    void createNotice(MsgNotice msgNotice);
+    void createNotice(MsgNotice msgNotice) throws ClaimpptException;
+
+    void updateNotice(List<String> idsList,String status);
+
+    void addEmploverList(List<Employer> emploverList);
+
+    List<Employer> selectEmplover();
+
 }

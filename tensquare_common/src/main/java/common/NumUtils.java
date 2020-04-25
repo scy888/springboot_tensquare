@@ -29,6 +29,7 @@ public class NumUtils {
     public void test(){
         System.out.println(getNum(4));
         System.out.println(getNum(6));
+        System.out.println(6+""+"6");
         System.out.println(getNum(2));
     }
 }

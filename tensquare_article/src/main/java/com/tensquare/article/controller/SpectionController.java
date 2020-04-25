@@ -1,16 +1,14 @@
 package com.tensquare.article.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
 import com.tensquare.article.jiekou.HttpRestOperations;
 import com.tensquare.article.jiekou.ProvinceServince;
 import com.tensquare.article.jiekou.ReflectServince;
 import com.tensquare.article.jiekou.SpectionServince;
-import com.tensquare.article.pingan.CoinsShare;
-import com.tensquare.article.pingan.MsgNotice;
-import com.tensquare.article.pingan.PaymentItem;
-import com.tensquare.article.pingan.Settlenment;
+import com.tensquare.article.pingan.*;
 import com.tensquare.article.pojo.*;
 import com.tensquare.article.service.ProvinceServinceImpl;
 import com.tensquare.article.service.SpectionServinceImpl;
@@ -781,7 +779,7 @@ public class SpectionController {
          * @Description: 注册验证码
          * @methodName: registerCode
          * @Param: [ipAdress]
-         * @return: java.util.Map<java.lang.String                                                                                                                               ,                                                                                                                               java.lang.Object>
+         * @return: java.util.Map<java.lang.String                                                                                                                                                                                                                                                               ,                                                                                                                                                                                                                                                               java.lang.Object>
          * @Author: scyang
          * @Date: 2020/3/15 17:06
          */
@@ -916,18 +914,61 @@ public class SpectionController {
             List<PaymentItem> paymentItemList = spectionServince.generatePayList(settlenment, coinsShareList);
             return new ResponeData<List<PaymentItem>>(true, StatusCode.QUERYSUCCESS, ResultMessage.QUERYSUCCESS, paymentItemList);
         } catch (Exception e) {
-            return new ResponeData(false, StatusCode.QUERYSFALSE, ResultMessage.QUERYSFALSE+e.getMessage());
+            return new ResponeData(false, StatusCode.QUERYSFALSE, ResultMessage.QUERYSFALSE + e.getMessage());
         }
     }
- @RequestMapping("/createNotice")
-    public ResponeData<?> createNotice(@RequestBody MsgNotice msgNotice){
-     try {
-         logge.info("msgNotice{}:"+JSON.toJSONString(msgNotice));
-         spectionServince.createNotice(msgNotice);
-         return new ResponeData<>(true, StatusCode.ADDSUCCESS, "消息发送成功");
-     } catch (Exception e) {
-         //e.printStackTrace();
-         return new ResponeData<>(false, StatusCode.ADDFALSE, "消息发送失败 :"+e.getMessage());
-     }
- }
+
+    @RequestMapping("/createNotice")
+    public ResponeData<?> createNotice(@RequestBody MsgNotice msgNotice) {
+        try {
+            logge.info("msgNotice{}:" + JSON.toJSONString(msgNotice));
+            spectionServince.createNotice(msgNotice);
+            return new ResponeData<>(true, StatusCode.ADDSUCCESS, "消息发送成功");
+        } catch (Exception e) {
+            return new ResponeData<>(false, StatusCode.ADDFALSE, "消息发送失败 :" + e.getMessage());
+        }
+    }
+   @RequestMapping("/updateNotice")
+    public ResponeData<Void> updateNotice(@RequestBody Map<String,Object> map /*String paramJson*/){
+       try {
+           /*JSONObject jsonObject = JSON.parseObject(paramJson);
+           String ids = jsonObject.getString("ids");
+           String status = jsonObject.getString("status");*/
+           String ids = (String) map.get("ids");
+           String status = (String) map.get("status");
+           List<String> idsList = Arrays.asList(ids.split(","));
+           logge.info("idsList{}:"+idsList);
+           logge.info("status{}:"+status);
+           spectionServince.updateNotice(idsList,status);
+           return new ResponeData<Void>(true, StatusCode.UPDATESUCCESS,ResultMessage.UPDATESUCCESS );
+       } catch (Exception e) {
+           return new ResponeData<>(false, StatusCode.UPDATEFALSE,ResultMessage.UPDATEFALSE+e.getMessage());
+       }
+   }
+   @PostMapping("/addEmploverList")
+    public ResponeData<Void> addEmploverList(@RequestBody String paramJson /*Map<String, List<Employer>>map*/){
+       try {
+          // List<Employer> emploverList = JSON.parseObject(paramJson).getJSONArray("emploverList").toJavaList(Employer.class);
+           //List<Employer> emploverList = JSON.parseObject(JSON.toJSONString(map)).getJSONArray("emploverList").toJavaList(Employer.class);
+           //List<Employer> emploverList =  map.get("emploverList");
+           JSONArray jsonArray = JSON.parseObject(paramJson).getJSONArray("emploverList");
+           List<Employer> employerList = JSON.parseArray(JSON.toJSONString(jsonArray), Employer.class);
+           logge.info("emploverList{}:"+JSON.toJSONString(employerList));
+           spectionServince.addEmploverList(employerList);
+           return new ResponeData<Void>(true,StatusCode.ADDSUCCESS , ResultMessage.ADDSUCCESS);
+       } catch (Exception e) {
+           return new ResponeData<>(false,StatusCode.ADDFALSE , ResultMessage.ADDFALSE+e.getMessage());
+       }
+   }
+   @RequestMapping("/selectEmplover")
+    public ResponeData<List<Employer>> selectEmplover(){
+       try {
+           List<Employer> employerList=spectionServince.selectEmplover();
+           logge.info("employerList{}:"+JSON.toJSONString(employerList));
+           return new ResponeData<List<Employer>>(true, StatusCode.QUERYSUCCESS,ResultMessage.QUERYSUCCESS,employerList );
+       } catch (Exception e) {
+           return new ResponeData<>(false, StatusCode.QUERYSFALSE,ResultMessage.QUERYSFALSE+e.getMessage() );
+
+       }
+   }
 }

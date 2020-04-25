@@ -2,6 +2,9 @@ package com.tensquare.article.dao;
 
 import com.tensquare.article.pingan.MsgNotice;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * @author: scyang
@@ -13,4 +16,6 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface MsgNoticeDao {
     void createNotice(MsgNotice msgNotice);
+
+    void updateNotice(@Param("idsList") List<String> idsList,@Param("status") String status);
 }
