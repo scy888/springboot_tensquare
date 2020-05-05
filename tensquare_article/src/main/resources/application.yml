@@ -51,3 +51,5 @@ cmb: http://www.cmb.com.cn
 claimppt_j2ee.http.hostUrl: http://localhost:9004/spection
 request_rel_read_timeout: 30000
 request_rel_connect_timeout: 30000
+
+imageKey: GIF,JPG,DXF
