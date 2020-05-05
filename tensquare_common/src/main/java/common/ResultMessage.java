@@ -19,5 +19,7 @@ public interface ResultMessage {
     public static final String UPLOADFALSE="上传文件失败";
     public static final String LOGINSUCCESS="登陆成功";
     public static final String LOGINFALSE="登陆失败";
+    public static final String ADD_LIST_SUCCESS="批量添加成功";
+    public static final String ADD_LIST_FALSE="批量添加失败";
 
 }

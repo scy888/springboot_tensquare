@@ -131,4 +131,5 @@ public interface SpectionServince {
 
     List<Employer> selectEmplover();
 
+    void addImageList(List<Image> imageList);
 }

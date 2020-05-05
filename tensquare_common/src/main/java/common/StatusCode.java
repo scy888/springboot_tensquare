@@ -19,4 +19,6 @@ public interface StatusCode {
     public static final Integer UPLOADFALSE=701;
     public static final Integer LOGINSUCCESS=800;
     public static final Integer LOGINFALSE=801;
+    public static final Integer ADD_LIST_SUCCESS=900;
+    public static final Integer ADD_LIST_FALSE=901;
 }

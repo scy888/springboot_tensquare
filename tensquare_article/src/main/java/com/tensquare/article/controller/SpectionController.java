@@ -968,7 +968,17 @@ public class SpectionController {
            return new ResponeData<List<Employer>>(true, StatusCode.QUERYSUCCESS,ResultMessage.QUERYSUCCESS,employerList );
        } catch (Exception e) {
            return new ResponeData<>(false, StatusCode.QUERYSFALSE,ResultMessage.QUERYSFALSE+e.getMessage() );
-
+       }
+   }
+   @RequestMapping("/addImageList")
+    public ResponeData<Void> addImageList(@RequestBody Map<String,List<Image>> map){
+       try {
+           logge.info("map+{}:"+JSON.toJSONString(map));
+           List<Image> imageList = map.get("imageList");
+           spectionServince.addImageList(imageList);
+           return new ResponeData<Void>(true, StatusCode.ADD_LIST_SUCCESS, ResultMessage.ADD_LIST_SUCCESS);
+       } catch (Exception e) {
+           return new ResponeData<>(false, StatusCode.ADD_LIST_FALSE, ResultMessage.ADD_LIST_FALSE);
        }
    }
 }

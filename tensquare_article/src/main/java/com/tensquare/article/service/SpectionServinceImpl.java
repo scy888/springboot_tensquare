@@ -101,6 +101,8 @@ public class SpectionServinceImpl implements SpectionServince {
     @Autowired
     private EmploverDao emploverDao;
     @Autowired
+    private ImageDao imageDao;
+    @Autowired
     private IdWorker idWorker;
     @Autowired
     private JmsTemplate jmsTemplate;
@@ -1859,6 +1861,62 @@ public class SpectionServinceImpl implements SpectionServince {
         //employerList.stream().forEach(employer->employer.setDataMap(listMap));
         return employerList;
     }
+
+    @Override
+    public void addImageList(List<Image> imageList) {
+        /**
+         * @Description: 批量添加图片信息
+         * @methodName: addImageList
+         * @Param: [imageList]
+         * @return: void
+         * @Author: scyang
+         * @Date: 2020/5/5 13:58
+         */
+       if (!CollectionsUtils.isListEmpty(imageList)){
+           for (Image image : imageList) {
+               image.setImageId(idWorker.nextId()+"");
+               image.setCreateDate(new Date());
+               image.setImageName(setImageName(image.getImageName()));
+               int index = image.getImageName().lastIndexOf(".");
+               if (index!=-1){
+                   image.setImageEnd(image.getImageName().substring(index + 1));
+               }
+               image.setImageType(setImageType(image.getImageEnd()));
+           }
+           imageDao.addImageList(imageList);
+       }
+    }
+
+    private String setImageType(String imageEnd) {
+        String type="";
+        switch (imageEnd){
+            case "gif":
+                type="GIF";
+                break;
+            case "jpg":
+                type="JPG";
+                break;
+            case "dxf":
+                type="DXF";
+                break;
+                default:
+                    type="不知道是什么类型";
+             }
+        return type;
+    }
+
+    private String setImageName(String imageName) {
+        switch (imageName){
+            case "gif":
+                return UUID.randomUUID()+"."+imageName;
+            case "jpg":
+                return UUID.randomUUID()+"."+imageName;
+            case "dxf":
+                return UUID.randomUUID()+"."+imageName;
+             }
+        return null;
+    }
+
 
     private String setTypes(String types) {
         String str = "";

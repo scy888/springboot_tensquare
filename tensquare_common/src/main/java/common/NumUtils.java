@@ -3,6 +3,7 @@ package common;
 import org.junit.Test;
 
 import java.util.Random;
+import java.util.UUID;
 
 /**
  * @author: scyang
@@ -30,6 +31,8 @@ public class NumUtils {
         System.out.println(getNum(4));
         System.out.println(getNum(6));
         System.out.println(6+""+"6");
+        System.out.println(UUID.nameUUIDFromBytes("aa".getBytes()));
+        System.out.println(UUID.randomUUID());
         System.out.println(getNum(2));
     }
 }

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tensquare.article.dao.ImageDao">
+  <insert id="addImageList" parameterType="com.tensquare.article.pingan.Image">
+      insert into tb_image (image_id,image_name,image_end,image_type,create_date,image_size) values
+      <if test="imageList!=null and imageList.size()>0">
+          <foreach collection="imageList" open="" item="image" separator="," close="">
+              (#{image.imageId},#{image.imageName},#{image.imageEnd},#{image.imageType},#{image.createDate},#{image.imageSize})
+          </foreach>
+      </if>
+  </insert>
+</mapper>

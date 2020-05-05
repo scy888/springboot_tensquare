@@ -6,7 +6,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.tensquare.article.dao.OptionDao;
 import com.tensquare.article.dao.PolicyDao;
 import com.tensquare.article.pojo.Option;
-import com.tensquare.article.pojo.Policy;
 import common.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,11 +14,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 /**
