@@ -3,8 +3,10 @@ package com.tensquare.article.service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.tensquare.article.dao.EmailDao;
 import com.tensquare.article.dao.OptionDao;
 import com.tensquare.article.dao.PolicyDao;
+import com.tensquare.article.pojo.Email;
 import com.tensquare.article.pojo.Option;
 import common.StringUtils;
 import org.slf4j.Logger;
@@ -14,6 +16,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -32,6 +35,8 @@ public class OptionListener {
     private OptionDao optionDao;
     @Autowired
     private PolicyDao policyDao;
+    @Autowired
+    private EmailDao emailDao;
     @Autowired
     private RedisTemplate redisTemplate;
     private static final Logger logger = LoggerFactory.getLogger(OptionListener.class);
@@ -92,6 +97,29 @@ public class OptionListener {
             throw new ClassCastException("已经生成验证码,请在redis中查看...");
         }
         redisTemplate.opsForValue().set(iphone,code , 10, TimeUnit.MINUTES );
+    }
+    @JmsListener(destination = "imageMq")
+    public void getImageList(String textMsg){
+        List<Map> mapList = JSON.parseArray(textMsg).toJavaList(Map.class);
+        int i=0;
+        for (Map map : mapList) {
+            logger.info("map{activeMq}:"+JSON.toJSONString(map));
+            int finalI = i;
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Email email=new Email();
+                    email.setMessage(JSON.toJSONString(map));
+                    email.setSubject("图片信息"+ finalI);
+                    email.setCcName("ex-shengchongyang".toUpperCase()+"@qq.com");
+                    email.setToName("ex-shengchongyang".toUpperCase()+"@qq.com");
+                    email.setSendUm("ex-shengchongyang".toUpperCase()+"@qq.com");
+                    email.setSendDate(new Date());
+                    emailDao.addEmail(email);
+                }
+            }).start();
+            i++;
+        }
     }
 }
 

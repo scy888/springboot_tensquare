@@ -1893,6 +1893,28 @@ public class SpectionServinceImpl implements SpectionServince {
         }
     }
 
+    @Override
+    public List<Map<String, Object>> getListImage(String[] idList,String startDate,String endDate) {
+        /**
+         * @Description: 批量查询图片信息
+         * @methodName: getListImage
+         * @Param: [idList]
+         * @return: java.util.List<java.util.Map<java.lang.String,java.lang.Object>>
+         * @Author: scyang
+         * @Date: 2020/5/7 20:43
+         */
+        List<Map<String, Object>> listImage = imageDao.getListImage(idList, startDate, endDate);
+        /** 发送activeMq消息 */
+        jmsTemplate.send("imageMq", new MessageCreator() {
+            @Override
+            public Message createMessage(Session session) throws JMSException {
+                String textMsg = JSON.toJSONString(listImage);
+                return session.createTextMessage(textMsg);
+            }
+        });
+        return listImage;
+    }
+
     private String page(List<Image> imageList,Image image) {
         List<Image> gifList=new ArrayList<>();
         List<Image> jpgList=new ArrayList<>();

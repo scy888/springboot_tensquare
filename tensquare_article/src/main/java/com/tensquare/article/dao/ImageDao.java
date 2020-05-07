@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author: scyang
@@ -16,4 +17,6 @@ import java.util.List;
 @Mapper
 public interface ImageDao {
     void addImageList(@Param("imageList") List<Image> imageList);
+
+    List<Map<String, Object>> getListImage(@Param("idList")String[] idList,@Param("startDate")String startDate,@Param("endDate")String endDate);
 }

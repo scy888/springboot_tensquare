@@ -982,4 +982,24 @@ public class SpectionController {
            return new ResponeData<>(false, StatusCode.ADD_LIST_FALSE, ResultMessage.ADD_LIST_FALSE+e.getMessage());
        }
    }
+   @RequestMapping("/select2")
+    public ResponeData<List<Map<String,Object>>> getListImage(@RequestBody Map<String,Object> map){
+       try {
+           logge.info("map{}:"+JSON.toJSONString(map));
+           JSONObject jsonObject = JSON.parseObject(JSON.toJSONString(map));
+           String[] idList = jsonObject.getJSONArray("idList").toJavaObject(String[].class);
+           //String startDate = jsonObject.getString("startDate");
+           String startDate = (String) map.get("startDate");
+           logge.info("startDate{}:"+JSON.toJSONString(startDate));
+          // String endDate = jsonObject.getString("endDate");
+           String endDate = (String) map.get("endDate");
+           logge.info("endDate{}:"+JSON.toJSONString(endDate));
+           // String[] idList = (String[]) map.get("idList");
+           List<Map<String,Object>> mapList=spectionServince.getListImage(idList,startDate,endDate);
+           return new ResponeData<List<Map<String, Object>>>(true, StatusCode.QUERYSUCCESS, ResultMessage.QUERYSUCCESS, mapList);
+       } catch (Exception e) {
+          // e.printStackTrace();
+           return new ResponeData<>(false, StatusCode.QUERYSFALSE,ResultMessage.QUERYSFALSE+e.getMessage());
+       }
+   }
 }

@@ -11,4 +11,13 @@
           </foreach>
       </if>
   </insert>
+    <select id="getListImage" parameterType="java.lang.String" resultType="java.util.Map">
+        select * from tb_image where image_id in
+        <if test="idList!=null and idList.length>0">
+            <foreach collection="idList" open="(" item="id" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
+        and create_date between date_format(#{startDate},'%Y-%m-%d %H:%i:%s') and date_format(#{endDate},'%Y-%m-%d %H:%i:%s')
+    </select>
 </mapper>
