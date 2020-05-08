@@ -18,6 +18,7 @@
                 #{id}
             </foreach>
         </if>
-        and create_date between date_format(#{startDate},'%Y-%m-%d %H:%i:%s') and date_format(#{endDate},'%Y-%m-%d %H:%i:%s')
+        <!-- and create_date between str_to_date(#{startDate},'%Y-%m-%d %H:%i:%s') and str_to_date(#{endDate},'%Y-%m-%d %H:%i:%s')-->
+        and create_date <![CDATA[>=]]> str_to_date(#{startDate},'%Y-%m-%d %H:%i:%s') and create_date <![CDATA[<=]]> str_to_date(#{endDate},'%Y-%m-%d %H:%i:%s')
     </select>
 </mapper>

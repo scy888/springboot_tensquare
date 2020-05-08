@@ -493,6 +493,51 @@ public class DateUtil {
         instance.add(Calendar.DAY_OF_MONTH, num);
         return instance.getTime();
     }
+    public static boolean isWeekDay(Date date){
+        /**
+         * @Description: 判断当前日期是否是工作日
+         * @methodName: isWeekDay
+         * @Param: [date]
+         * @return: boolean
+         * @Author: scyang
+         * @Date: 2020/5/8 19:51
+         */
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        int week = calendar.get(Calendar.DAY_OF_WEEK)-1;
+        return !(week==0||week==6);
+    }
+    public static boolean isBetweenDate(Date date,String startDate,String endDate) throws Exception {
+        /**
+         * @Description: 判断是否在某段时间内
+         * @methodName: isBetweenDate
+         * @Param: [date, startDate, endDate]
+         * @return: boolean
+         * @Author: scyang
+         * @Date: 2020/5/8 22:00
+         */
+        SimpleDateFormat sdf1=new SimpleDateFormat(FORMATTHREE);
+        SimpleDateFormat sdf2=new SimpleDateFormat(FORMATONE);
+        Date parse_start = sdf2.parse(sdf1.format(date) + " " + startDate);
+        Date parse_end = sdf2.parse(sdf1.format(date) + " " + endDate);
+        if (date.after(parse_start)&&date.before(parse_end)){
+            return true;
+        }
+        return false;
+    }
+    public static Date appointDate(Date date,String dateStr) throws Exception {
+        /**
+         * @Description: 设置当天的指定时间
+         * @methodName: appointDate
+         * @Param: [date, dateStr]
+         * @return: java.util.Date
+         * @Author: scyang
+         * @Date: 2020/5/8 22:21
+         */
+        SimpleDateFormat sdf1=new SimpleDateFormat(FORMATTHREE);
+        SimpleDateFormat sdf2=new SimpleDateFormat(FORMATONE);
+      return sdf2.parse(sdf1.format(date)+" "+dateStr);
+    }
     @Test
     public void test() throws Exception {
         System.out.println(TimeUnit.DAYS.toHours(2));
@@ -503,5 +548,8 @@ public class DateUtil {
         System.out.println(hours);
         System.out.println("===============================================");
         System.out.println(addDate(new Date(), -20));
+        System.out.println(isWeekDay(new Date()));
+        System.out.println(isBetweenDate(new Date(), "22:00:00", "22:30:00"));
+        System.out.println(appointDate(new Date(), "08:08:08"));
     }
 }
