@@ -134,4 +134,6 @@ public interface SpectionServince {
     void addImageList(List<Image> imageList);
 
     List<Map<String, Object>> getListImage(String[] idList,String startDate,String endDate);
+
+    List<String> getDateStrList();
 }

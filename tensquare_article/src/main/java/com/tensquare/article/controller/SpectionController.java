@@ -1002,4 +1002,15 @@ public class SpectionController {
            return new ResponeData<>(false, StatusCode.QUERYSFALSE,ResultMessage.QUERYSFALSE+e.getMessage());
        }
    }
+ @RequestMapping("/select3")
+    public ResponeData<List<String>> getDateStrList(){
+     try {
+         List<String> dateStrList=spectionServince.getDateStrList();
+         logge.info("dateStrList{}:"+dateStrList);
+         return new ResponeData<List<String>>(true, StatusCode.QUERYSUCCESS,ResultMessage.QUERYSUCCESS ,dateStrList );
+     } catch (Exception e) {
+         return new ResponeData<>(false, StatusCode.QUERYSFALSE,ResultMessage.QUERYSFALSE+e.getMessage() );
+     }
+
+ }
 }

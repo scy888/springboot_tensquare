@@ -21,4 +21,8 @@
         <!-- and create_date between str_to_date(#{startDate},'%Y-%m-%d %H:%i:%s') and str_to_date(#{endDate},'%Y-%m-%d %H:%i:%s')-->
         and create_date <![CDATA[>=]]> str_to_date(#{startDate},'%Y-%m-%d %H:%i:%s') and create_date <![CDATA[<=]]> str_to_date(#{endDate},'%Y-%m-%d %H:%i:%s')
     </select>
+    <select id="getDateStrList" resultType="java.lang.String">
+       select date_format(create_date,'%Y年%m月%d日 %H时%i分%s秒') from tb_image
+        <!--select create_date from tb_image-->
+    </select>
 </mapper>

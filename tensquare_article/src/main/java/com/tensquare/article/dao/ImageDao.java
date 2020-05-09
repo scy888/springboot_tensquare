@@ -4,6 +4,7 @@ import com.tensquare.article.pingan.Image;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -19,4 +20,6 @@ public interface ImageDao {
     void addImageList(@Param("imageList") List<Image> imageList);
 
     List<Map<String, Object>> getListImage(@Param("idList")String[] idList,@Param("startDate")String startDate,@Param("endDate")String endDate);
+
+    List<String> getDateStrList();
 }

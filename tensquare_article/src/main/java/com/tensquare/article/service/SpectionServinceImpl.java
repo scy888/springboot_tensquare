@@ -1915,6 +1915,11 @@ public class SpectionServinceImpl implements SpectionServince {
         return listImage;
     }
 
+    @Override
+    public List<String> getDateStrList() {
+        return imageDao.getDateStrList();
+    }
+
     private String page(List<Image> imageList,Image image) {
         List<Image> gifList=new ArrayList<>();
         List<Image> jpgList=new ArrayList<>();
