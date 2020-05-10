@@ -103,6 +103,10 @@ public class SpectionServinceImpl implements SpectionServince {
     @Autowired
     private ImageDao imageDao;
     @Autowired
+    private DutyDao dutyDao;
+    @Autowired
+    private DutyPersonDao dutyPersonDao;
+    @Autowired
     private IdWorker idWorker;
     @Autowired
     private JmsTemplate jmsTemplate;
@@ -1918,6 +1922,152 @@ public class SpectionServinceImpl implements SpectionServince {
     @Override
     public List<String> getDateStrList() {
         return imageDao.getDateStrList();
+    }
+
+    @Override
+    public void addListDuty(List<DutyPerson> dutyPersonList, List<Duty> dutyList) {
+        /**
+         * @Description: 批量添加纳税人信息
+         * @methodName: addListDuty
+         * @Param: [dutyPersonList, dutyList]
+         * @return: void
+         * @Author: scyang
+         * @Date: 2020/5/10 16:42
+         */
+        int num=2;
+        for (DutyPerson dutyPerson : dutyPersonList) {
+            String idCard_person = dutyPerson.getIdCard();
+            for (Duty duty : dutyList) {
+                String idCard_duty = duty.getIdCard();
+                if (idCard_person.equals(idCard_duty)){
+                    dutyPerson.setDutyPersonId(idWorker.nextId()+"");
+                    duty.setDuityId(idWorker.nextId()+"");
+                    /** 税务局名称 */
+                    duty.setDutyName("国家税务总局深圳市龙华区税务局");
+                    /** 任职受雇单位 */
+                    duty.setWorkCompany(dutyPerson.getWorkCompany());
+                    /** 缴纳起始年度 */
+                    duty.setPayStart("2019-01");
+                    /** 缴纳终止年度 */
+                    duty.setPayEnd("2019-12");
+                    /** 申请时间 */
+                    duty.setApplyDate(setOthenDate(duty.getApplyDate(),num));
+                    /** 审核的时间 */
+                    duty.setAuditDate(setOthenDate(duty.getAuditDate(),num));
+                    /** 咨询时间 */
+                    duty.setAskDate(setOthenDate(duty.getAskDate(),num ));
+                    /** 咨询结果 */
+                    duty.setAskResult(getAskResult(duty.getAskDate()));
+                    /** 申请到审核之间的天数 */
+                    duty.setApplyAuditDays(new BigDecimal(DateUtil.getBetweenDay(duty.getApplyDate(), duty.getAuditDate())));
+                   /** 审核状态 */
+                   duty.setAuditStatus("1");
+                   /** 国库处理时间 */
+                   duty.setDealDate(setOthenDate(duty.getDealDate(),num ));
+                   /** 审核到国库处理的天数 */
+                   duty.setAuditDealDays(new BigDecimal(DateUtil.getBetweenDay(duty.getAuditDate(),duty.getDealDate())));
+                   /** 处理状态 */
+                   duty.setDealStatus("1");
+                   /** 收入合计 */
+                   duty.setSalaryCount(dutyPerson.getSalaryAmount().multiply(new BigDecimal(12)));
+                   /** 已纳税额 */
+                    duty.setTaxPayAmount((duty.getSalaryCount().subtract(new BigDecimal(60000.00))).multiply(new BigDecimal(0.03)));
+                    /** 减税项目 */
+                    duty.setFreeDutyName(setFreeDutyName(dutyPerson.getFreeDutyName()));
+                    /** 免税收入 */
+                    duty.setFreeDutyAmount(setFreeDutyAmount(duty.getFreeDutyName()));
+                    /** 退税补税差价 */
+                    duty.setDutySubtractAmount(setDutySubtractAmount(duty.getFreeDutyAmount(),duty.getTaxPayAmount()));
+                    /** 设置退税补税状态 */
+                    duty.setDutyStatus("1");
+                    dutyPersonDao.addDutyPerson(dutyPerson);
+                    dutyDao.addDuty(duty);
+                    break;
+                }
+            }
+            num++;
+        }
+    }
+
+    private BigDecimal setDutySubtractAmount(BigDecimal freeDutyAmount, BigDecimal taxPayAmount) {
+        BigDecimal decimal = taxPayAmount.subtract(freeDutyAmount).setScale(2, BigDecimal.ROUND_HALF_UP);
+        if (decimal.compareTo(BigDecimal.ZERO)>=0){
+            return decimal;
+        }
+        return taxPayAmount;
+    }
+
+    private BigDecimal setFreeDutyAmount(String freeDutyName) {
+        BigDecimal subtractAmount=BigDecimal.ZERO;
+        JSONObject object = JSON.parseObject(freeDutyName);
+        String father = object.getString("father");
+        String mother = object.getString("mother");
+        String son = object.getString("son");
+        String renting = object.getString("renting");
+        if (father!=null||mother!=null){
+            subtractAmount=subtractAmount.add(new BigDecimal(12000));
+        }
+        if (!StringUtils.isEmpyStr(son)){
+            subtractAmount=subtractAmount.add(new BigDecimal(10000));
+        }
+        subtractAmount=subtractAmount.add(new BigDecimal(8000));
+        logger.info("subtractAmount:{}:"+subtractAmount);
+        return subtractAmount;
+    }
+
+    private String setFreeDutyName(String freeDutyName) {
+        JSONObject json=new JSONObject();
+
+       // {"parents":[{"father":"422202199109093496"},{"mother":"422202199109093496"}],"children":{"son":"422202199109093496"},"renting":"在深圳租房"}
+        JSONObject jsonObject = JSON.parseObject(freeDutyName);
+        String father_id_card = jsonObject.getJSONArray("parents").getJSONObject(0).getString("father");
+        logger.info("father_id_card{}:"+father_id_card);
+        String mother_id_card = jsonObject.getJSONArray("parents").getJSONObject(1).getString("mother");
+        logger.info("mother_id_card{}:"+mother_id_card);
+        String son_id_card = jsonObject.getJSONObject("children").getString("son");
+        logger.info("son_id_card{}:"+son_id_card);
+        String renting = jsonObject.getString("renting");
+        logger.info("renting{}:"+renting);
+        try {
+            if (StringUtils.getAgeFromIdCard(father_id_card)>=60){
+                json.put("father", father_id_card);
+            }
+            if (StringUtils.getAgeFromIdCard(mother_id_card)>=60){
+                json.put("mother", mother_id_card);
+            }
+            if (StringUtils.getAgeFromIdCard(son_id_card)>=10){
+                json.put("son", son_id_card);
+            }
+            json.put("renting", renting);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        logger.info("json{}:"+JSON.toJSONString(json));
+        return JSON.toJSONString(json);
+    }
+
+    private String getAskResult(Date askDate)  {
+        String result="";
+        try {
+            if (!DateUtil.isWeekDay(askDate)||!DateUtil.isBetweenDate(askDate, "09:00:00", "18:00:00")){
+                result= "不在工作日时间或者不在上班时间不予支持人工服务";
+            }
+            if (DateUtil.isWeekDay(askDate)&&DateUtil.isBetweenDate(askDate, "09:00:00", "18:00:00")){
+                result= "正在受理请耐心等待";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    private Date setOthenDate(Date applyDate, int num) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(applyDate);
+        calendar.add(Calendar.HOUR_OF_DAY, 8+num);
+        calendar.add(Calendar.MINUTE, 12-num);
+        calendar.add(Calendar.SECOND, 30+num);
+        return calendar.getTime();
     }
 
     private String page(List<Image> imageList,Image image) {

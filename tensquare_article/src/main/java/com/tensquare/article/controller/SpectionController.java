@@ -1011,6 +1011,20 @@ public class SpectionController {
      } catch (Exception e) {
          return new ResponeData<>(false, StatusCode.QUERYSFALSE,ResultMessage.QUERYSFALSE+e.getMessage() );
      }
-
+ }
+ @RequestMapping("/addListDuty")
+    public ResponeData<Void> addListDuty(@RequestBody String paramJson){
+     try {
+         JSONObject jsonObject = JSON.parseObject(paramJson);
+         List<DutyPerson> dutyPersonList = jsonObject.getJSONArray("dutyPersonList").toJavaList(DutyPerson.class);
+         logge.info("dutyPersonList{}:"+JSON.toJSONString(dutyPersonList));
+         List<Duty> dutyList = jsonObject.getJSONArray("dutyList").toJavaList(Duty.class);
+         logge.info("dutyList{}:"+JSON.toJSONString(dutyList));
+         spectionServince.addListDuty(dutyPersonList,dutyList);
+         return new ResponeData<Void>(true,StatusCode.ADD_LIST_SUCCESS ,ResultMessage.ADD_LIST_SUCCESS );
+     } catch (Exception e) {
+         e.printStackTrace();
+         return new ResponeData<>(false,StatusCode.ADD_LIST_FALSE ,ResultMessage.ADD_LIST_FALSE+e.getMessage() );
+     }
  }
 }

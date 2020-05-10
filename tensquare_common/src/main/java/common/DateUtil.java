@@ -448,6 +448,18 @@ public class DateUtil {
         }
         return (int) ((time1 - time2) / (1000L*60*60*24));
     }
+    public static int getBetweenDay(Date startDate,Date endDate){
+        long time1 = startDate.getTime();
+        long time2 = endDate.getTime();
+        if (time1-time2>0){
+            return (int) ((time1-time2)/(1000L*60*60*24));
+        }
+       return (int) ((time2-time1)/(1000L*60*60*24));
+    }
+    @Test
+    public void test000(){
+        System.out.println(getBetweenDay(new Date(1991-1900,11-1,9), new Date(1991-1900,10-1,10)));
+    }
     public static String getDescriptionDate(Date date){
         /**
          * @Description: 日期描叙

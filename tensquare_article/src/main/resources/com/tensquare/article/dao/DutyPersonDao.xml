@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tensquare.article.dao.DutyPersonDao">
+   <insert id="addDutyPerson" parameterType="com.tensquare.article.pingan.DutyPerson">
+       insert into tb_duty_person(duty_person_id,person_name,work_company,salary_amount,free_duty_name,id_card)values
+                                  (#{dutyPersonId},#{personName},#{workCompany},#{salaryAmount},#{freeDutyName},#{idCard})
+   </insert>
+</mapper>
