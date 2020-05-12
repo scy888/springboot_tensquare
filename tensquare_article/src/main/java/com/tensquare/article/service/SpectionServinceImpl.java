@@ -2049,7 +2049,7 @@ public class SpectionServinceImpl implements SpectionServince {
             BigDecimal totalScore = totalScoreList.get(i);
             for (String casePersonName : nameList) {
                 if (score_name_map.get(totalScore).equals(casePersonName)){
-                    allTotalScoreMap.put(casePersonName+"在全国排名是:",i+1+"名" );
+                    allTotalScoreMap.put(casePersonName+"在全国排名是",i+1+"名" );
                     break;
                 }
             }
