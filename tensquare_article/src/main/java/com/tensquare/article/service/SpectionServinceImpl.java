@@ -2054,11 +2054,41 @@ public class SpectionServinceImpl implements SpectionServince {
                 }
             }
         }
-
         logger.info("allTotalScoreMap{}:"+JSON.toJSONString(allTotalScoreMap));
+        /** 根据团队名称分组 */
+        Map<String, List<CasePerson>> casePersonGroup = casePersonList.stream().collect(Collectors.groupingBy(CasePerson::getCaseTeamId));
+        logger.info("casePersonGroup{}:"+JSON.toJSONString(casePersonGroup));
+        /** 获取团队名称 */
+        Map<String,String> teamId_teamName_map=new HashMap<>();
+        for (String caseTeamId : casePersonGroup.keySet()) {
+          String teamName = caseTeamDao.getTeamNameById(caseTeamId);
+            teamId_teamName_map.put(caseTeamId, teamName);
+        }
+        logger.info("teamId_teamName_map{}:"+JSON.toJSONString(teamId_teamName_map));
+
+
+        for (List<CasePerson> personList : casePersonGroup.values()) {
+           Map<String,Object> teamTotalScoreMap=getTeamTotalScore(personList);
+
+        }
+
         paramMap.put("allTotalScoreMap",allTotalScoreMap );
 
         return paramMap;
+    }
+
+    private Map<String, Object> getTeamTotalScore(List<CasePerson> personList) {
+        /**
+         * @Description: 在团队中总分排名
+         * @methodName: getTeamTotalScore
+         * @Param: [personList]
+         * @return: java.util.Map<java.lang.String,java.lang.Object>
+         * @Author: scyang
+         * @Date: 2020/5/13 0:01
+         */
+        Map<String, BigDecimal> name_totalScore = personList.stream().collect(Collectors.toMap(CasePerson::getCasePersonName, CasePerson::getTotalScore));
+
+        return null;
     }
 
     private String getCaseValue(String caseTeamStatus) {

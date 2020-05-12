@@ -3,6 +3,7 @@ package com.tensquare.article.dao;
 import com.tensquare.article.pingan.CaseTeam;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
 
 /**
  * @author: scyang
@@ -17,4 +18,6 @@ public interface CaseTeamDao {
             "(#{caseTeamId},#{caseTeamName},#{caseTeamStatus},#{caseTeamValue})"
             )
     void addCaseTeam(CaseTeam caseTeam);
+    @Select("select case_team_name from tb_case_team where case_team_id=#{caseTeamId}")
+    String getTeamNameById(String caseTeamId);
 }
