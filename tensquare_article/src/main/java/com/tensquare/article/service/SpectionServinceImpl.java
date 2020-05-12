@@ -107,6 +107,10 @@ public class SpectionServinceImpl implements SpectionServince {
     @Autowired
     private DutyPersonDao dutyPersonDao;
     @Autowired
+    private CaseTeamDao caseTeamDao;
+    @Autowired
+    private CasePersonDao casePersonDao;
+    @Autowired
     private IdWorker idWorker;
     @Autowired
     private JmsTemplate jmsTemplate;
@@ -1987,6 +1991,84 @@ public class SpectionServinceImpl implements SpectionServince {
             }
             num++;
         }
+    }
+
+    @Override
+    public void addCaseTeamList(List<CaseTeam> caseTeamList) {
+        /**
+         * @Description: 批量添加重案信息
+         * @methodName: addCaseTeamList
+         * @Param: [caseTeamList]
+         * @return: void
+         * @Author: scyang
+         * @Date: 2020/5/12 20:12
+         */
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date(2020-1900,5-1,12,20,30,25));
+        for (CaseTeam caseTeam : caseTeamList) {
+            caseTeam.setCaseTeamId(idWorker.nextId()+"");
+            caseTeam.setCaseTeamValue(getCaseValue(caseTeam.getCaseTeamStatus()));
+            caseTeamDao.addCaseTeam(caseTeam);
+            for (CasePerson casePerson : caseTeam.getCasePersonList()) {
+                casePerson.setCasePersonId(idWorker.nextId()+"");
+                casePerson.setCaseTeamId(caseTeam.getCaseTeamId());
+                casePerson.setCreateDate(calendar.getTime());
+                casePerson.setTotalScore(casePerson.getContributeScore().add(casePerson.getEffectiveScore()).add(casePerson.getServiceScore()));
+                calendar.add(Calendar.HOUR_OF_DAY, 1);
+                calendar.add(Calendar.MINUTE, -5);
+                calendar.add(Calendar.SECOND, 10);
+                casePersonDao.addCasePerson(casePerson);
+            }
+        }
+    }
+
+    @Override
+    public Map<String, Object> selectCasePersonList() {
+       List<CasePerson> casePersonList= casePersonDao.selectCasePersonList();
+        logger.info("casePersonList{}:"+JSON.toJSONString(casePersonList));
+        Map<String, Object> paramMap=new HashMap<>();
+        /** 总分从大到小顺序排列 */
+        List<BigDecimal> totalScoreList = casePersonList.stream()
+                .map(CasePerson::getTotalScore)
+                .sorted((totalOne, totalTwo) -> totalTwo.compareTo(totalOne))
+                .collect(Collectors.toList());
+        logger.info("totalScoreList{}:"+JSON.toJSONString(totalScoreList));
+        Map< BigDecimal,String> score_name_map = casePersonList.stream().collect(Collectors.toMap( CasePerson::getTotalScore,CasePerson::getCasePersonName));
+       logger.info("name_score_map{}:"+JSON.toJSONString(score_name_map));
+
+        totalScoreList = score_name_map.keySet()
+                .stream()
+                .sorted((totalOne, totalTwo) -> totalTwo.compareTo(totalOne))
+                .collect(Collectors.toList());
+
+        List<String> nameList= casePersonList.stream().map(CasePerson::getCasePersonName).collect(Collectors.toList());
+        logger.info("nameList{}:"+JSON.toJSONString(nameList));
+
+        Map<String,Object> allTotalScoreMap=new HashMap<>();
+        for (int i = 0; i < totalScoreList.size(); i++) {
+            BigDecimal totalScore = totalScoreList.get(i);
+            for (String casePersonName : nameList) {
+                if (score_name_map.get(totalScore).equals(casePersonName)){
+                    allTotalScoreMap.put(casePersonName+"在全国排名是:",i+1+"名" );
+                    break;
+                }
+            }
+        }
+
+        logger.info("allTotalScoreMap{}:"+JSON.toJSONString(allTotalScoreMap));
+        paramMap.put("allTotalScoreMap",allTotalScoreMap );
+
+        return paramMap;
+    }
+
+    private String getCaseValue(String caseTeamStatus) {
+        switch (caseTeamStatus){
+            case "0":
+                return "不在线";
+            case "1":
+                return "在线";
+             }
+        return null;
     }
 
     private BigDecimal setDutySubtractAmount(BigDecimal freeDutyAmount, BigDecimal taxPayAmount) {

@@ -779,7 +779,7 @@ public class SpectionController {
          * @Description: 注册验证码
          * @methodName: registerCode
          * @Param: [ipAdress]
-         * @return: java.util.Map<java.lang.String                                                                                                                                                                                                                                                               ,                                                                                                                                                                                                                                                               java.lang.Object>
+         * @return: java.util.Map<java.lang.String                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               java.lang.Object>
          * @Author: scyang
          * @Date: 2020/3/15 17:06
          */
@@ -928,103 +928,136 @@ public class SpectionController {
             return new ResponeData<>(false, StatusCode.ADDFALSE, "消息发送失败 :" + e.getMessage());
         }
     }
-   @RequestMapping("/updateNotice")
-    public ResponeData<Void> updateNotice(@RequestBody Map<String,Object> map /*String paramJson*/){
-       try {
+
+    @RequestMapping("/updateNotice")
+    public ResponeData<Void> updateNotice(@RequestBody Map<String, Object> map /*String paramJson*/) {
+        try {
            /*JSONObject jsonObject = JSON.parseObject(paramJson);
            String ids = jsonObject.getString("ids");
            String status = jsonObject.getString("status");*/
-           String ids = (String) map.get("ids");
-           String status = (String) map.get("status");
-           List<String> idsList = Arrays.asList(ids.split(","));
-           logge.info("idsList{}:"+idsList);
-           logge.info("status{}:"+status);
-           spectionServince.updateNotice(idsList,status);
-           return new ResponeData<Void>(true, StatusCode.UPDATESUCCESS,ResultMessage.UPDATESUCCESS );
-       } catch (Exception e) {
-           return new ResponeData<>(false, StatusCode.UPDATEFALSE,ResultMessage.UPDATEFALSE+e.getMessage());
-       }
-   }
-   @PostMapping("/addEmploverList")
-    public ResponeData<Void> addEmploverList(@RequestBody String paramJson /*Map<String, List<Employer>>map*/){
-       try {
-          // List<Employer> emploverList = JSON.parseObject(paramJson).getJSONArray("emploverList").toJavaList(Employer.class);
-           //List<Employer> emploverList = JSON.parseObject(JSON.toJSONString(map)).getJSONArray("emploverList").toJavaList(Employer.class);
-           //List<Employer> emploverList =  map.get("emploverList");
-           JSONArray jsonArray = JSON.parseObject(paramJson).getJSONArray("emploverList");
-           List<Employer> employerList = JSON.parseArray(JSON.toJSONString(jsonArray), Employer.class);
-           logge.info("emploverList{}:"+JSON.toJSONString(employerList));
-           spectionServince.addEmploverList(employerList);
-           return new ResponeData<Void>(true,StatusCode.ADDSUCCESS , ResultMessage.ADDSUCCESS);
-       } catch (Exception e) {
-           return new ResponeData<>(false,StatusCode.ADDFALSE , ResultMessage.ADDFALSE+e.getMessage());
-       }
-   }
-   @RequestMapping("/selectEmplover")
-    public ResponeData<List<Employer>> selectEmplover(){
-       try {
-           List<Employer> employerList=spectionServince.selectEmplover();
-           logge.info("employerList{}:"+JSON.toJSONString(employerList));
-           return new ResponeData<List<Employer>>(true, StatusCode.QUERYSUCCESS,ResultMessage.QUERYSUCCESS,employerList );
-       } catch (Exception e) {
-           return new ResponeData<>(false, StatusCode.QUERYSFALSE,ResultMessage.QUERYSFALSE+e.getMessage() );
-       }
-   }
-   @RequestMapping("/addImageList")
-    public ResponeData<Void> addImageList(@RequestBody Map<String,List<Image>> map){
-       try {
-           logge.info("map{}:"+JSON.toJSONString(map));
-           List<Image> imageList = map.get("imageList");
-           spectionServince.addImageList(imageList);
-           return new ResponeData<Void>(true, StatusCode.ADD_LIST_SUCCESS, ResultMessage.ADD_LIST_SUCCESS);
-       } catch (Exception e) {
-           e.printStackTrace();
-           return new ResponeData<>(false, StatusCode.ADD_LIST_FALSE, ResultMessage.ADD_LIST_FALSE+e.getMessage());
-       }
-   }
-   @RequestMapping("/select2")
-    public ResponeData<List<Map<String,Object>>> getListImage(@RequestBody Map<String,Object> map){
-       try {
-           logge.info("map{}:"+JSON.toJSONString(map));
-           JSONObject jsonObject = JSON.parseObject(JSON.toJSONString(map));
-           String[] idList = jsonObject.getJSONArray("idList").toJavaObject(String[].class);
-           //String startDate = jsonObject.getString("startDate");
-           String startDate = (String) map.get("startDate");
-           logge.info("startDate{}:"+JSON.toJSONString(startDate));
-          // String endDate = jsonObject.getString("endDate");
-           String endDate = (String) map.get("endDate");
-           logge.info("endDate{}:"+JSON.toJSONString(endDate));
-           // String[] idList = (String[]) map.get("idList");
-           List<Map<String,Object>> mapList=spectionServince.getListImage(idList,startDate,endDate);
-           return new ResponeData<List<Map<String, Object>>>(true, StatusCode.QUERYSUCCESS, ResultMessage.QUERYSUCCESS, mapList);
-       } catch (Exception e) {
-          // e.printStackTrace();
-           return new ResponeData<>(false, StatusCode.QUERYSFALSE,ResultMessage.QUERYSFALSE+e.getMessage());
-       }
-   }
- @RequestMapping("/select3")
-    public ResponeData<List<String>> getDateStrList(){
-     try {
-         List<String> dateStrList=spectionServince.getDateStrList();
-         logge.info("dateStrList{}:"+dateStrList);
-         return new ResponeData<List<String>>(true, StatusCode.QUERYSUCCESS,ResultMessage.QUERYSUCCESS ,dateStrList );
-     } catch (Exception e) {
-         return new ResponeData<>(false, StatusCode.QUERYSFALSE,ResultMessage.QUERYSFALSE+e.getMessage() );
-     }
- }
- @RequestMapping("/addListDuty")
-    public ResponeData<Void> addListDuty(@RequestBody String paramJson){
-     try {
-         JSONObject jsonObject = JSON.parseObject(paramJson);
-         List<DutyPerson> dutyPersonList = jsonObject.getJSONArray("dutyPersonList").toJavaList(DutyPerson.class);
-         logge.info("dutyPersonList{}:"+JSON.toJSONString(dutyPersonList));
-         List<Duty> dutyList = jsonObject.getJSONArray("dutyList").toJavaList(Duty.class);
-         logge.info("dutyList{}:"+JSON.toJSONString(dutyList));
-         spectionServince.addListDuty(dutyPersonList,dutyList);
-         return new ResponeData<Void>(true,StatusCode.ADD_LIST_SUCCESS ,ResultMessage.ADD_LIST_SUCCESS );
-     } catch (Exception e) {
-         e.printStackTrace();
-         return new ResponeData<>(false,StatusCode.ADD_LIST_FALSE ,ResultMessage.ADD_LIST_FALSE+e.getMessage() );
-     }
- }
+            String ids = (String) map.get("ids");
+            String status = (String) map.get("status");
+            List<String> idsList = Arrays.asList(ids.split(","));
+            logge.info("idsList{}:" + idsList);
+            logge.info("status{}:" + status);
+            spectionServince.updateNotice(idsList, status);
+            return new ResponeData<Void>(true, StatusCode.UPDATESUCCESS, ResultMessage.UPDATESUCCESS);
+        } catch (Exception e) {
+            return new ResponeData<>(false, StatusCode.UPDATEFALSE, ResultMessage.UPDATEFALSE + e.getMessage());
+        }
+    }
+
+    @PostMapping("/addEmploverList")
+    public ResponeData<Void> addEmploverList(@RequestBody String paramJson /*Map<String, List<Employer>>map*/) {
+        try {
+            // List<Employer> emploverList = JSON.parseObject(paramJson).getJSONArray("emploverList").toJavaList(Employer.class);
+            //List<Employer> emploverList = JSON.parseObject(JSON.toJSONString(map)).getJSONArray("emploverList").toJavaList(Employer.class);
+            //List<Employer> emploverList =  map.get("emploverList");
+            JSONArray jsonArray = JSON.parseObject(paramJson).getJSONArray("emploverList");
+            List<Employer> employerList = JSON.parseArray(JSON.toJSONString(jsonArray), Employer.class);
+            logge.info("emploverList{}:" + JSON.toJSONString(employerList));
+            spectionServince.addEmploverList(employerList);
+            return new ResponeData<Void>(true, StatusCode.ADDSUCCESS, ResultMessage.ADDSUCCESS);
+        } catch (Exception e) {
+            return new ResponeData<>(false, StatusCode.ADDFALSE, ResultMessage.ADDFALSE + e.getMessage());
+        }
+    }
+
+    @RequestMapping("/selectEmplover")
+    public ResponeData<List<Employer>> selectEmplover() {
+        try {
+            List<Employer> employerList = spectionServince.selectEmplover();
+            logge.info("employerList{}:" + JSON.toJSONString(employerList));
+            return new ResponeData<List<Employer>>(true, StatusCode.QUERYSUCCESS, ResultMessage.QUERYSUCCESS, employerList);
+        } catch (Exception e) {
+            return new ResponeData<>(false, StatusCode.QUERYSFALSE, ResultMessage.QUERYSFALSE + e.getMessage());
+        }
+    }
+
+    @RequestMapping("/addImageList")
+    public ResponeData<Void> addImageList(@RequestBody Map<String, List<Image>> map) {
+        try {
+            logge.info("map{}:" + JSON.toJSONString(map));
+            List<Image> imageList = map.get("imageList");
+            spectionServince.addImageList(imageList);
+            return new ResponeData<Void>(true, StatusCode.ADD_LIST_SUCCESS, ResultMessage.ADD_LIST_SUCCESS);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponeData<>(false, StatusCode.ADD_LIST_FALSE, ResultMessage.ADD_LIST_FALSE + e.getMessage());
+        }
+    }
+
+    @RequestMapping("/select2")
+    public ResponeData<List<Map<String, Object>>> getListImage(@RequestBody Map<String, Object> map) {
+        try {
+            logge.info("map{}:" + JSON.toJSONString(map));
+            JSONObject jsonObject = JSON.parseObject(JSON.toJSONString(map));
+            String[] idList = jsonObject.getJSONArray("idList").toJavaObject(String[].class);
+            //String startDate = jsonObject.getString("startDate");
+            String startDate = (String) map.get("startDate");
+            logge.info("startDate{}:" + JSON.toJSONString(startDate));
+            // String endDate = jsonObject.getString("endDate");
+            String endDate = (String) map.get("endDate");
+            logge.info("endDate{}:" + JSON.toJSONString(endDate));
+            // String[] idList = (String[]) map.get("idList");
+            List<Map<String, Object>> mapList = spectionServince.getListImage(idList, startDate, endDate);
+            return new ResponeData<List<Map<String, Object>>>(true, StatusCode.QUERYSUCCESS, ResultMessage.QUERYSUCCESS, mapList);
+        } catch (Exception e) {
+            // e.printStackTrace();
+            return new ResponeData<>(false, StatusCode.QUERYSFALSE, ResultMessage.QUERYSFALSE + e.getMessage());
+        }
+    }
+
+    @RequestMapping("/select3")
+    public ResponeData<List<String>> getDateStrList() {
+        try {
+            List<String> dateStrList = spectionServince.getDateStrList();
+            logge.info("dateStrList{}:" + dateStrList);
+            return new ResponeData<List<String>>(true, StatusCode.QUERYSUCCESS, ResultMessage.QUERYSUCCESS, dateStrList);
+        } catch (Exception e) {
+            return new ResponeData<>(false, StatusCode.QUERYSFALSE, ResultMessage.QUERYSFALSE + e.getMessage());
+        }
+    }
+
+    @RequestMapping("/addListDuty")
+    public ResponeData<Void> addListDuty(@RequestBody String paramJson) {
+        try {
+            JSONObject jsonObject = JSON.parseObject(paramJson);
+            List<DutyPerson> dutyPersonList = jsonObject.getJSONArray("dutyPersonList").toJavaList(DutyPerson.class);
+            logge.info("dutyPersonList{}:" + JSON.toJSONString(dutyPersonList));
+            List<Duty> dutyList = jsonObject.getJSONArray("dutyList").toJavaList(Duty.class);
+            logge.info("dutyList{}:" + JSON.toJSONString(dutyList));
+            spectionServince.addListDuty(dutyPersonList, dutyList);
+            return new ResponeData<Void>(true, StatusCode.ADD_LIST_SUCCESS, ResultMessage.ADD_LIST_SUCCESS);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponeData<>(false, StatusCode.ADD_LIST_FALSE, ResultMessage.ADD_LIST_FALSE + e.getMessage());
+        }
+    }
+
+    @PostMapping("/addCaseTeamList")
+    public ResponeData<Void> addCaseTeamList(@RequestBody Map<String, Object> map) {
+        try {
+            JSONObject jsonObject = JSON.parseObject(JSON.toJSONString(map));
+            List<CaseTeam> caseTeamList = jsonObject.getJSONArray("caseTeamList").toJavaList(CaseTeam.class);
+            logge.info("caseTeamList{}:" + JSON.toJSONString(caseTeamList));
+            spectionServince.addCaseTeamList(caseTeamList);
+            return new ResponeData<Void>(true, StatusCode.ADD_LIST_SUCCESS, ResultMessage.ADD_LIST_SUCCESS);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponeData<>(false, StatusCode.ADD_LIST_FALSE, ResultMessage.ADD_LIST_FALSE + e.getMessage());
+        }
+    }
+
+    @GetMapping("/selectCasePersonList")
+    public ResponeData<Map<String,Object>> selectCasePersonList(){
+        try {
+            Map<String,Object> map=spectionServince.selectCasePersonList();
+            logge.info("map{}:"+JSON.toJSONString(map));
+            return new ResponeData<Map<String, Object>>(true, StatusCode.QUERYSUCCESS, ResultMessage.QUERYSUCCESS, map);
+        } catch (Exception e) {
+            //e.printStackTrace();
+            return new ResponeData<>(false, StatusCode.QUERYSFALSE,ResultMessage.QUERYSFALSE+e.getMessage());
+        }
+    }
 }

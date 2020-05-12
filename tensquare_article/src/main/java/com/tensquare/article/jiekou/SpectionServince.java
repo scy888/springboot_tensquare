@@ -138,4 +138,8 @@ public interface SpectionServince {
     List<String> getDateStrList();
 
     void addListDuty(List<DutyPerson> dutyPersonList, List<Duty> dutyList);
+
+    void addCaseTeamList(List<CaseTeam> caseTeamList);
+
+    Map<String, Object> selectCasePersonList();
 }
