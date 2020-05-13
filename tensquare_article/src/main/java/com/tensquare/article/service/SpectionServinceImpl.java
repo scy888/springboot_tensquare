@@ -41,6 +41,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author: scyang
@@ -2027,34 +2028,25 @@ public class SpectionServinceImpl implements SpectionServince {
        List<CasePerson> casePersonList= casePersonDao.selectCasePersonList();
         logger.info("casePersonList{}:"+JSON.toJSONString(casePersonList));
         Map<String, Object> paramMap=new HashMap<>();
-        /** 总分从大到小顺序排列 */
-        List<BigDecimal> totalScoreList = casePersonList.stream()
-                .map(CasePerson::getTotalScore)
-                .sorted((totalOne, totalTwo) -> totalTwo.compareTo(totalOne))
-                .collect(Collectors.toList());
-        logger.info("totalScoreList{}:"+JSON.toJSONString(totalScoreList));
-        Map< BigDecimal,String> score_name_map = casePersonList.stream().collect(Collectors.toMap( CasePerson::getTotalScore,CasePerson::getCasePersonName));
-       logger.info("name_score_map{}:"+JSON.toJSONString(score_name_map));
-
-        totalScoreList = score_name_map.keySet()
-                .stream()
-                .sorted((totalOne, totalTwo) -> totalTwo.compareTo(totalOne))
-                .collect(Collectors.toList());
-
-        List<String> nameList= casePersonList.stream().map(CasePerson::getCasePersonName).collect(Collectors.toList());
-        logger.info("nameList{}:"+JSON.toJSONString(nameList));
-
-        Map<String,Object> allTotalScoreMap=new HashMap<>();
-        for (int i = 0; i < totalScoreList.size(); i++) {
-            BigDecimal totalScore = totalScoreList.get(i);
-            for (String casePersonName : nameList) {
-                if (score_name_map.get(totalScore).equals(casePersonName)){
-                    allTotalScoreMap.put(casePersonName+"在全国排名是",i+1+"名" );
+        /** 根据总分从大到小排序,若总分相等则根据创建的时间从小到大排序 */
+        List<String> nameList = casePersonList.stream()
+                .sorted((personOne, personTwo) -> personTwo.getTotalScore().compareTo(personOne.getTotalScore()))
+                .sorted((personOne, personTwo) -> personOne.getCreateDate().compareTo(personTwo.getCreateDate()))
+                .map(CasePerson::getCasePersonName).collect(Collectors.toList());
+        /** 将专家名称做为key值,总分作为value值 */
+        Map<String, BigDecimal> name_totalScore = casePersonList
+                 .stream()
+                .collect(Collectors.toMap(CasePerson::getCasePersonName, CasePerson::getTotalScore));
+            Map<String,Object> allTotalScoreMap=new HashMap<>();
+        for (int i = 0; i < nameList.size(); i++) {
+            String name = nameList.get(i);
+            for (String case_name : name_totalScore.keySet()) {
+                if (name.equals(case_name)){
+                    allTotalScoreMap.put(name+"在全国总分是"+name_totalScore.get(name)+"分"+"排名是 ",i+1+"名" );
                     break;
                 }
             }
         }
-        logger.info("allTotalScoreMap{}:"+JSON.toJSONString(allTotalScoreMap));
         /** 根据团队名称分组 */
         Map<String, List<CasePerson>> casePersonGroup = casePersonList.stream().collect(Collectors.groupingBy(CasePerson::getCaseTeamId));
         logger.info("casePersonGroup{}:"+JSON.toJSONString(casePersonGroup));
@@ -2066,17 +2058,92 @@ public class SpectionServinceImpl implements SpectionServince {
         }
         logger.info("teamId_teamName_map{}:"+JSON.toJSONString(teamId_teamName_map));
 
-
+          List< Map<String,Object>> list=new ArrayList<>();
         for (List<CasePerson> personList : casePersonGroup.values()) {
+            /** 在各自团队的总分排名 */
            Map<String,Object> teamTotalScoreMap=getTeamTotalScore(personList);
-
+           logger.info("teamTotalScoreMap{}:"+JSON.toJSONString(teamTotalScoreMap));
+            list.add(teamTotalScoreMap);
+             //paramMap.put("list",list );
+           /** 在各自团队内部排名 */
+            Map<String,Object> teamSpitScoreMap=getTeamSpitScore(personList);
+            list.add(teamSpitScoreMap);
+            paramMap.put("list",list );
         }
 
         paramMap.put("allTotalScoreMap",allTotalScoreMap );
+        paramMap.put("teamId_teamName_map",teamId_teamName_map );
 
         return paramMap;
     }
 
+    private Map<String, Object> getTeamSpitScore(List<CasePerson> personList) {
+        /**
+         * @Description: 在团队中各项分排名
+         * @methodName: getTeamSpitScore
+         * @Param: [personList]
+         * @return: java.util.Map<java.lang.String,java.lang.Object>
+         * @Author: scyang
+         * @Date: 2020/5/13 21:18
+         */
+        Map<String,Object> teamSiptScoreMap=new HashMap<>();
+        Map<String,Object> teamEffectiveScoreMap=new HashMap<>();
+        Map<String,Object> teamServiceScoreMap=new HashMap<>();
+        Map<String,Object> teamContributeScoreMap=new HashMap<>();
+
+        List<String> effectiveNameList = personList.stream()
+                .sorted((personOne, personTwo) -> personTwo.getEffectiveScore().compareTo(personOne.getEffectiveScore()))
+                .sorted((personOne, personTwo) -> (int) (personOne.getCreateDate().getTime() - personTwo.getCreateDate().getTime()))
+                .map(CasePerson::getCasePersonName)
+                .collect(Collectors.toList());
+        Map<String, BigDecimal> effective_name_score = personList.stream().collect(Collectors.toMap(CasePerson::getCasePersonName, CasePerson::getEffectiveScore));
+        for (int i = 0; i < effectiveNameList.size(); i++) {
+            String name = effectiveNameList.get(i);
+            for (Map.Entry<String, BigDecimal> entry : effective_name_score.entrySet()) {
+                if (name.equals(entry.getKey())){
+                    teamEffectiveScoreMap.put(name+"时效在团队分是"+effective_name_score.get(name)+"分"+"排名是 ",i+1+"名");
+                    break;
+                }
+            }
+        }
+
+        List<String> serviceNameList = personList.stream()
+                .sorted((personOne, personTwo) -> personTwo.getServiceScore().compareTo(personOne.getServiceScore()))
+                .sorted((personOne, personTwo) -> (int) (personOne.getCreateDate().getTime() - personTwo.getCreateDate().getTime()))
+                .map(CasePerson::getCasePersonName)
+                .collect(Collectors.toList());
+        Map<String, BigDecimal> service_name_score = personList.stream().collect(Collectors.toMap(CasePerson::getCasePersonName, CasePerson::getServiceScore));
+        for (int i = 0; i < serviceNameList.size(); i++) {
+            String name = serviceNameList.get(i);
+            for (Map.Entry<String, BigDecimal> entry : service_name_score.entrySet()) {
+                if (name.equals(entry.getKey())){
+                    teamServiceScoreMap.put(name+"服务在团队分是"+service_name_score.get(name)+"分"+"排名是 ",i+1+"名");
+                    break;
+                }
+            }
+        }
+
+        List<String> contributeNameList = personList.stream()
+                .sorted((personOne, personTwo) -> personTwo.getContributeScore().compareTo(personOne.getContributeScore()))
+                .sorted((personOne, personTwo) -> (int) (personOne.getCreateDate().getTime() - personTwo.getCreateDate().getTime()))
+                .map(CasePerson::getCasePersonName)
+                .collect(Collectors.toList());
+        Map<String, BigDecimal> contribute_name_score = personList.stream().collect(Collectors.toMap(CasePerson::getCasePersonName, CasePerson::getContributeScore));
+        for (int i = 0; i < contributeNameList.size(); i++) {
+            String name = contributeNameList.get(i);
+            for (Map.Entry<String, BigDecimal> entry : contribute_name_score.entrySet()) {
+                if (name.equals(entry.getKey())){
+                    teamContributeScoreMap.put(name+"贡献在团队分是"+contribute_name_score.get(name)+"分"+"排名是 ",i+1+"名");
+                    break;
+                }
+            }
+        }
+
+        teamSiptScoreMap.put("teamEffectiveScoreMap", teamEffectiveScoreMap);
+        teamSiptScoreMap.put("teamServiceScoreMap", teamServiceScoreMap);
+        teamSiptScoreMap.put("teamContributeScoreMap", teamContributeScoreMap);
+        return teamSiptScoreMap;
+    }
     private Map<String, Object> getTeamTotalScore(List<CasePerson> personList) {
         /**
          * @Description: 在团队中总分排名
@@ -2086,9 +2153,23 @@ public class SpectionServinceImpl implements SpectionServince {
          * @Author: scyang
          * @Date: 2020/5/13 0:01
          */
-        Map<String, BigDecimal> name_totalScore = personList.stream().collect(Collectors.toMap(CasePerson::getCasePersonName, CasePerson::getTotalScore));
+        Map<String,Object> teamTotalScoreMap=new HashMap<>();
+        List<String> nameList = personList.stream()
+                .sorted((personOne, personTwo) -> personTwo.getTotalScore().compareTo(personOne.getTotalScore()))
+                .sorted((personOne, personTwo) -> (int) (personOne.getCreateDate().getTime() - personTwo.getCreateDate().getTime()))
+                .map(CasePerson::getCasePersonName)
+                .collect(Collectors.toList());
 
-        return null;
+        Map<String, BigDecimal> name_score = personList.stream().collect(Collectors.toMap(CasePerson::getCasePersonName, CasePerson::getTotalScore));
+        for (int i = 0; i < nameList.size(); i++) {
+            String name = nameList.get(i);
+            for (Map.Entry<String, BigDecimal> entry : name_score.entrySet()) {
+                if (name.equals(entry.getKey())){
+                    teamTotalScoreMap.put(name+"在团队总分是"+entry.getValue()+"分"+"排名是 ",i+1+"名");
+                }
+            }
+        }
+        return teamTotalScoreMap;
     }
 
     private String getCaseValue(String caseTeamStatus) {
