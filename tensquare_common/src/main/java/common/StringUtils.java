@@ -195,11 +195,17 @@ public class StringUtils {
         return oject.toString();*/
         return oject == null ? "" : oject.toString();
     }
-
+    public static String getStringValue(String str,String deflautValue){
+        if (null==str||"".equals(str.toString().trim())){
+            return deflautValue;
+        }
+        return str;
+    }
     @Test
     public void test02() {
         System.out.println(StringUtils.nullToStr(null));
         System.out.println(StringUtils.nullToStr("阳阳"));
+        System.out.println(getStringValue("yangyang", "a"));
     }
 
     public static boolean isEmpyStr(String str) {/**
