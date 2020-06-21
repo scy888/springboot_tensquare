@@ -41,7 +41,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @author: scyang
@@ -2131,9 +2130,9 @@ public class SpectionServinceImpl implements SpectionServince {
         Map<String, BigDecimal> contribute_name_score = personList.stream().collect(Collectors.toMap(CasePerson::getCasePersonName, CasePerson::getContributeScore));
         for (int i = 0; i < contributeNameList.size(); i++) {
             String name = contributeNameList.get(i);
-            for (Map.Entry<String, BigDecimal> entry : contribute_name_score.entrySet()) {
-                if (name.equals(entry.getKey())){
-                    teamContributeScoreMap.put(name+"贡献在团队分是"+contribute_name_score.get(name)+"分"+"排名是 ",i+1+"名");
+            for (Map.Entry<String, BigDecimal> ENTRY : contribute_name_score.entrySet()) {
+                if (name.equals(ENTRY.getKey())){
+                    teamServiceScoreMap.put(name+"贡献在团队分是"+contribute_name_score.get(name)+"分"+"排名是 ",i+1+"名");
                     break;
                 }
             }
