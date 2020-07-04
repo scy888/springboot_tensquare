@@ -223,6 +223,7 @@ public class SpectionController {
     }
 
     public static void main(String[] args) {
+        /** 数据库里的date日期用get请求提交时无需转换成字符串时 9 - 14 */
         Date date = new Date(2020 - 1900, 2 - 1, 2, 9 - 14, 25, 36);
         System.out.println(date);
     }
