@@ -3,6 +3,8 @@ package com.tensquare.test.dao;
 import com.tensquare.test.pojo.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 /**
  * @author: scyang
  * @program: tensquare_parent
@@ -11,4 +13,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @describe:
  */
 public interface UserDomeDao extends JpaRepository<User,Integer> {
+    List<User> findByUserIdInOrderByAgeDesc(List<Integer> idList);
+
+    List<User> findByNameLike(String name);
+
+    List<User> findByAgeGreaterThanEqualOrderByBirthdayAsc(int age);
+
+    List<User> findByAgeOrName(int age, String name);
 }
