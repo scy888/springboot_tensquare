@@ -26,3 +26,8 @@ eureka:
 feign:
   hystrix:
     enabled: true
+
+person:
+  name: 盛重阳
+  address: 湖北省
+  age: 25

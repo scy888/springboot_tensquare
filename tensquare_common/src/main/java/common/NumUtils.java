@@ -13,7 +13,7 @@ import java.util.UUID;
  * @describe:
  */
 public class NumUtils {
-    public int getNum(int size){
+    public  int getNum(int size){
         int num=0;
         if (size==4){
             num=1000+new Random().nextInt(9000);

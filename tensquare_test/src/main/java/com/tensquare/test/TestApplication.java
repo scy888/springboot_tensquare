@@ -1,5 +1,6 @@
 package com.tensquare.test;
 
+import common.DateUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
@@ -27,5 +28,10 @@ public class TestApplication {
     @Bean
     public JwtUtil jwtUtil(){
         return new JwtUtil();
+    }
+
+    @Bean
+    public DateUtils dateUtils(){
+        return new DateUtils();
     }
 }

@@ -5,14 +5,15 @@ import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tensquare.test.dao.UserDomeDao;
 import com.tensquare.test.pojo.User;
+import common.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.time.LocalDate;
 import java.util.*;
@@ -31,6 +32,10 @@ import java.util.stream.Collectors;
 public class UserDomeController {
     @Autowired
     private UserDomeDao userDomeDao;
+    @Autowired
+    private Config config;
+    @Autowired
+    private DateUtils dateUtils;
     private static final Logger logger = LoggerFactory.getLogger(UserDomeController.class);
 
     @PostMapping("/addList")
@@ -85,6 +90,9 @@ public class UserDomeController {
             e.setAge(e.getAge() > 30 ? e.getAge() : e.getAge() + 1);
         });
         log.info("user:{}", JSON.toJSONString(optionalUser.get()));
+        String dateStr = dateUtils.getDateStr(1991, 10, 16, dateUtils.getPATTERN_TWO());
+       log.info("date:{}",dateStr);
+        log.info("name:{},address:{},age:{}",config.getName(),config.getAddress(),config.getAge());
         return optionalUser.get();
     }
 
@@ -100,6 +108,7 @@ public class UserDomeController {
         name= URLDecoder.decode(name,"utf-8" );
         name = name + "%";
         List<User> userList = userDomeDao.findByNameLike(name);
+        /** 根据年龄从大到小排序 */
         userList= userList.stream().distinct().sorted((user1,user2)->Integer.compare(user2.getAge(), user1.getAge())).collect(Collectors.toList());
         log.info("cuserList{}:", JSON.toJSONString(userList));
         return userList;
@@ -107,6 +116,7 @@ public class UserDomeController {
     @GetMapping("/greaterThanEqual/{age}")
     public List<User> findByAgeGreaterThanEqualOrderByBirthday(@PathVariable int age){
         List<User> userList= userDomeDao.findByAgeGreaterThanEqualOrderByBirthdayAsc(age);
+        /** 根据姓名和年龄排序 */
         Map<String, List<User>> listMap = userList.stream().distinct().collect(Collectors.groupingBy(user -> user.getName() + ":" + user.getAge()));
         log.info("listMap:{}"+listMap);
         return userList;
@@ -115,11 +125,41 @@ public class UserDomeController {
     public List<User> ageOrNameUserList(@PathVariable int age,@PathVariable String name){
         List<User> userList =userDomeDao.findByAgeOrName(age,name);
         log.info("userList:{}"+userList);
+        /** 根据姓名和年龄去重 */
         userList=  userList.stream().distinct()
                 .collect(Collectors.collectingAndThen(
                         Collectors.toCollection(()->new TreeSet<>(Comparator.comparing(user->user.getName()+":"+user.getAge()))),
                         ArrayList::new));
         log.info("userList:{}"+userList);
+        return userList;
+    }
+    @RequestMapping("/update/{id}")
+    public User update(@PathVariable int id){
+        Optional<User> optional = userDomeDao.findById(id);
+        if (optional.isPresent()) {
+            log.info("修改前的user:{}",optional.get());
+            log.info("name:{},address:{},age:{}",config.getName(),config.getAddress(),config.getAge());
+            User user = optional.get();
+            user = userDomeDao.save(user.setName(user.getName() + "2").setAddress(user.getAddress() + "2"));
+            log.info("修改后的user:{}",user);
+            return user;
+        }
+      /*  optional.ifPresent(user->{
+            user.setName(user.getName()+"2");
+            user.setAddress(user.getAddress()+"2");
+
+        });*/
+      return null;
+    }
+    @GetMapping("/updateBy/{id}/{address}")
+    //@Transactional
+    public void updateBy(@PathVariable int id,@PathVariable String address){
+        userDomeDao.updateBy(id,address);
+    }
+    @GetMapping("/selectBy/{address}/{sex}")
+    public List<User> selectBy(@PathVariable String address,@PathVariable String sex){
+        List<User> userList= userDomeDao.selectBy(address,sex);
+        log.info("userList:{}",JSON.toJSONString(userList));
         return userList;
     }
 }

@@ -3,6 +3,7 @@ package com.tensquare.test.pojo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -22,6 +23,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Accessors(chain = true)
 @Table(name = "tb_user_dto",
         indexes = {@Index(name="index_name",columnList = "name",unique = false),
                    @Index(name="index_age",columnList = "age",unique = false)})
