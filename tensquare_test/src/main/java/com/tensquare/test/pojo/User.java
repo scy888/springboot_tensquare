@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -20,6 +22,7 @@ import java.util.Date;
  * @describe:
  */
 @Data
+//@EntityListeners(value={AutditingEntityListener.class})
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -46,8 +49,15 @@ public class User implements Serializable {
     private String address;
     @Column(columnDefinition = "decimal(5,2) null comment '用户薪资'")
     private BigDecimal userPay;
+    @Enumerated(value=EnumType.STRING)
+    @Column(columnDefinition = "varchar(10) null comment '支付状态'")
+    private StatusMent statusMent;
     @Column(columnDefinition = "date null comment '出生日期'")
     private LocalDate birthday;
+    @CreatedDate
     @Column(columnDefinition = "datetime null comment '创建时间'")
     private Date createDate;
+    @LastModifiedDate
+    @Column(columnDefinition = "datetime null comment '修改时间'")
+    private LocalDateTime updateDate;
 }

@@ -5,6 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import utils.IdWorker;
 import utils.JwtUtil;
 
@@ -17,6 +18,7 @@ import utils.JwtUtil;
  */
 @SpringBootApplication
 @EnableEurekaClient
+@EnableJpaAuditing//自动加载时间的
 public class TestApplication {
     public static void main(String[] args) {
         SpringApplication.run(TestApplication.class, args);

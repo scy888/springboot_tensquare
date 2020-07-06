@@ -16,7 +16,7 @@ import org.springframework.stereotype.Controller;
 @Configuration
 public class Config {
     @Value("${person.name}")
-    public   String name;
+    public String name;
     @Value("${person.address}")
     private String address;
     @Value("${person.age}")
