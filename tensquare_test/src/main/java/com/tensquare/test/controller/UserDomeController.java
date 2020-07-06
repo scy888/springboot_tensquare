@@ -3,7 +3,8 @@ package com.tensquare.test.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tensquare.test.dao.UserDomeDao;
+import com.tensquare.test.dao.UserDomeDaoJpa;
+
 import com.tensquare.test.pojo.User;
 import common.DateUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URLDecoder;
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UserDomeController {
     @Autowired
-    private UserDomeDao userDomeDao;
+    private UserDomeDaoJpa userDomeDaoJpa;
     @Autowired
     private Config config;
     @Autowired
@@ -55,7 +55,7 @@ public class UserDomeController {
         }
         log.info("userList:{}", userList);
         logger.info("userList:{}", JSON.toJSONString(userList));
-        return userDomeDao.saveAll(userList);
+        return userDomeDaoJpa.saveAll(userList);
     }
 
     @PostMapping("/select")
@@ -70,7 +70,7 @@ public class UserDomeController {
         Sort sort = Sort.by(Sort.Direction.DESC, "birthday").and(Sort.by(Sort.Direction.ASC, "age"));
         // Sort.by(Sort.Order.by("birthday")).descending().and(Sort.by(Sort.Order.by("age"))).ascending();
         Pageable pageable = PageRequest.of(pageNum - 1, pageSize, sort);
-        Page<User> userPage = userDomeDao.findAll(example, pageable);
+        Page<User> userPage = userDomeDaoJpa.findAll(example, pageable);
         Map<String, Object> retunMap = new HashMap<>();
         retunMap.put("content", userPage.getContent());
         retunMap.put("totalElements", userPage.getTotalElements());
@@ -84,7 +84,7 @@ public class UserDomeController {
         User user = new User();
         user.setName("周芷若2");
         Example<? extends User> example = Example.of(user);
-        Optional<? extends User> optionalUser = userDomeDao.findOne(example);
+        Optional<? extends User> optionalUser = userDomeDaoJpa.findOne(example);
         optionalUser.ifPresent(e -> {
             e.setName("芷若");
             e.setAge(e.getAge() > 30 ? e.getAge() : e.getAge() + 1);
@@ -99,7 +99,7 @@ public class UserDomeController {
     @RequestMapping("/idList")
     public List<User> getUserList(@RequestBody List<Integer> idList) {
         log.info("idList:{}", JSON.toJSONString(idList));
-        List<User> userList = userDomeDao.findByUserIdInOrderByAgeDesc(idList);
+        List<User> userList = userDomeDaoJpa.findByUserIdInOrderByAgeDesc(idList);
         log.info("cuserList{}:", JSON.toJSONString(userList));
         return userList;
     }
@@ -107,7 +107,7 @@ public class UserDomeController {
     public List<User> getUserListLike(@PathVariable String name) throws Exception {
         name= URLDecoder.decode(name,"utf-8" );
         name = name + "%";
-        List<User> userList = userDomeDao.findByNameLike(name);
+        List<User> userList = userDomeDaoJpa.findByNameLike(name);
         /** 根据年龄从大到小排序 */
         userList= userList.stream().distinct().sorted((user1,user2)->Integer.compare(user2.getAge(), user1.getAge())).collect(Collectors.toList());
         log.info("cuserList{}:", JSON.toJSONString(userList));
@@ -115,7 +115,7 @@ public class UserDomeController {
     }
     @GetMapping("/greaterThanEqual/{age}")
     public List<User> findByAgeGreaterThanEqualOrderByBirthday(@PathVariable int age){
-        List<User> userList= userDomeDao.findByAgeGreaterThanEqualOrderByBirthdayAsc(age);
+        List<User> userList= userDomeDaoJpa.findByAgeGreaterThanEqualOrderByBirthdayAsc(age);
         /** 根据姓名和年龄排序 */
         Map<String, List<User>> listMap = userList.stream().distinct().collect(Collectors.groupingBy(user -> user.getName() + ":" + user.getAge()));
         log.info("listMap:{}"+listMap);
@@ -123,7 +123,7 @@ public class UserDomeController {
     }
     @GetMapping("/ageOrName/{age}/{name}")
     public List<User> ageOrNameUserList(@PathVariable int age,@PathVariable String name){
-        List<User> userList =userDomeDao.findByAgeOrName(age,name);
+        List<User> userList =userDomeDaoJpa.findByAgeOrName(age,name);
         log.info("userList:{}"+userList);
         /** 根据姓名和年龄去重 */
         userList=  userList.stream().distinct()
@@ -135,12 +135,12 @@ public class UserDomeController {
     }
     @RequestMapping("/update/{id}")
     public User update(@PathVariable int id){
-        Optional<User> optional = userDomeDao.findById(id);
+        Optional<User> optional = userDomeDaoJpa.findById(id);
         if (optional.isPresent()) {
             log.info("修改前的user:{}",optional.get());
             log.info("name:{},address:{},age:{}",config.getName(),config.getAddress(),config.getAge());
             User user = optional.get();
-            user = userDomeDao.save(user.setName(user.getName() + "2").setAddress(user.getAddress() + "2"));
+            user = userDomeDaoJpa.save(user.setName(user.getName() + "2").setAddress(user.getAddress() + "2"));
             log.info("修改后的user:{}",user);
             return user;
         }
@@ -154,11 +154,11 @@ public class UserDomeController {
     @GetMapping("/updateBy/{id}/{address}")
     //@Transactional
     public void updateBy(@PathVariable int id,@PathVariable String address){
-        userDomeDao.updateBy(id,address);
+        userDomeDaoJpa.updateBy(id,address);
     }
     @GetMapping("/selectBy/{address}/{sex}")
     public List<User> selectBy(@PathVariable String address,@PathVariable String sex){
-        List<User> userList= userDomeDao.selectBy(address,sex);
+        List<User> userList= userDomeDaoJpa.selectBy(address,sex);
         log.info("userList:{}",JSON.toJSONString(userList));
         return userList;
     }
