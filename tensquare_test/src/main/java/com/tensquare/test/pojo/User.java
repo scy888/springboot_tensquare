@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -22,7 +23,7 @@ import java.util.Date;
  * @describe:
  */
 @Data
-//@EntityListeners(value={AutditingEntityListener.class})
+@EntityListeners(AuditingEntityListener.class)
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -31,7 +32,6 @@ import java.util.Date;
         indexes = {@Index(name="index_name",columnList = "name",unique = false),
                    @Index(name="index_age",columnList = "age",unique = false)})
 @org.hibernate.annotations.Table(appliesTo = "tb_user_dto",comment = "用户信息列表")
-
 public class User implements Serializable {
 
     private static final long serialVersionUID = -1699425269559042856L;
