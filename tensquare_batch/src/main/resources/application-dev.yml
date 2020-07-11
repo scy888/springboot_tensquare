@@ -1,0 +1,32 @@
+spring:
+  datasource:
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost/batch?createDatabaseIfNotExist=true&characterEncoding=UTF8
+    username: root
+    password: root
+
+  kafka:
+    producer:
+      bootstrap-servers:
+      - 10.83.0.47:9092
+      - 10.83.0.123:9092
+      - 10.83.0.129:9092
+      retries: 0
+      buffer-memory: 33554432
+      acks: 1
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+
+    consumer:
+      bootstrap-servers:
+       - 10.83.0.47:9092
+       - 10.83.0.123:9092
+       - 10.83.0.129:9092
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      enable-auto-commit: false
+      group-id: acc-lxgm-adapter
+
+student:
+  path: E:\batch

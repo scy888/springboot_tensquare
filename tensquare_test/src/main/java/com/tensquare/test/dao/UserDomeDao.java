@@ -3,6 +3,7 @@ package com.tensquare.test.dao;
 import com.tensquare.test.pojo.User;
 import common.JacksonUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -53,6 +54,7 @@ public class UserDomeDao {
     }
 
     public List<User> getList(String sex) {
+
         String sql="select * from tb_user_dto where sex=?";
         List<User> userList = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(User.class),sex);
         List<Map<String, Object>> mapList = jdbcTemplate.queryForList(sql, new Object[]{sex});

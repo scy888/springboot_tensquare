@@ -8,6 +8,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="tensquare_article" />
         <module name="tensquare_base" />
+        <module name="tensquare_batch" />
         <module name="tensquare_common" />
         <module name="tensquare_config" />
         <module name="tensquare_eureka" />

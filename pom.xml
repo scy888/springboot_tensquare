@@ -23,6 +23,7 @@
         <module>tensquare_web</module>
         <module>tensquare_config</module>
         <module>tensquare_test</module>
+        <module>tensquare_batch</module>
     </modules>
     <packaging>pom</packaging>
     <name>tensquare_parent</name>
