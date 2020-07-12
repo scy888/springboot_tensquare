@@ -3,6 +3,7 @@ package com.tensquare.batch.controller;
 import com.tensquare.batch.pojo.Instance;
 import com.tensquare.batch.pojo.Job;
 import com.tensquare.batch.pojo.Step;
+import com.tensquare.batch.service.BatchService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobInstance;
@@ -17,9 +18,9 @@ import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 /**
  * @author: scyang
@@ -40,6 +41,8 @@ public class BatchController {
     private JobExplorer jobExplorer;
     @Autowired
     private JobLauncher jobLauncher;
+    @Autowired
+    private BatchService batchService;
 
     @RequestMapping("/kafka")
     public String hello(@RequestParam String worlds) {
@@ -110,5 +113,17 @@ public class BatchController {
             instanceList.add(instance);
         }
         return instanceList;
+    }
+
+    @GetMapping("/start/{jobName}")
+    public String start(@PathVariable String jobName,
+                              @RequestParam(required = false,defaultValue = "system") String batchDate,
+                              @RequestParam(required = false,defaultValue = "2020-12-12") String param){
+        Map<String, Object> map = new HashMap<>();
+        map.put("jobName", jobName);
+        map.put("startDate", LocalDate.now().toString());
+        map.put("param", param == null ? "system" : param);
+        map.put("batchDate", batchDate == null ? LocalDate.now().minusDays(2).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) : batchDate);
+        return batchService.start(jobName,param,batchDate).toString();
     }
 }
