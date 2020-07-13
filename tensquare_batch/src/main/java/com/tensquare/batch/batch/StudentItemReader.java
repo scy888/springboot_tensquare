@@ -32,7 +32,8 @@ public class StudentItemReader extends FlatFileItemReader<Student> {
       this.setResource(resource2);
       this.setLinesToSkip(1);
       DelimitedLineTokenizer lineTokenizer = new DelimitedLineTokenizer();
-      lineTokenizer.setNames(new String[]{"address", "age", "birthday", "createDate", "lastUpDate", "name", "sex"});
+      //lineTokenizer.setNames(new String[]{"address", "age", "birthday", "createDate", "lastUpDate", "name", "sex"});
+      lineTokenizer.setNames(new String[]{"address", "age", "birthday", "name", "sex"});
       lineTokenizer.setDelimiter(",");
       lineTokenizer.setStrict(false);
 
