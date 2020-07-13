@@ -24,31 +24,33 @@ import java.util.Map;
 @Service
 @Slf4j
 public class BatchService {
-@Autowired
-private JobLauncher jobLauncher;
-@Autowired
-private JobRegistry jobRegistry;
+    @Autowired
+    private JobLauncher jobLauncher;
+    @Autowired
+    private JobRegistry jobRegistry;
+
     public JobExecution start(Map<String, Object> map) throws Exception {
         Job job = jobRegistry.getJob((String) map.get("jobName"));
-        log.info("获取的job：{}",job);
-        JobParametersBuilder jobParameters=new JobParametersBuilder();
+        log.info("获取的job：{}", job);
+        JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
         for (Map.Entry<String, Object> entry : map.entrySet()) {
-            jobParameters.addString(entry.getKey(), (String) entry.getValue());
+            jobParametersBuilder.addString(entry.getKey(), (String) entry.getValue());
         }
-        log.info("获取的job名：{}",jobParameters.toJobParameters());
-
-        return null;
+        log.info("获取的job名：{}", jobParametersBuilder.toJobParameters());
+        log.info("job:{}", job);
+        JobExecution jobExecution = jobLauncher.run(job, jobParametersBuilder.toJobParameters());
+        return jobExecution;
     }
 
     @SneakyThrows
     public JobExecution start(String jobName, String param, String batchDate) {
-        JobParameters jobParameters=new JobParametersBuilder()
-                .addString("jobName",jobName )
+        JobParameters jobParameters = new JobParametersBuilder()
+                .addString("jobName", jobName)
                 .addString("param", param)
-                .addString("batchDate",batchDate )
+                .addString("batchDate", batchDate)
                 .toJobParameters();
         Job job = jobRegistry.getJob(jobName);
-        log.info("job:{}",job);
+        log.info("job:{}", job);
         JobExecution jobExecution = jobLauncher.run(job, jobParameters);
         return jobExecution;
     }

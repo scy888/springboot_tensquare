@@ -118,12 +118,13 @@ public class BatchController {
     @GetMapping("/start/{jobName}")
     public String start(@PathVariable String jobName,
                               @RequestParam(required = false,defaultValue = "system") String batchDate,
-                              @RequestParam(required = false,defaultValue = "2020-12-12") String param){
+                              @RequestParam(required = false,defaultValue = "2020-12-12") String param) throws Exception {
         Map<String, Object> map = new HashMap<>();
         map.put("jobName", jobName);
         map.put("startDate", LocalDate.now().toString());
         map.put("param", param == null ? "system" : param);
         map.put("batchDate", batchDate == null ? LocalDate.now().minusDays(2).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) : batchDate);
-        return batchService.start(jobName,param,batchDate).toString();
+        return batchService.start(map).toString();
+        //return batchService.start(jobName,param,batchDate).toString();
     }
 }
