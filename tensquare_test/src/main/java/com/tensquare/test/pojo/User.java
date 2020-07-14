@@ -55,7 +55,7 @@ public class User implements Serializable {
     @Column(columnDefinition = "date null comment '出生日期'")
     private LocalDate birthday;
     @CreatedDate
-    @Column(columnDefinition = "datetime null comment '创建时间'")
+    @Column(columnDefinition = "datetime null comment '创建时间'",updatable = false)
     private Date createDate;
     @LastModifiedDate
     @Column(columnDefinition = "datetime null comment '修改时间'")

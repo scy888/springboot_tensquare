@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URLDecoder;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -195,9 +196,9 @@ public class UserDomeController {
     public List<User> saveList(@RequestBody String paramJson) {
         List<User> userList = JacksonUtils.toList(paramJson, new TypeReference<List<User>>() {
         });
-        LocalDate localDate= LocalDate.of(1991, 10, 16);
+        LocalDate localDate = LocalDate.of(1991, 10, 16);
         for (User user : userList) {
-            localDate= localDate.minusYears(1)
+            localDate = localDate.minusYears(1)
                     .plusMonths(2)
                     .plusDays(2);
             user.setBirthday(localDate);
@@ -207,10 +208,36 @@ public class UserDomeController {
         log.info("userList2:{}", jacksonUtils.toString(userList));
         return userList;
     }
+
     @GetMapping("/findBySex")
-    public List<User> getList(@RequestParam String sex){
-       List<User> userList= userDomeDao.getList(sex);
-       log.info("userList:{}",jacksonUtils.toString(userList));
-       return userList;
+    public List<User> getList(@RequestParam String sex) {
+        List<User> userList = userDomeDao.getList(sex);
+        log.info("userList:{}", jacksonUtils.toString(userList));
+        return userList;
+    }
+
+    @PostMapping("/addSome")
+    public List<User> addSome(@RequestBody String paramJson) {
+        List<User> userList = JSON.parseObject(paramJson).getJSONArray("userList").toJavaList(User.class);
+        LocalDate birthday = LocalDate.of(2020, 7, 14);
+        for (User user : userList) {
+            user.setBirthday(birthday);
+            birthday = birthday.minusYears(1)
+                    .plusMonths(2)
+                    .plusDays(3);
+        }
+        logger.info("保存前,userList:{}", JSON.toJSONString(userList));
+        userList = userDomeDaoJpa.saveAll(userList);
+        logger.info("保存后,userList:{}", JSON.toJSONString(userList));
+        userList = userDomeDao.findUserByNameAndSex(userList);
+        logger.info("保存后,userList:{}", JSON.toJSONString(userList));
+        return userList;
+    }
+
+    @GetMapping("/maxBirthday/{name}")
+    public LocalDate maxBirthday(@PathVariable String name){
+        LocalDate birthday= userDomeDaoJpa.maxBirthday(name);
+        log.info("出生日期最大值：{}",birthday);
+        return birthday;
     }
 }

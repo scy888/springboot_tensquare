@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -32,4 +33,7 @@ public interface UserDomeDaoJpa extends JpaRepository<User,Integer> {
 
    @Query(value = "select * from tb_user_dto where address=?1 or sex=?2",nativeQuery = true)
     List<User> selectBy(String address, String sex);
+
+   @Query(value = "select max(birthday) from #{#entityName} where name= ?1")
+    LocalDate maxBirthday(String name);
 }

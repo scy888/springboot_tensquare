@@ -61,4 +61,12 @@ public class UserDomeDao {
         log.info("mapList:{}", JacksonUtils.getInstance().toString(mapList));
         return userList;
     }
+
+    public List<User> findUserByNameAndSex(List<User> userList) {
+        String query = userList.stream().map(user -> {
+            return "('" + user.getName() + "'," + "'" + user.getSex() + "')";
+        }).collect(Collectors.joining(","));
+        String sql="select * from tb_user_dto where (name,sex) in ("+query+")";
+        return jdbcTemplate.query(sql,new BeanPropertyRowMapper<>(User.class) );
+    }
 }
