@@ -130,7 +130,34 @@ public class Md5Utils {
                 "aeIrkU+ruu2RMPU5bFM8LMmhdMDMr2Fgs2/6Wl5845IMKw4lk8ebl8umcwIQRNO+\n" +
                 "0HTg+x/cJTdyDiz68QIDAQAB"));
     }
-
+   @Test
+   public void test04_() throws Exception {
+        String context="{\"name\":\"盛重阳\",\"sex\":\"男\",\"age\":27}";
+       /** 公钥加密 */
+       String publicKey="MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDX54NF5LcCb+tZHZu4uWn3+Pgl\n" +
+               "B+e2BF1pEEInVaV+SjNcf8ROsLDE0qwuHZHoQ6OwBMErmnqzPlzNZUdCjbAfUrsU\n" +
+               "uNqlsu7UldFqYDDoeVbiC12MjCVHXInuqXIRPxgpWOhNZ8piOKkhHFzmlhUBiuGY\n" +
+               "wo2HxRveTvKyrpNU5QIDAQAB";
+       String privateKey="MIICeAIBADANBgkqhkiG9w0BAQEFAASCAmIwggJeAgEAAoGBANfng0XktwJv61kd\n" +
+               "m7i5aff4+CUH57YEXWkQQidVpX5KM1x/xE6wsMTSrC4dkehDo7AEwSuaerM+XM1l\n" +
+               "R0KNsB9SuxS42qWy7tSV0WpgMOh5VuILXYyMJUdcie6pchE/GClY6E1nymI4qSEc\n" +
+               "XOaWFQGK4ZjCjYfFG95O8rKuk1TlAgMBAAECgYBIprHowgbHPiv+x9TPuyyqcc/m\n" +
+               "fht9h0h7gyoPnGVc8tEHrkK7i/9fq9ieh/rCIoihQWhTKN9jE3gc8ZiiD5WUxlPf\n" +
+               "TerZOhb3HDrD3E1xrXHJO/nzuNwfPPYMMcMPDMxqPm4mfHgg7OEls5Sj1FiFJjCq\n" +
+               "91aKC2//vddt+Agj3QJBAPbZWetpggJjxvkLPCd6cLeNJO4wg5aYWZLvaGkOi7Yz\n" +
+               "Xjjp+2esh5IQ7zLSWdB6QIqSIaiWDR3f17qd3utg+9MCQQDf6H10XnK+V+SEM1tC\n" +
+               "5sJLuaox7fhWkE5Gip599+cAITntzkYtCLLzL5W/ZhVJbOgXDarCPHagGz3TXOui\n" +
+               "txFnAkEAgW8eky3TmeUvo86cUCcHi3da8fpGRWTFMyKNoOiboYH12en2hToWLCTt\n" +
+               "B7z8kzBHP2G4fGmRnySMPbIh/VHxOQJBAJBKKTZpevYQe9F5qvD09faIohXk7akS\n" +
+               "+25X/ATfUTxzLPqDeBOjTHaMjqq15TfY98OLaiQbhLJue6wOcEb+RDcCQQD2sQKX\n" +
+               "plZEa31dXBV9d4IB4GY0fH3ZH1yVCo6PXffTSJjkQ0E3EeQNXJqmyRVu/UK0xPUa\n" +
+               "+BJmOyR52xtGPUgI";
+       String encryptByPublic = encryptByPublic(context, publicKey);
+       System.out.println(encryptByPublic);
+       /** 私钥解密 */
+      // String decryptByPrivate = decryptByPrivate(encryptByPublic, privateKey);
+      // System.out.println(decryptByPrivate);
+   }
     private static PublicKey getPublicKey(String publicKeyStr) throws Exception {
         /**
          * @Description: 获取公钥
@@ -167,7 +194,7 @@ public class Md5Utils {
         return new String(bytes, CHARSET_CODING);
     }
 
-    public static boolean getgetSHA256withRSA(String text, String signedData, String publicKeyStr) throws Exception {
+    public static boolean getSHA256withRSA(String text, String signedData, String publicKeyStr) throws Exception {
         /**
          * @Description: 判断公钥签名 text待签名的字符串 signseData  privateKeyStr私钥字符串
          * @methodName: getgetSHA256withRSA
@@ -212,7 +239,7 @@ public class Md5Utils {
         return secureDate;
     }
 
-    public static String encryptBySHA256Private(String plainTest, String privateKeyStr) throws Exception {
+    public static String encryptByPrivate(String plainTest, String privateKeyStr) throws Exception {
         /**
          * @Description: 私钥加密
          * @methodName: encryptBySHA256Private
@@ -232,7 +259,7 @@ public class Md5Utils {
         return encryptedData;
     }
 
-    public static String encryptBySHA256Public(String plainTest, String publicKeyStr) throws Exception {
+    public static String encryptByPublic(String plainTest, String publicKeyStr) throws Exception {
         /**
          * @Description: 公钥加密
          * @methodName: encryptBySHA256Public
@@ -252,7 +279,7 @@ public class Md5Utils {
         return encryptedData;
     }
 
-    public static String decryptBySHA256Private(String plainTest, String privateKeyStr) throws Exception {
+    public static String decryptByPrivate(String plainTest, String privateKeyStr) throws Exception {
         /**
          * @Description: 私钥解密
          * @methodName: decryptBySHA256Private
@@ -272,7 +299,7 @@ public class Md5Utils {
         return decryptedData;
     }
 
-    public static String decryptBySHA256Public(String plainTest, String publicKeyStr) throws Exception {
+    public static String decryptByPublic(String plainTest, String publicKeyStr) throws Exception {
         /**
          * @Description: 公钥解密
          * @methodName: decryptBySHA256Public
