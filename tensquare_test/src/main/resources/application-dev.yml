@@ -4,3 +4,22 @@ spring:
     url: jdbc:mysql://localhost/tensquare?characterEncoding=UTF8
     username: root
     password: root
+
+publicKey: MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC5h5wvfjljxbQ9clrHbaLaeJ86
+  OoudefVNKEKetVBgDb7TSg5MUHpcKq6WJpudCbdW8Fgm/kGeEEewu1WP6TFQdQ8N
+  xuaI9MwWnvXoz5lzEocwYP3cQeBB7iJO4XHbUVC6KK9PEMrSA/zgAaHUo2KyrT+h
+  1H6s9uxH0R51+JHXzwIDAQAB
+privateKey: MIICdQIBADANBgkqhkiG9w0BAQEFAASCAl8wggJbAgEAAoGBALmHnC9+OWPFtD1y
+  Wsdtotp4nzo6i5159U0oQp61UGANvtNKDkxQelwqrpYmm50Jt1bwWCb+QZ4QR7C7
+  VY/pMVB1Dw3G5oj0zBae9ejPmXMShzBg/dxB4EHuIk7hcdtRULoor08QytID/OAB
+  odSjYrKtP6HUfqz27EfRHnX4kdfPAgMBAAECgYAuamr8xst81p19MfrcIeW4Wq0b
+  WEJNp5FjOEtSgXIWVdoD6mchWJEENflvv0D3TNL9gSvMtZec/92vrW5+joyzczbo
+  OomjOVmIUhvbL+LyOze4hPCGJm14A8gdKjW/iVANIKAzeqdp+0ZxS3Jsr/mlPyaD
+  7/mVNI+7l7w7Ury5YQJBAOIUq5CbW+QddOm49MsJ+z3uuIwiynpRct+AT/ZTOZ0D
+  Kf9V48b3KtBmxxvfuakLq6vRPtncGabsKeyvk60ksaUCQQDSFR9tCXJXvkgXedNr
+  s5iVzG8j2BX69rHPHWP+30aZJE4jBUqkhxMEnTVI4KS26lZ/V7rgMXPNVN1ip+td
+  2YFjAkB674x/fMuSFqZ9dVK/mbTh746wvTZnHyUc/dP9eTIJ/C95JgZPKhZA7rJ0
+  qMp3bt4x9v17UCEu0JrXln3yF9L1AkAs6b0lN37NiW2qLy5m+Sdm5yTfmePhGnqb
+  F+J3684REXTvAcOadxI2y1FH+lbckC7b3KqkIY5rWHhYDiRAlS6XAkB6uyPcW556
+  mBPLhmI7zyV2f5AAPsx+kpa2DzKHR/CYXNEltmqbbI+8/7XD9phy3Ol5sZ1Nqcni
+  imdP5SPu5ibA

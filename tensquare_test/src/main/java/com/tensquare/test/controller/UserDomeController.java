@@ -6,16 +6,27 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tensquare.test.dao.UserDomeDao;
 import com.tensquare.test.dao.UserDomeDaoJpa;
+import com.tensquare.test.pojo.ExceptionEnum;
+import com.tensquare.test.pojo.Result;
 import com.tensquare.test.pojo.User;
+import com.tensquare.test.pojo.UserDto;
 import common.DateUtils;
 import common.JacksonUtils;
+import common.RsaUtil;
+import common.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.*;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.net.URLDecoder;
 import java.time.LocalDate;
 import java.util.*;
@@ -35,13 +46,21 @@ public class UserDomeController {
     @Autowired
     private UserDomeDaoJpa userDomeDaoJpa;
     @Autowired
+    private JpaRepository<UserDto,Integer> jpaRepository;
+    @Autowired
     private UserDomeDao userDomeDao;
+    @Autowired
+    private HttpServletRequest request;
     @Autowired
     private Config config;
     @Autowired
     private DateUtils dateUtils;
     @Autowired
     private JacksonUtils jacksonUtils;
+    @Value("${publicKey}")
+    private String publicKey;
+    @Value("${privateKey}")
+    private String privateKey;
     private static final Logger logger = LoggerFactory.getLogger(UserDomeController.class);
 
     @PostMapping("/addList")
@@ -232,9 +251,58 @@ public class UserDomeController {
     }
 
     @GetMapping("/maxBirthday/{name}")
-    public LocalDate maxBirthday(@PathVariable String name){
-        LocalDate birthday= userDomeDaoJpa.maxBirthday(name);
-        log.info("出生日期最大值：{}",birthday);
+    public LocalDate maxBirthday(@PathVariable String name) {
+        LocalDate birthday = userDomeDaoJpa.maxBirthday(name);
+        log.info("出生日期最大值：{}", birthday);
         return birthday;
+    }
+
+    @PostMapping("/addUserDtoList")
+    public List<UserDto> addUserDtoList(@RequestBody List<UserDto> userDtoList) {
+        log.info("添加前的userDtoList:{}", jacksonUtils.toString(userDtoList));
+        userDtoList = jpaRepository.saveAll(userDtoList);
+        log.info("添加后的userDtoList:{}", jacksonUtils.toString(userDtoList));
+        String head = request.getHeader("head");
+        log.info("head:{}",head);
+        return userDtoList;
+    }
+    @PostMapping("/addUserDto")
+    public Result addUserDto(@RequestBody @Validated UserDto userDto, BindingResult bindingResult) throws Exception {
+        log.info("添加前的userDtoList:{}", jacksonUtils.toString(userDto));
+        String mesg="";
+        Result result=null;
+        for (ObjectError error : bindingResult.getAllErrors()) {
+            mesg=mesg+"/"+error.getDefaultMessage();
+        }
+        log.info("mesg:{}", jacksonUtils.toString(mesg));
+        if (!StringUtils.isEmpyStr(mesg)){
+            result= new Result().setResultCode(ExceptionEnum.PARAMS_ERROR.getRetCode())
+                    .setResultMessage(ExceptionEnum.PARAMS_ERROR.getRetMessage());
+        }
+        String context="{\"name\":\"张无忌\",\"address\":\"明教\",\"age\":20,\"sex\":\"男\"}";
+        //rsa加密
+        String encrypt = RsaUtil.encrypt(context, publicKey);
+        log.info("context加密：{}",encrypt);
+        //rsa解密
+        String decrypt = RsaUtil.decrypt(encrypt, privateKey);
+        log.info("context解密：{}",decrypt);
+         userDto.setContext(decrypt);
+         //加签
+        String generateSign = RsaUtil.generateSign(context, privateKey, "SHA256withRSA");
+        log.info("context加签：{}",generateSign);
+        boolean verify = RsaUtil.verifyWithMd5(context, generateSign, publicKey, "SHA256withRSA");
+        if (!verify){
+            result= new Result().setResultCode(ExceptionEnum.SIGN_ERROR.getRetCode())
+                    .setResultMessage(ExceptionEnum.SIGN_ERROR.getRetMessage());
+        }
+        else {
+            result= new Result().setResultCode(ExceptionEnum.SUCCESS.getRetCode())
+                    .setResultMessage(ExceptionEnum.SUCCESS.getRetMessage());
+        }
+        // userDto = jpaRepository.save(userDto);
+        log.info("userDto:{}", jacksonUtils.toString(userDto));
+        String head = request.getHeader("head");
+        log.info("head:{}",head);
+        return result;
     }
 }
