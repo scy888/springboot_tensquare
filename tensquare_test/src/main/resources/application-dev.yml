@@ -1,7 +1,7 @@
 spring:
   datasource:
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost/tensquare?characterEncoding=UTF8
+    url: jdbc:mysql://localhost/tensquare?createDatabaseIfNotExist=true&characterEncoding=UTF8
     username: root
     password: root
 

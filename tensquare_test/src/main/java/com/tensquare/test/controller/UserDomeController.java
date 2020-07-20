@@ -4,12 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tensquare.test.dao.AdminDaoJpa;
 import com.tensquare.test.dao.UserDomeDao;
 import com.tensquare.test.dao.UserDomeDaoJpa;
-import com.tensquare.test.pojo.ExceptionEnum;
-import com.tensquare.test.pojo.Result;
-import com.tensquare.test.pojo.User;
-import com.tensquare.test.pojo.UserDto;
+import com.tensquare.test.pojo.*;
 import common.DateUtils;
 import common.JacksonUtils;
 import common.RsaUtil;
@@ -21,12 +19,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import utils.IdWorker;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 import java.net.URLDecoder;
 import java.time.LocalDate;
 import java.util.*;
@@ -46,7 +48,9 @@ public class UserDomeController {
     @Autowired
     private UserDomeDaoJpa userDomeDaoJpa;
     @Autowired
-    private JpaRepository<UserDto,Integer> jpaRepository;
+    private JpaRepository<UserDto, Integer> jpaRepository;
+    @Autowired
+    private AdminDaoJpa adminDaoJpa;
     @Autowired
     private UserDomeDao userDomeDao;
     @Autowired
@@ -57,10 +61,15 @@ public class UserDomeController {
     private DateUtils dateUtils;
     @Autowired
     private JacksonUtils jacksonUtils;
+    @Autowired
+    private BCryptPasswordEncoder encoder;
+    @Autowired
+    private IdWorker idWorker;
     @Value("${publicKey}")
     private String publicKey;
     @Value("${privateKey}")
     private String privateKey;
+    private static final String ADMIN_ID = "admin_id";
     private static final Logger logger = LoggerFactory.getLogger(UserDomeController.class);
 
     @PostMapping("/addList")
@@ -263,46 +272,91 @@ public class UserDomeController {
         userDtoList = jpaRepository.saveAll(userDtoList);
         log.info("添加后的userDtoList:{}", jacksonUtils.toString(userDtoList));
         String head = request.getHeader("head");
-        log.info("head:{}",head);
+        log.info("head:{}", head);
         return userDtoList;
     }
+
     @PostMapping("/addUserDto")
     public Result addUserDto(@RequestBody @Validated UserDto userDto, BindingResult bindingResult) throws Exception {
         log.info("添加前的userDtoList:{}", jacksonUtils.toString(userDto));
-        String mesg="";
-        Result result=null;
+        String mesg = "";
+        Result result = null;
         for (ObjectError error : bindingResult.getAllErrors()) {
-            mesg=mesg+"/"+error.getDefaultMessage();
+            mesg = mesg + "/" + error.getDefaultMessage();
         }
         log.info("mesg:{}", jacksonUtils.toString(mesg));
-        if (!StringUtils.isEmpyStr(mesg)){
-            result= new Result().setResultCode(ExceptionEnum.PARAMS_ERROR.getRetCode())
+        if (!StringUtils.isEmpyStr(mesg)) {
+            result = new Result().setResultCode(ExceptionEnum.PARAMS_ERROR.getRetCode())
                     .setResultMessage(ExceptionEnum.PARAMS_ERROR.getRetMessage());
         }
-        String context="{\"name\":\"张无忌\",\"address\":\"明教\",\"age\":20,\"sex\":\"男\"}";
+        String context = "{\"name\":\"张无忌\",\"address\":\"明教\",\"age\":20,\"sex\":\"男\"}";
         //rsa加密
         String encrypt = RsaUtil.encrypt(context, publicKey);
-        log.info("context加密：{}",encrypt);
+        log.info("context加密：{}", encrypt);
         //rsa解密
         String decrypt = RsaUtil.decrypt(encrypt, privateKey);
-        log.info("context解密：{}",decrypt);
-         userDto.setContext(decrypt);
-         //加签
+        log.info("context解密：{}", decrypt);
+        userDto.setContext(decrypt);
+        //加签
         String generateSign = RsaUtil.generateSign(context, privateKey, "SHA256withRSA");
-        log.info("context加签：{}",generateSign);
+        log.info("context加签：{}", generateSign);
         boolean verify = RsaUtil.verifyWithMd5(context, generateSign, publicKey, "SHA256withRSA");
-        if (!verify){
-            result= new Result().setResultCode(ExceptionEnum.SIGN_ERROR.getRetCode())
+        if (!verify) {
+            result = new Result().setResultCode(ExceptionEnum.SIGN_ERROR.getRetCode())
                     .setResultMessage(ExceptionEnum.SIGN_ERROR.getRetMessage());
-        }
-        else {
-            result= new Result().setResultCode(ExceptionEnum.SUCCESS.getRetCode())
+        } else {
+            result = new Result().setResultCode(ExceptionEnum.SUCCESS.getRetCode())
                     .setResultMessage(ExceptionEnum.SUCCESS.getRetMessage());
         }
         // userDto = jpaRepository.save(userDto);
         log.info("userDto:{}", jacksonUtils.toString(userDto));
         String head = request.getHeader("head");
-        log.info("head:{}",head);
+        log.info("head:{}", head);
         return result;
+    }
+
+    @RequestMapping("/addAdmin")
+    public Admin addAdmin(@RequestBody @Valid AdminReq adminReq, BindingResult bindingResult) throws Exception {
+        log.info("adminReq:{}", jacksonUtils.writeValueAsString(adminReq));
+        /** 检验入参 */
+        String errorMsg = "";
+        for (ObjectError error : bindingResult.getAllErrors()) {
+            errorMsg += "/" + error;
+        }
+        if (!StringUtils.isEmpyStr(errorMsg)) {
+            log.info("errorMsg:{}", errorMsg);
+            throw new RuntimeException("参数校验不符合规定...");
+        }
+        Admin admin = new Admin();
+        admin.setAdminId(idWorker.nextId() + "")
+                .setAdmin(adminReq.getAdmin())
+                .setPassword(encoder.encode(adminReq.getPassword()))
+                .setAuthCode(adminReq.getAuthCode())
+                .setIsEffetive(true);
+        /** 将adminId存入session中 */
+        HttpSession session = request.getSession();
+        session.setMaxInactiveInterval(60);
+        session.setAttribute(ADMIN_ID, admin.getAdminId());
+        log.info("session保存的值为:{}", session.getAttribute(ADMIN_ID));
+        log.info("保存前admin:{}", jacksonUtils.writeValueAsString(admin));
+        admin = adminDaoJpa.save(admin);
+        log.info("保存后admin:{}", jacksonUtils.writeValueAsString(admin));
+        return admin;
+    }
+
+    @RequestMapping("/login/{admin}/{password}")
+    public String login(@PathVariable String admin, @PathVariable String password) {
+        String loginMsg="";
+        log.info("用户登录名admin:{},用户登录密码password:{}",admin,password);
+       Admin ad= adminDaoJpa.findByAdmin(admin);
+       log.info("用户信息Admin：{}",ad);
+        boolean isFlag = encoder.matches(password, ad.getPassword());
+        if (isFlag) {
+            loginMsg="用户名密码正确,登录成功!!!";
+        }
+        else {
+            loginMsg="用户名或密码不正确,登录失败!!!";
+        }
+        return loginMsg;
     }
 }
