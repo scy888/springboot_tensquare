@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @Component
+//@Order(1)
 public class TestRunner implements ApplicationRunner {
     private static final Logger logger= LoggerFactory.getLogger(ApplicationRunner.class);
     @Override

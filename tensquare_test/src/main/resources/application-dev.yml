@@ -8,6 +8,27 @@ spring:
 logging:
   config: classpath:logger.xml
 
+jetcache:
+  statIntervalMinutes: 15
+  areaInCacheName: false
+  local:
+    default:
+      type: caffeine
+      keyConvertor: fastjson
+      limit: 100
+  remote:
+    default:
+      type: redis
+      keyConvertor: fastjson
+      valueEncoder: java
+      valueDecoder: java
+      poolConfig:
+        minIdle: 5
+        maxIdle: 20
+        maxTotal: 50
+      host: localhost
+      port: 6379
+
 publicKey: MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC5h5wvfjljxbQ9clrHbaLaeJ86
   OoudefVNKEKetVBgDb7TSg5MUHpcKq6WJpudCbdW8Fgm/kGeEEewu1WP6TFQdQ8N
   xuaI9MwWnvXoz5lzEocwYP3cQeBB7iJO4XHbUVC6KK9PEMrSA/zgAaHUo2KyrT+h

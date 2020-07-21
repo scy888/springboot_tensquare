@@ -1,5 +1,7 @@
 package com.tensquare.test;
 
+import com.alicp.jetcache.anno.config.EnableCreateCacheAnnotation;
+import com.alicp.jetcache.anno.config.EnableMethodCache;
 import common.DateUtils;
 import common.JacksonUtils;
 import org.springframework.boot.SpringApplication;
@@ -21,6 +23,8 @@ import utils.JwtUtil;
 @SpringBootApplication
 @EnableEurekaClient
 @EnableJpaAuditing//自动加载时间的
+@EnableMethodCache(basePackages = "com.tensquare.test")
+@EnableCreateCacheAnnotation
 public class TestApplication {
     public static void main(String[] args) {
         SpringApplication.run(TestApplication.class, args);
