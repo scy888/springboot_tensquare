@@ -5,6 +5,9 @@ spring:
     username: root
     password: root
 
+logging:
+  config: classpath:logger.xml
+
 publicKey: MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC5h5wvfjljxbQ9clrHbaLaeJ86
   OoudefVNKEKetVBgDb7TSg5MUHpcKq6WJpudCbdW8Fgm/kGeEEewu1WP6TFQdQ8N
   xuaI9MwWnvXoz5lzEocwYP3cQeBB7iJO4XHbUVC6KK9PEMrSA/zgAaHUo2KyrT+h
@@ -23,3 +26,4 @@ privateKey: MIICdQIBADANBgkqhkiG9w0BAQEFAASCAl8wggJbAgEAAoGBALmHnC9+OWPFtD1y
   F+J3684REXTvAcOadxI2y1FH+lbckC7b3KqkIY5rWHhYDiRAlS6XAkB6uyPcW556
   mBPLhmI7zyV2f5AAPsx+kpa2DzKHR/CYXNEltmqbbI+8/7XD9phy3Ol5sZ1Nqcni
   imdP5SPu5ibA
+
