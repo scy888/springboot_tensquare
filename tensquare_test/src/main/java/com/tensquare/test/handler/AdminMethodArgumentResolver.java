@@ -11,6 +11,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 /**
  * @author: scyang
@@ -33,10 +34,16 @@ public class AdminMethodArgumentResolver implements HandlerMethodArgumentResolve
     @Override
     public Object resolveArgument(MethodParameter methodParameter, ModelAndViewContainer modelAndViewContainer, NativeWebRequest nativeWebRequest, WebDataBinderFactory webDataBinderFactory) throws Exception {
         HttpServletRequest request = nativeWebRequest.getNativeRequest(HttpServletRequest.class);
-        String admin = (String) request.getSession().getAttribute(ADMIN);
-        log.info("方法参数拦截器AdminMethodArgumentResolver,admin:{}",admin);
-        String admin2 = (String) nativeWebRequest.getAttribute(ADMIN, RequestAttributes.SCOPE_REQUEST);
-        log.info("方法参数拦截器AdminMethodArgumentResolver,admin2:{}",admin2);
-        return admin;
+//        String admin = (String) request.getSession().getAttribute(ADMIN);
+//        log.info("方法参数拦截器AdminMethodArgumentResolver,admin:{}",admin);
+//        String admin2 = (String) nativeWebRequest.getAttribute(ADMIN, RequestAttributes.SCOPE_REQUEST);
+//        log.info("方法参数拦截器AdminMethodArgumentResolver,admin2:{}",admin2);
+        String header = request.getHeader("header");
+        log.info("header:{}",header);
+        HttpSession session = request.getSession();
+        session.setAttribute(header,"呵呵呵" );
+        String value = (String) session.getAttribute(header);
+        log.info("session的值:{}",value);
+        return value;
     }
 }

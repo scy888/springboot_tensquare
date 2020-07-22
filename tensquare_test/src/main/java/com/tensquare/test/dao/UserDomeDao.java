@@ -1,6 +1,8 @@
 package com.tensquare.test.dao;
 
+import com.alibaba.fastjson.JSONObject;
 import com.tensquare.test.pojo.User;
+import com.tensquare.test.pojo.UserDto;
 import common.JacksonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -68,5 +71,59 @@ public class UserDomeDao {
         }).collect(Collectors.joining(","));
         String sql="select * from tb_user_dto where (name,sex) in ("+query+")";
         return jdbcTemplate.query(sql,new BeanPropertyRowMapper<>(User.class) );
+    }
+
+    public int insertUserDtoList(List<UserDto> userDtoList){
+        /** 批量添加 */
+        log.info("userDtoList:{}", JSONObject.toJSONString(userDtoList));
+        String sql="insert into user_dto(name,sex,age,create_date)values"+"\n";
+        String values = userDtoList.stream().map(userDto -> {
+            return "(?,?,?,?)";
+        }).collect(Collectors.joining(",\n"));
+        log.info("sql语句：{}",sql+values+";");
+        List<Object> list=new ArrayList<>();
+        for (UserDto userDto : userDtoList) {
+            list.add(userDto.getName());
+            list.add(userDto.getSex());
+            list.add(userDto.getAge());
+            list.add(userDto.getCreateDate());
+        }
+        Object[] args = list.toArray(new Object[list.size()]);
+       return jdbcTemplate.update(sql+values+";",args);
+    }
+
+    public int addUserList(List<UserDto> userDtoList){
+        List<Object> list=new ArrayList<>();
+        StringBuffer sb=new StringBuffer();
+        sb.append("insert into user_dto(name,sex,age,create_date)values").append("\n");
+        for (UserDto userDto : userDtoList) {
+            sb.append("(?,?,?,?)").append(",").append("\n");
+            list.add(userDto.getName());
+            list.add(userDto.getSex());
+            list.add(userDto.getAge());
+            list.add(userDto.getCreateDate());
+        }
+        Object[] args = list.toArray(new Object[list.size()]);
+        sb=sb.deleteCharAt(sb.lastIndexOf(",")).append(";");
+        log.info("sql语句：{}",sb.toString());
+        return jdbcTemplate.update(sb.toString(),args);
+    }
+
+    public int addList(List<UserDto> userDtoList){
+        List<Object> list=new ArrayList<>();
+        String sql="insert into user_dto(name,sex,age,create_date)values"+"\n";
+        String value="";
+        for (UserDto userDto : userDtoList) {
+            value+="(?,?,?,?),"+"\n";
+            list.add(userDto.getName());
+            list.add(userDto.getSex());
+            list.add(userDto.getAge());
+            list.add(userDto.getCreateDate());
+        }
+        Object[] args = list.toArray(new Object[list.size()]);
+        //value=value.substring(0, value.length()-2);
+        value=value.substring(0,value.lastIndexOf(","));
+        log.info("sql:{}",sql+value+";");
+        return jdbcTemplate.update(sql+value+";",args);
     }
 }

@@ -30,7 +30,7 @@ public class StartRun implements CommandLineRunner {
 //    private Cache<String,Object> userCache;
     @Override
     public void run(String... args) throws Exception {
-        List<User> userList = userDomeDaoJpa.findAll();
+        List<User> userList = userDomeDaoJpa.findAll().subList(0,1 );
         log.info("userList:{}", JSONObject.toJSONString(userList));
         //userCache.put("userList",userList );
     }

@@ -54,4 +54,12 @@ public class UserDto implements Serializable {
     @Column(columnDefinition = "datetime null comment '最后修改时间'")
     @LastModifiedDate
     private LocalDateTime updateDate;
+
+    public UserDto(@NotBlank(message = "姓名不能为空") String name, @NotBlank(message = "性别不能为空") String sex, Integer age, LocalDateTime createDate) {
+        this.name = name;
+        this.sex = sex;
+        this.age = age;
+        this.createDate = createDate;
+    }
+
 }

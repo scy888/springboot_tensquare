@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tensquare.test.annotation.AdminName;
 import com.tensquare.test.dao.AdminDaoJpa;
 import com.tensquare.test.dao.UserDomeDao;
 import com.tensquare.test.dao.UserDomeDaoJpa;
@@ -358,5 +359,11 @@ public class UserDomeController {
             loginMsg="用户名或密码不正确,登录失败!!!";
         }
         return loginMsg;
+    }
+
+    @RequestMapping("/annotation")
+    public String getString(@AdminName String adminName){
+        log.info("参数adminName：{}",adminName);
+        return adminName;
     }
 }
