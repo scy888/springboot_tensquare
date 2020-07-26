@@ -1,6 +1,7 @@
 package com.tensquare.test.dao;
 
 import com.tensquare.test.pojo.User;
+import com.tensquare.test.pojo.UserDto;
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -17,7 +18,7 @@ import java.util.List;
  * @date: 2020-07-04 16:16:29
  * @describe:
  */
-public interface UserDomeDaoJpa extends JpaRepository<User,Integer> {
+public interface UserDomeDaoJpa extends JpaRepository<User, Integer> {
     List<User> findByUserIdInOrderByAgeDesc(List<Integer> idList);
 
     List<User> findByNameLike(String name);
@@ -26,14 +27,16 @@ public interface UserDomeDaoJpa extends JpaRepository<User,Integer> {
 
     List<User> findByAgeOrName(int age, String name);
 
-   @Query(value = "update tb_user_dto set address=?2 where user_id =?1",nativeQuery = true)
-   @Modifying
-   @Transactional
+    @Query(value = "update tb_user_dto set address=?2 where user_id =?1", nativeQuery = true)
+    @Modifying
+    @Transactional
     void updateBy(int id, String address);
 
-   @Query(value = "select * from tb_user_dto where address=?1 or sex=?2",nativeQuery = true)
+    @Query(value = "select * from tb_user_dto where address=?1 or sex=?2", nativeQuery = true)
     List<User> selectBy(String address, String sex);
 
-   @Query(value = "select max(birthday) from #{#entityName} where name= ?1")
+    @Query(value = "select max(birthday) from #{#entityName} where name= ?1")
     LocalDate maxBirthday(String name);
+
+
 }

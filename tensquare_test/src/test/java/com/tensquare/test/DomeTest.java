@@ -18,6 +18,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MockMvcBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -56,12 +57,15 @@ public class DomeTest {
     }
     @Test
     public void test_() throws Exception{
-        List<UserDto> userDtoList = Arrays.asList(new UserDto[]{new UserDto().setName("无忌").setSex("男").setAge(20).setContext("倚天屠龙记"),
-                new UserDto().setName("芷若").setSex("女").setAge(19).setContext("倚天屠龙记")});
+        List<UserDto> userDtoList = Arrays.asList(new UserDto[]{new UserDto().setName("无忌2").setSex("男").setAge(5).setContext("倚天屠龙记"),
+                new UserDto().setName("芷若2").setSex("女").setAge(6).setContext("倚天屠龙记")});
         String value = new ObjectMapper().writeValueAsString(userDtoList);
-        String contentAsString = mockMvc.perform(MockMvcRequestBuilders.post("/localhost:9023/batch/userDome/addUserDtoList")
+        String contentAsString = mockMvc.perform(MockMvcRequestBuilders.post("/batch/userDome/addUserDtoList")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(value)).andReturn().getResponse().getContentAsString();
+                .content(value))
+                .andDo(MockMvcResultHandlers.print())
+                .andReturn().getResponse()
+                .getContentAsString();
         log.info("contentAsString:{}",jacksonUtils.toString(contentAsString));
     }
     @Test

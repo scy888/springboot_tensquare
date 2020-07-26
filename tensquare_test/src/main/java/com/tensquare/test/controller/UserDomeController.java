@@ -8,11 +8,9 @@ import com.tensquare.test.annotation.AdminName;
 import com.tensquare.test.dao.AdminDaoJpa;
 import com.tensquare.test.dao.UserDomeDao;
 import com.tensquare.test.dao.UserDomeDaoJpa;
+import com.tensquare.test.dao.UserDtoDaoJpa;
 import com.tensquare.test.pojo.*;
-import common.DateUtils;
-import common.JacksonUtils;
-import common.RsaUtil;
-import common.StringUtils;
+import common.*;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +30,7 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.net.URLDecoder;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -54,6 +53,8 @@ public class UserDomeController {
     private AdminDaoJpa adminDaoJpa;
     @Autowired
     private UserDomeDao userDomeDao;
+    @Autowired
+    private UserDtoDaoJpa userDtoDaoJpa;
     @Autowired
     private HttpServletRequest request;
     @Autowired
@@ -347,23 +348,68 @@ public class UserDomeController {
 
     @RequestMapping("/login/{admin}/{password}")
     public String login(@PathVariable String admin, @PathVariable String password) {
-        String loginMsg="";
-        log.info("用户登录名admin:{},用户登录密码password:{}",admin,password);
-       Admin ad= adminDaoJpa.findByAdmin(admin);
-       log.info("用户信息Admin：{}",ad);
+        String loginMsg = "";
+        log.info("用户登录名admin:{},用户登录密码password:{}", admin, password);
+        Admin ad = adminDaoJpa.findByAdmin(admin);
+        log.info("用户信息Admin：{}", ad);
         boolean isFlag = encoder.matches(password, ad.getPassword());
         if (isFlag) {
-            loginMsg="用户名密码正确,登录成功!!!";
-        }
-        else {
-            loginMsg="用户名或密码不正确,登录失败!!!";
+            loginMsg = "用户名密码正确,登录成功!!!";
+        } else {
+            loginMsg = "用户名或密码不正确,登录失败!!!";
         }
         return loginMsg;
     }
 
     @RequestMapping("/annotation")
-    public String getString(@AdminName String adminName){
-        log.info("参数adminName：{}",adminName);
+    public String getString(@AdminName String adminName) {
+        log.info("参数adminName：{}", adminName);
         return adminName;
+    }
+
+    @PostMapping("/addUsers")
+    public List<UserDto> addUsers(@RequestBody List<UserDto> userDtoList) {
+        userDtoList = userDtoList.stream().map(userDto -> {
+            userDto.setCreateDate(LocalDateTime.now());
+            return userDto;
+        }).collect(Collectors.toList());
+        log.info("待添加的userDtoList：{}", JSON.toJSONString(userDtoList));
+        /** 批量根据姓名和年龄查询 */
+        List<UserDto> existList = userDomeDao.selectUserByNameAndAge(userDtoList);
+        log.info("根据姓名和年龄批量查询existList：{}", JSON.toJSONString(existList));
+        List<UserDto> addList = new ArrayList<>();
+        for (UserDto userDto : userDtoList) {
+            if (existList.stream().noneMatch(e -> e.getName().equals(userDto.getName())
+                    && e.getName().equals(userDto.getName()))) {
+                /**  如果不存在就批量添加 */
+                addList.add(userDto);
+            }
+            /** 存在就更新 */
+            else {
+                try {
+                    userDtoDaoJpa.updateByNameAndAge(userDto.getContext(),userDto.getSex(),userDto.getName(),userDto.getAge());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        if (!CollectionsUtils.isListEmpty(addList)) {
+            int i = userDomeDao.addList(addList);
+            log.info("添加影响的行数i:{}", i);
+        }
+        return addList;
+    }
+    @PostMapping("saveOrUpadateUsers")
+    public int saveOrUpadateUsers(@RequestBody String userList){
+        List<UserDto> userDtoList = jacksonUtils.toList(userList, new TypeReference<List<UserDto>>() {
+        });
+        userDtoList = userDtoList.stream().map(userDto -> {
+            userDto.setCreateDate(LocalDateTime.now());
+            return userDto;
+        }).collect(Collectors.toList());
+        log.info("待添加的userDtoList：{}", JSON.toJSONString(userDtoList));
+        int i = userDomeDao.saveOrUpadateUsers(userDtoList);
+        log.info("新增或修改影响的条数：{}",i);
+        return i;
     }
 }

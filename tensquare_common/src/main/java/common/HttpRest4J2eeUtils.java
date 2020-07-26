@@ -31,6 +31,7 @@ public class HttpRest4J2eeUtils {
         try {
             logger.info("url{}:"+url);
             HttpHeaders httpHeaders = new HttpHeaders();
+            //httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
             httpHeaders.setContentType(new MediaType("application", "json", Charset.forName("utf-8")));
             httpHeaders.setAccept(Arrays.asList(new MediaType[]{new MediaType("application", "json", Charset.forName("utf-8"))}));
             HttpEntity httpEntity = new HttpEntity(null, httpHeaders);

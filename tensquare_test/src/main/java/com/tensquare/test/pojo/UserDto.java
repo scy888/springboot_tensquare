@@ -28,8 +28,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 @Accessors(chain = true)
-@Table(indexes = {@Index(name = "index_name", columnList = "name", unique = true),
-        @Index(name = "index_age", columnList = "age", unique = true)})
+@Table(indexes = {@Index(name = "index_name_age", columnList = "name,age", unique = true),
+       /* @Index(name = "index_age", columnList = "age", unique = true)*/})
 @org.hibernate.annotations.Table(appliesTo = "user_dto", comment = "校验参数信息表")
 public class UserDto implements Serializable {
     private static final long serialVersionUID = 7729098393490305945L;
@@ -45,7 +45,7 @@ public class UserDto implements Serializable {
     @Column(columnDefinition = "int null comment '年龄'")
    // @NotEmpty( message = "年龄不能为空")
     private Integer age;
-    @Column(columnDefinition = "varchar(225) null comment '内容信息'")
+    //@Column(columnDefinition = "varchar(225) null comment '内容信息'")
     @NotEmpty(message = "内容信息不能为空")
     private String context;
     @Column(columnDefinition = "datetime null comment '创建时间'")
@@ -61,5 +61,4 @@ public class UserDto implements Serializable {
         this.age = age;
         this.createDate = createDate;
     }
-
 }

@@ -73,6 +73,21 @@ public class UserDomeDao {
         return jdbcTemplate.query(sql,new BeanPropertyRowMapper<>(User.class) );
     }
 
+    public List<UserDto> selectUserByNameAndAge(List<UserDto> userDtoList) {
+        String sql="select * from user_dto where (name,age) in(";
+         String value="";
+         List<Object> list=new ArrayList<>();
+        for (UserDto userDto : userDtoList) {
+            value+="(?,?),\n";
+            list.add(userDto.getName());
+            list.add(userDto.getAge());
+        }
+        value=value.substring(0, value.lastIndexOf(","))+")";
+        log.info("打印sql:{}",sql+value+";");
+        Object[] args = list.toArray(new Object[list.size()]);
+        return jdbcTemplate.query(sql+value+";", new BeanPropertyRowMapper<>(UserDto.class),args );
+    }
+
     public int insertUserDtoList(List<UserDto> userDtoList){
         /** 批量添加 */
         log.info("userDtoList:{}", JSONObject.toJSONString(userDtoList));
@@ -111,13 +126,14 @@ public class UserDomeDao {
 
     public int addList(List<UserDto> userDtoList){
         List<Object> list=new ArrayList<>();
-        String sql="insert into user_dto(name,sex,age,create_date)values"+"\n";
+        String sql="insert into user_dto(name,sex,age,context,create_date)values"+"\n";
         String value="";
         for (UserDto userDto : userDtoList) {
-            value+="(?,?,?,?),"+"\n";
+            value+="(?,?,?,?,?),"+"\n";
             list.add(userDto.getName());
             list.add(userDto.getSex());
             list.add(userDto.getAge());
+            list.add(userDto.getContext());
             list.add(userDto.getCreateDate());
         }
         Object[] args = list.toArray(new Object[list.size()]);
@@ -125,5 +141,20 @@ public class UserDomeDao {
         value=value.substring(0,value.lastIndexOf(","));
         log.info("sql:{}",sql+value+";");
         return jdbcTemplate.update(sql+value+";",args);
+    }
+
+
+    public int saveOrUpadateUsers(List<UserDto> userDtoList) {
+          int num=0;
+        for (UserDto userDto : userDtoList) {
+            String sql="insert into user_dto(age,context,create_date,name,sex)values(?,?,?,?,?)" +
+                    "on duplicate key update context=?,create_date=?,sex=?";
+            log.info("新增或修改sql：{}",sql);
+            Object[] arge=new Object[]{userDto.getAge(),userDto.getContext(),userDto.getCreateDate(),
+            userDto.getName(),userDto.getSex(),userDto.getContext(),userDto.getCreateDate(),userDto.getSex()};
+            int update = jdbcTemplate.update(sql, arge);
+            num=+update;
+        }
+        return num;
     }
 }
