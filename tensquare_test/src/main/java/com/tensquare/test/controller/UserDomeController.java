@@ -93,7 +93,6 @@ public class UserDomeController {
         logger.info("userList:{}", JSON.toJSONString(userList));
         return userDomeDaoJpa.saveAll(userList);
     }
-
     @PostMapping("/select")
     public Map<String, Object> select(@RequestBody String paramJson) {
         JSONObject jsonObject = JSON.parseObject(paramJson);
