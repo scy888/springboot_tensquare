@@ -6,6 +6,7 @@ import com.tensquare.test.pojo.User;
 import com.tensquare.test.pojo.UserDto;
 import common.JacksonUtils;
 import common.NumUtils;
+import common.SnowFlake;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
 import org.junit.Test;

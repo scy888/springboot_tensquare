@@ -13,12 +13,12 @@ public class SecurityUtil {
      * @param str
      * @return
      */
-    public static String md5Encoder(String str) {
+    public static String encoder(String str,String algorithm) {
         if (str == null) {
             return null;
         }
         try {
-            MessageDigest md5 = MessageDigest.getInstance("MD5");
+            MessageDigest md5 = MessageDigest.getInstance(algorithm);
             char[] charArray = str.toCharArray();
             byte[] byteArray = new byte[charArray.length];
 
@@ -50,7 +50,7 @@ public class SecurityUtil {
      * @return
      */
     public static String md5EncoderSquare(String str) {
-        return md5Encoder(md5Encoder(str));
+        return encoder(encoder(str,"MD5"),"MD5");
     }
 
     /**
@@ -63,10 +63,10 @@ public class SecurityUtil {
      * @return
      */
     public static String md5EncoderWithSalt(String md5Str, String salt) {
-        return md5Encoder(md5Str + salt);
+        return encoder(md5Str + salt,"MD5");
     }
    @Test
     public void test(){
-       System.out.println(md5Encoder("盛重阳"));
+       System.out.println(encoder("盛重阳","MD5"));
    }
 }

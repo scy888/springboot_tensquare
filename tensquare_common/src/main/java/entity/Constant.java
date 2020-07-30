@@ -1,6 +1,10 @@
 package entity;
 
 import common.CaseReasonEnum;
+import common.IdGeneratorConfig;
+import common.SnowFlake;
+import common.SpringContextUtil;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -156,4 +160,12 @@ public class Constant {
     public static final String COMMON_Y = "Y";
     public static final String COMMON_N = "N";
 
+   @Test
+   public void test(){
+       System.out.println(new SnowFlake(1,1).nextId());
+//       User user = SpringContextUtil.getBean(User.class);
+//       user.setAddress("武汉");
+//       System.out.println(user);
+       System.out.println(new IdGeneratorConfig().snowFlake());
+   }
 }
