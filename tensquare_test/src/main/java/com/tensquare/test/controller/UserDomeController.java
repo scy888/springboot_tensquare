@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -25,6 +27,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import utils.IdWorker;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -67,6 +71,8 @@ public class UserDomeController {
     private BCryptPasswordEncoder encoder;
     @Autowired
     private IdWorker idWorker;
+    //@Autowired
+   // private JavaMailSender mailSender;
     @Value("${publicKey}")
     private String publicKey;
     @Value("${privateKey}")
@@ -93,26 +99,26 @@ public class UserDomeController {
         logger.info("userList:{}", JSON.toJSONString(userList));
         return userDomeDaoJpa.saveAll(userList);
     }
-    @PostMapping("/select")
-    public Map<String, Object> select(@RequestBody String paramJson) {
-        JSONObject jsonObject = JSON.parseObject(paramJson);
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        Integer pageNum = jsonObject.getInteger("pageNum");
-        Integer pageSize = jsonObject.getInteger("pageSize");
-        User user = jsonObject.getJSONObject("user").toJavaObject(User.class);
-        Example<User> example = Example.of(user);
-        Sort sort = Sort.by(Sort.Direction.DESC, "birthday").and(Sort.by(Sort.Direction.ASC, "age"));
-        // Sort.by(Sort.Order.by("birthday")).descending().and(Sort.by(Sort.Order.by("age"))).ascending();
-        Pageable pageable = PageRequest.of(pageNum - 1, pageSize, sort);
-        Page<User> userPage = userDomeDaoJpa.findAll(example, pageable);
-        Map<String, Object> retunMap = new HashMap<>();
-        retunMap.put("content", userPage.getContent());
-        retunMap.put("totalElements", userPage.getTotalElements());
-        retunMap.put("totalPages", userPage.getTotalPages());
-        log.info("map:{}", retunMap);
-        return retunMap;
-    }
+//    @PostMapping("/select")
+//    public Map<String, Object> select(@RequestBody String paramJson) {
+//        JSONObject jsonObject = JSON.parseObject(paramJson);
+//        ObjectMapper objectMapper = new ObjectMapper();
+//
+//        Integer pageNum = jsonObject.getInteger("pageNum");
+//        Integer pageSize = jsonObject.getInteger("pageSize");
+//        User user = jsonObject.getJSONObject("user").toJavaObject(User.class);
+//        Example<User> example = Example.of(user);
+//        Sort sort = Sort.by(Sort.Direction.DESC, "birthday").and(Sort.by(Sort.Direction.ASC, "age"));
+//        // Sort.by(Sort.Order.by("birthday")).descending().and(Sort.by(Sort.Order.by("age"))).ascending();
+//        Pageable pageable = PageRequest.of(pageNum - 1, pageSize, sort);
+//        Page<User> userPage = userDomeDaoJpa.findAll(example, pageable);
+//        Map<String, Object> retunMap = new HashMap<>();
+//        retunMap.put("content", userPage.getContent());
+//        retunMap.put("totalElements", userPage.getTotalElements());
+//        retunMap.put("totalPages", userPage.getTotalPages());
+//        log.info("map:{}", retunMap);
+//        return retunMap;
+//    }
 
     @RequestMapping("/findOne")
     public User findOne() {
@@ -411,4 +417,51 @@ public class UserDomeController {
         log.info("新增或修改影响的条数：{}",i);
         return i;
     }
+//    @GetMapping("/send")
+//    public String sendEmail() throws Exception{
+//        String templateContent = FreemarkerUtil.getTemplateContent("/ftl/batch-job-failure.html");
+//        Map<String, Object> root = new HashMap<>();
+//        root.put("operator", "operator");
+//        root.put("subject", "标题");
+//        root.put("subject", "Job异常信息明细");
+//        root.put("jobName", "jobName");
+//        root.put("jobStartTime", "jobStartTime");
+//        root.put("jobEndTime", "jobStartTime");
+//        root.put("jobStatus", "jobStatus");
+//        root.put("jobExitCode", "jobExitCode");
+//        root.put("jobExitDescription", "jobExitDescription");
+//        root.put("jobIsRuning", "jobIsRuning");
+//        root.put("joblastUpdateTime", "joblastUpdateTime");
+//        root.put("jobDueTime", "jobDueTime");
+//        root.put("stepName", "stepName");
+//        root.put("stepStartTime", "stepStartTime");
+//        root.put("stepEndTime", "stepEndTime");
+//        root.put("stepStatus", "stepStatus");
+//        root.put("stepCommitCount", "stepCommitCount");
+//        root.put("stepReadCount", "stepReadCount");
+//        root.put("stepWriteCount", "stepWriteCount");
+//        root.put("stepExitCode", "stepExitCode");
+//        root.put("stepExitDescription", "stepExitDescription");
+//
+//        String outputContent = FreemarkerUtil.parse(templateContent, root);
+//
+//        MimeMessage mimeMailMessage = mailSender.createMimeMessage();
+//        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMailMessage);
+//        try {
+//            mimeMessageHelper.setFrom("um-sit@weshareholdings.com.cn");
+//            mimeMessageHelper.setTo(new String[]{"v_tianwenkai@weshareholdings.com",
+//                    "v_shengchongyang@weshareholdings.com",
+//                    "knight.song@weshareholdings.com",
+//                    "jiancai.zhou@weshareholdings.com",
+//                    "jiayuan.qu@weshareholdings.com",});
+//            mimeMessageHelper.setSubject("Job异常信息明细");
+//            mimeMessageHelper.setText(outputContent, true);
+//            mailSender.send(mimeMailMessage);
+//            log.info("邮件发送成功：{}", "");
+//        } catch (MessagingException e) {
+//            e.printStackTrace();
+//            log.error("邮件发送失败：{}", "");
+//        }
+//        return null;
+//    }
 }
