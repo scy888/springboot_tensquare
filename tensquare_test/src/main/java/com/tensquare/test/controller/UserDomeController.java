@@ -1,9 +1,7 @@
 package com.tensquare.test.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tensquare.test.annotation.AdminName;
 import com.tensquare.test.dao.AdminDaoJpa;
 import com.tensquare.test.dao.UserDomeDao;
@@ -16,10 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Example;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -27,8 +23,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import utils.IdWorker;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -72,7 +66,7 @@ public class UserDomeController {
     @Autowired
     private IdWorker idWorker;
     //@Autowired
-   // private JavaMailSender mailSender;
+    // private JavaMailSender mailSender;
     @Value("${publicKey}")
     private String publicKey;
     @Value("${privateKey}")
@@ -392,7 +386,7 @@ public class UserDomeController {
             /** 存在就更新 */
             else {
                 try {
-                    userDtoDaoJpa.updateByNameAndAge(userDto.getContext(),userDto.getSex(),userDto.getName(),userDto.getAge());
+                    userDtoDaoJpa.updateByNameAndAge(userDto.getContext(), userDto.getSex(), userDto.getName(), userDto.getAge());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -404,8 +398,9 @@ public class UserDomeController {
         }
         return addList;
     }
+
     @PostMapping("saveOrUpadateUsers")
-    public int saveOrUpadateUsers(@RequestBody String userList){
+    public int saveOrUpadateUsers(@RequestBody String userList) {
         List<UserDto> userDtoList = jacksonUtils.toList(userList, new TypeReference<List<UserDto>>() {
         });
         userDtoList = userDtoList.stream().map(userDto -> {
@@ -414,7 +409,7 @@ public class UserDomeController {
         }).collect(Collectors.toList());
         log.info("待添加的userDtoList：{}", JSON.toJSONString(userDtoList));
         int i = userDomeDao.saveOrUpadateUsers(userDtoList);
-        log.info("新增或修改影响的条数：{}",i);
+        log.info("新增或修改影响的条数：{}", i);
         return i;
     }
 //    @GetMapping("/send")

@@ -13,6 +13,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * @author: scyang
@@ -30,8 +32,21 @@ public class StartRun implements CommandLineRunner {
 //    private Cache<String,Object> userCache;
     @Override
     public void run(String... args) throws Exception {
-        List<User> userList = userDomeDaoJpa.findAll().subList(0,1 );
-        log.info("userList:{}", JSONObject.toJSONString(userList));
-        //userCache.put("userList",userList );
+        Object obj = new Callable<List<User>>() {
+            @Override
+            public List<User> call() throws Exception {
+                List<User> userList = userDomeDaoJpa.findAll().subList(0,1 );
+                return userList;
+            }
+        }.call();
+        log.info("多线程实现实现Callable接口,userList:{}", JSONObject.toJSONString(obj));
+
+        CompletableFuture<List<User>> completableFuture = CompletableFuture.supplyAsync(() -> {
+            log.info("开始实现多线程completableFuture....");
+            return userDomeDaoJpa.findAll().subList(0, 1);
+        }).exceptionally(ex -> {
+            throw new RuntimeException("多线程调用completableFuture失败:{}",ex.getCause());
+        });
+        log.info("多线程实现实现CompletableFuture接口,userList:{}", JSONObject.toJSONString(completableFuture.get()));
     }
 }
