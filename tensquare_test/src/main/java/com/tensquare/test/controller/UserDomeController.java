@@ -15,6 +15,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.BindingResult;
@@ -23,6 +27,10 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import utils.IdWorker;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -459,4 +467,33 @@ public class UserDomeController {
 //        }
 //        return null;
 //    }
+    @RequestMapping("/dynamic")
+    public List<UserDto> getUserDtoList(@RequestBody Map<String,Object> map){
+        log.info("前端传过来的参数,map:{}",map);
+        Integer pageNum = (Integer) map.get("pageNum");
+        Integer pageSize = (Integer) map.get("pageSize");
+
+        List<Predicate> predicateList=new ArrayList<>();
+        Specification<UserDto> specification = new Specification<UserDto>() {
+            @Override
+            public Predicate toPredicate(Root<UserDto> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+                if (!StringUtils.isEmpyStr((String) map.get("name"))){
+                    predicateList.add(criteriaBuilder.equal(root.get("name").as(String.class), (String) map.get("name")));
+                }
+                if (!StringUtils.isEmpyStr((String) map.get("context"))){
+                    predicateList.add(criteriaBuilder.like(root.get("context").as(String.class), (String) map.get("context")+"%"));
+                }
+                if ((Integer)map.get("age")!=null){
+
+                    predicateList.add(criteriaBuilder.ge(root.get("age").as(Integer.class),(Integer)map.get("age")));
+                }
+                return criteriaBuilder.or(predicateList.toArray(new Predicate[predicateList.size()]));
+            }
+        };
+        Page<UserDto> userDtoPage = userDtoDaoJpa.findAll(specification,
+                PageRequest.of(pageNum - 1, pageSize, Sort.by(Sort.Direction.DESC, "age")
+                        .and(Sort.by(Sort.Direction.ASC, "userId"))));
+        log.info("userDtoPage{}:",JSON.toJSONString(userDtoPage));
+        return userDtoPage.getContent();
+    }
 }
