@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * @author: scyang
  * @program: tensquare_parent
@@ -20,6 +22,13 @@ public interface UserDtoDaoJpa extends JpaRepository<UserDto,Integer>, JpaSpecif
     @Modifying
     @Transactional
     void updateByNameAndAge(String context, String sex, String name, Integer age);
+
+    List<UserDto> findByName(String name);
+
+    @Query(value = "update user_dto set age=age+?2 where name= ?1",nativeQuery = true)
+    @Modifying
+    @Transactional
+    void updateUserDto(String name, int age);
 
 //    @Query(value = "update user_dto set context= :#{#userDto.context},sex= :#{#userDto.sex} where name= :#{#userDto.name} and age= :#{#userDto.age}", nativeQuery = true)
 //    @Modifying

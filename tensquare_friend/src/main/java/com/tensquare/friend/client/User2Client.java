@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
  */
 @FeignClient(value = "tensquare-user",fallback = UserClientImpl.class)
 @Component
-public interface UserClient {
+public interface User2Client {
     /**
      * 考取被调用用户微服务的更改关注数的方法
      * @param num

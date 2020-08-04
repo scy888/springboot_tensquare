@@ -1,6 +1,6 @@
 package com.tensquare.friend.controller;
 
-import com.tensquare.friend.client.UserClient;
+import com.tensquare.friend.client.User2Client;
 import com.tensquare.friend.serivce.FriendService;
 import entity.Result;
 import entity.StatusCode;
@@ -18,7 +18,7 @@ public class FriendController {
     @Autowired
     private FriendService friendService;
     @Autowired
-    private UserClient userClient;
+    private User2Client user2Client;
     /**
      * /like/{friendid}/{type}
      * 添加好友或非好友
@@ -35,8 +35,8 @@ public class FriendController {
         // 判断是添加好友还是非好友, 好友type=1, 非好友：type=2
         if("1".equals(type)){
             friendService.like(userId,friendid);
-            userClient.updateFollowCount(userId,1);
-            userClient.updateFansCount(friendid,1);
+            user2Client.updateFollowCount(userId,1);
+            user2Client.updateFansCount(friendid,1);
         }else{
             // 添加非好友
             friendService.addNoFriend(userId,friendid);
@@ -53,8 +53,8 @@ public class FriendController {
         String userId = claims.getId();
 
         friendService.deleteFriend(userId,friendId);
-        userClient.updateFansCount(friendId,-1);
-        userClient.updateFollowCount(userId,-1);
+        user2Client.updateFansCount(friendId,-1);
+        user2Client.updateFollowCount(userId,-1);
         return Result.success("删除好友成功...");
     }
 }

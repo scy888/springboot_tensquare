@@ -24,6 +24,7 @@
         <module>tensquare_config</module>
         <module>tensquare_test</module>
         <module>tensquare_batch</module>
+        <module>tensquare_service</module>
     </modules>
     <packaging>pom</packaging>
     <name>tensquare_parent</name>

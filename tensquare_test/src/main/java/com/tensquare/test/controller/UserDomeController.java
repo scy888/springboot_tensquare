@@ -1,7 +1,10 @@
 package com.tensquare.test.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tensquare.req.UserDtoReq;
 import com.tensquare.test.annotation.AdminName;
 import com.tensquare.test.dao.AdminDaoJpa;
 import com.tensquare.test.dao.UserDomeDao;
@@ -12,12 +15,10 @@ import common.*;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -101,26 +102,25 @@ public class UserDomeController {
         logger.info("userList:{}", JSON.toJSONString(userList));
         return userDomeDaoJpa.saveAll(userList);
     }
-//    @PostMapping("/select")
-//    public Map<String, Object> select(@RequestBody String paramJson) {
-//        JSONObject jsonObject = JSON.parseObject(paramJson);
-//        ObjectMapper objectMapper = new ObjectMapper();
-//
-//        Integer pageNum = jsonObject.getInteger("pageNum");
-//        Integer pageSize = jsonObject.getInteger("pageSize");
-//        User user = jsonObject.getJSONObject("user").toJavaObject(User.class);
-//        Example<User> example = Example.of(user);
-//        Sort sort = Sort.by(Sort.Direction.DESC, "birthday").and(Sort.by(Sort.Direction.ASC, "age"));
-//        // Sort.by(Sort.Order.by("birthday")).descending().and(Sort.by(Sort.Order.by("age"))).ascending();
-//        Pageable pageable = PageRequest.of(pageNum - 1, pageSize, sort);
-//        Page<User> userPage = userDomeDaoJpa.findAll(example, pageable);
-//        Map<String, Object> retunMap = new HashMap<>();
-//        retunMap.put("content", userPage.getContent());
-//        retunMap.put("totalElements", userPage.getTotalElements());
-//        retunMap.put("totalPages", userPage.getTotalPages());
-//        log.info("map:{}", retunMap);
-//        return retunMap;
-//    }
+
+    @PostMapping("/select")
+    public Map<String, Object> select(@RequestBody String paramJson) {
+        JSONObject jsonObject = JSON.parseObject(paramJson);
+        Integer pageNum = jsonObject.getInteger("pageNum");
+        Integer pageSize = jsonObject.getInteger("pageSize");
+        User user = jsonObject.getJSONObject("user").toJavaObject(User.class);
+        Example<User> example = Example.of(user);
+        Sort sort = Sort.by(Sort.Direction.DESC, "birthday").and(Sort.by(Sort.Direction.ASC, "age"));
+        // Sort.by(Sort.Order.by("birthday")).descending().and(Sort.by(Sort.Order.by("age"))).ascending();
+        Pageable pageable = PageRequest.of(pageNum - 1, pageSize, sort);
+        Page<User> userPage = userDomeDaoJpa.findAll(example, pageable);
+        Map<String, Object> retunMap = new HashMap<>();
+        retunMap.put("content", userPage.getContent());
+        retunMap.put("totalElements", userPage.getTotalElements());
+        retunMap.put("totalPages", userPage.getTotalPages());
+        log.info("map:{}", retunMap);
+        return retunMap;
+    }
 
     @RequestMapping("/findOne")
     public User findOne() {
@@ -420,7 +420,8 @@ public class UserDomeController {
         log.info("新增或修改影响的条数：{}", i);
         return i;
     }
-//    @GetMapping("/send")
+
+    //    @GetMapping("/send")
 //    public String sendEmail() throws Exception{
 //        String templateContent = FreemarkerUtil.getTemplateContent("/ftl/batch-job-failure.html");
 //        Map<String, Object> root = new HashMap<>();
@@ -468,24 +469,24 @@ public class UserDomeController {
 //        return null;
 //    }
     @RequestMapping("/dynamic")
-    public List<UserDto> getUserDtoList(@RequestBody Map<String,Object> map){
-        log.info("前端传过来的参数,map:{}",map);
+    public List<UserDto> getUserDtoList(@RequestBody Map<String, Object> map) {
+        log.info("前端传过来的参数,map:{}", map);
         Integer pageNum = (Integer) map.get("pageNum");
         Integer pageSize = (Integer) map.get("pageSize");
 
-        List<Predicate> predicateList=new ArrayList<>();
+        List<Predicate> predicateList = new ArrayList<>();
         Specification<UserDto> specification = new Specification<UserDto>() {
             @Override
             public Predicate toPredicate(Root<UserDto> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
-                if (!StringUtils.isEmpyStr((String) map.get("name"))){
+                if (!StringUtils.isEmpyStr((String) map.get("name"))) {
                     predicateList.add(criteriaBuilder.equal(root.get("name").as(String.class), (String) map.get("name")));
                 }
-                if (!StringUtils.isEmpyStr((String) map.get("context"))){
-                    predicateList.add(criteriaBuilder.like(root.get("context").as(String.class), (String) map.get("context")+"%"));
+                if (!StringUtils.isEmpyStr((String) map.get("context"))) {
+                    predicateList.add(criteriaBuilder.like(root.get("context").as(String.class), (String) map.get("context") + "%"));
                 }
-                if ((Integer)map.get("age")!=null){
+                if ((Integer) map.get("age") != null) {
 
-                    predicateList.add(criteriaBuilder.ge(root.get("age").as(Integer.class),(Integer)map.get("age")));
+                    predicateList.add(criteriaBuilder.ge(root.get("age").as(Integer.class), (Integer) map.get("age")));
                 }
                 return criteriaBuilder.or(predicateList.toArray(new Predicate[predicateList.size()]));
             }
@@ -493,7 +494,32 @@ public class UserDomeController {
         Page<UserDto> userDtoPage = userDtoDaoJpa.findAll(specification,
                 PageRequest.of(pageNum - 1, pageSize, Sort.by(Sort.Direction.DESC, "age")
                         .and(Sort.by(Sort.Direction.ASC, "userId"))));
-        log.info("userDtoPage{}:",JSON.toJSONString(userDtoPage));
+        log.info("userDtoPage{}:", JSON.toJSONString(userDtoPage));
         return userDtoPage.getContent();
+    }
+
+    @RequestMapping("/select2")
+    public List<UserDtoReq> select2(@RequestBody UserDtoReq userDtoReq) {
+        log.info("入参userDto:{}", JSON.toJSONString(userDtoReq));
+        List<UserDto> userDtoList = userDtoDaoJpa.findAll(Example.of(JSON.parseObject(JSON.toJSONString(userDtoReq)).toJavaObject(UserDto.class)));
+        List<UserDtoReq> userDtoReqList = userDtoList.stream().map(userDto1 -> {
+            return JSON.parseObject(JSON.toJSONString(userDto1), UserDtoReq.class);
+        }).collect(Collectors.toList());
+        log.info("userDtoList转换=>userDtoReqList:{}", JSON.toJSONString(userDtoReqList));
+        return userDtoReqList;
+    }
+
+    @RequestMapping("/updateUserDto/{name}/{age}")
+    public List<UserDtoReq> updateUserDto(@PathVariable String name,@PathVariable int age) {
+        List<UserDto> userDtoList = userDtoDaoJpa.findByName(name);
+        log.info("姓名：{},修改前的年龄：age:{}",userDtoList.get(0).getName(),userDtoList.get(0).getAge());
+        userDtoDaoJpa.updateUserDto(name,age);
+         userDtoList = userDtoDaoJpa.findByName(name);
+        log.info("姓名：{},修改后的年龄：age:{},",userDtoList.get(0).getName(),userDtoList.get(0).getAge());
+        return userDtoList.stream().map(userDto -> {
+            UserDtoReq userDtoReq=new UserDtoReq();
+            BeanUtils.copyProperties(userDto, userDtoReq);
+            return userDtoReq;
+        }).collect(Collectors.toList());
     }
 }

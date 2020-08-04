@@ -35,9 +35,10 @@ public class BatchService {
         for (Map.Entry<String, Object> entry : map.entrySet()) {
             jobParametersBuilder.addString(entry.getKey(), (String) entry.getValue());
         }
-        log.info("获取的job名：{}", jobParametersBuilder.toJobParameters());
+        JobParameters jobParameters = jobParametersBuilder.toJobParameters();
+        log.info("获取的job参数：{}", jobParameters);
         log.info("job:{}", job);
-        JobExecution jobExecution = jobLauncher.run(job, jobParametersBuilder.toJobParameters());
+        JobExecution jobExecution = jobLauncher.run(job, jobParameters);
         return jobExecution;
     }
 

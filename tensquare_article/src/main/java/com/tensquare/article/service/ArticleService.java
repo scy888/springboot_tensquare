@@ -229,6 +229,6 @@ public class ArticleService {
 		}
 		article.setThumbup(article.getThumbup()+1);
 		articleDao.save(article);
-		//articleDao.thumbup(articleId);
+		articleDao.thumbup(articleId);
 	}
 }

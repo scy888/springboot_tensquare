@@ -1,18 +1,28 @@
 package com.tensquare.batch.batch;
 
+import com.alibaba.fastjson.JSON;
 import com.tensquare.batch.config.BatchConfig;
+import com.tensquare.batch.feginClient.UserDtoFeignClient;
 import com.tensquare.batch.listener.JobListener;
 import com.tensquare.batch.pojo.Student;
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.Step;
+import com.tensquare.req.UserDtoReq;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.batch.core.*;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.core.scope.context.ChunkContext;
+import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.core.step.tasklet.TaskletStep;
 import org.springframework.batch.item.file.FlatFileItemReader;
+import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.List;
 
 /**
  * @author: scyang
@@ -22,7 +32,10 @@ import org.springframework.context.annotation.Configuration;
  * @describe:
  */
 @Configuration
+@Slf4j
 public class BatchJobConfig {
+    @Autowired
+    private UserDtoFeignClient userDtoFeignClient;
     @Autowired
     private JobBuilderFactory jobBuilderFactory;
     @Autowired
@@ -31,6 +44,8 @@ public class BatchJobConfig {
     private BatchConfig batchConfig;
     @Autowired
     private JobListener jobListener;
+//    @Autowired
+//    private ChunkContext chunkContext;
 
     @Bean
     public Step studentStep1(FlatFileItemReader<Student> studentItemReader,
@@ -57,7 +72,7 @@ public class BatchJobConfig {
     }
 
     @Bean
-    public Job StudentJob(Step studentStep1, Step studentStep2){
+    public Job StudentJob(Step studentStep1, Step studentStep2) {
         Job job = jobBuilderFactory.get("studentJob")
                 .incrementer(new RunIdIncrementer())
                 .listener(jobListener)
@@ -66,5 +81,93 @@ public class BatchJobConfig {
                 .end()
                 .build();
         return job;
+    }
+
+    /******************************************************************************/
+    @Bean
+    public BatchConfig getBatchConfig(){
+        return new BatchConfig();
+    }
+    /**
+     * job监听器
+     */
+    @Bean
+    public JobExecutionListener getJobListener() {
+        return new JobExecutionListener() {
+            @Override
+            public void beforeJob(JobExecution jobExecution) {
+                log.info("任务执行前BatchJobConfig内部注入监听器,jobInsrence:{}", jobExecution.getJobInstance());
+            }
+
+            @Override
+            public void afterJob(JobExecution jobExecution) {
+                log.info("任务执行后BatchJobConfig内部注入监听器,jobInsrence:{}", jobExecution.getJobInstance());
+            }
+        };
+    }
+
+    /**
+     * 第一个步骤
+     */
+    @Bean
+    @StepScope
+    public Tasklet getTasklet1(@Value("#{jobParameters[name]}") String name) {
+        log.info("从jobParameters获取的参数name:{}", name);
+        return new Tasklet() {
+            @Override
+            public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
+                List<UserDtoReq> userDtoReqList = userDtoFeignClient.select2(new UserDtoReq().setName(name));
+                log.info("从步骤getTasklet1中获取userDtoReqList：{},", JSON.toJSONString(userDtoReqList));
+                return RepeatStatus.FINISHED;
+            }
+        };
+    }
+
+    /**
+     * 第二个步骤
+     */
+    @Bean
+    public Tasklet getTasklet2() {
+        return new Tasklet() {
+            @Override
+            public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
+                String name = (String) chunkContext.getStepContext().getJobParameters().get("name");
+                String age = (String) chunkContext.getStepContext().getJobParameters().get("age");
+                log.info("从jobParameters获取的参数name:{}，age:{}", name, age);
+                List<UserDtoReq> userDtoReqList = userDtoFeignClient.updateUserDto(name, Integer.parseInt(age));
+                log.info("从步骤getTasklet2中获取userDtoReqList：{},", JSON.toJSONString(userDtoReqList));
+                return RepeatStatus.FINISHED;
+            }
+        };
+    }
+
+    @Bean
+    public Step getStep1(Tasklet getTasklet1) {
+        return stepBuilderFactory.get("step1")
+                //.tasklet(getTasklet1)
+                //.tasklet(batchConfig.getTasklet1())
+                .tasklet(getBatchConfig().getTasklet1())
+                .build();
+    }
+
+    @Bean
+    public Step getStep2() {
+        return stepBuilderFactory.get("step2")
+                //.tasklet(getTasklet2())
+                //.tasklet(batchConfig.getTasklet2())
+                .tasklet(getBatchConfig().getTasklet2())
+                .build();
+    }
+
+    @Bean
+    public Job getJob(Step getStep1){
+       return jobBuilderFactory.get("userJob")
+                //.listener(getJobListener())
+               //.listener(batchConfig.getJobListener())
+               .listener(getBatchConfig().getJobListener())
+                .incrementer(new RunIdIncrementer())
+                .start(getStep1)
+                .next(getStep2())
+                .build();
     }
 }
