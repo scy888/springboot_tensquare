@@ -132,9 +132,9 @@ public class BatchJobConfig {
             @Override
             public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
                 String name = (String) chunkContext.getStepContext().getJobParameters().get("name");
-                String age = (String) chunkContext.getStepContext().getJobParameters().get("age");
+                long age = (long) chunkContext.getStepContext().getJobParameters().get("age");
                 log.info("从jobParameters获取的参数name:{}，age:{}", name, age);
-                List<UserDtoReq> userDtoReqList = userDtoFeignClient.updateUserDto(name, Integer.parseInt(age));
+                List<UserDtoReq> userDtoReqList = userDtoFeignClient.updateUserDto(name, (int) age);
                 log.info("从步骤getTasklet2中获取userDtoReqList：{},", JSON.toJSONString(userDtoReqList));
                 return RepeatStatus.FINISHED;
             }

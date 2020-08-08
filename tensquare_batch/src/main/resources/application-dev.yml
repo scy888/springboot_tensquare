@@ -33,3 +33,6 @@ spring:
 
 student:
   path: E:\batch
+
+url:
+  lxgm: E:/lxgm

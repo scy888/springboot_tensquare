@@ -8,6 +8,7 @@ import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.configuration.JobRegistry;
 import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.batch.core.launch.NoSuchJobException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,13 +34,30 @@ public class BatchService {
         log.info("获取的job：{}", job);
         JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
         for (Map.Entry<String, Object> entry : map.entrySet()) {
-            jobParametersBuilder.addString(entry.getKey(), (String) entry.getValue());
+            if (entry.getKey()=="age"){
+                jobParametersBuilder.addLong(entry.getKey(), (Long) entry.getValue());
+            }
+            else {
+                jobParametersBuilder.addString(entry.getKey(), (String) entry.getValue());
+            }
         }
         JobParameters jobParameters = jobParametersBuilder.toJobParameters();
         log.info("获取的job参数：{}", jobParameters);
         log.info("job:{}", job);
         JobExecution jobExecution = jobLauncher.run(job, jobParameters);
         return jobExecution;
+    }
+
+    public String getCsv(Map<String, String> map) throws Exception {
+        Job job = jobRegistry.getJob((String) map.get("jobName"));
+        log.info("获取的job：{}", job);
+        JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            jobParametersBuilder.addString(entry.getKey(),  entry.getValue() );
+        }
+        JobParameters jobParameters = jobParametersBuilder.toJobParameters();
+        jobLauncher.run(job, jobParameters);
+        return jobParameters.toString();
     }
 
     @SneakyThrows
@@ -54,4 +72,5 @@ public class BatchService {
         JobExecution jobExecution = jobLauncher.run(job, jobParameters);
         return jobExecution;
     }
+
 }

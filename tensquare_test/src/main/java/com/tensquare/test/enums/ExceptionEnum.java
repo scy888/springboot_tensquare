@@ -1,4 +1,4 @@
-package com.tensquare.test.pojo;
+package com.tensquare.test.enums;
 
 /**
  * @author: scyang
@@ -7,6 +7,7 @@ package com.tensquare.test.pojo;
  * @date: 2020-07-19 17:02:44
  * @describe:
  */
+
 public enum ExceptionEnum {
     /** 签名错误 */
     SIGN_ERROR("30001","签名错误"),

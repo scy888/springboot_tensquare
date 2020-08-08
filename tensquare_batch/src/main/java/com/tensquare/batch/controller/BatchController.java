@@ -51,6 +51,7 @@ public class BatchController {
     private UserFeignClient userFeignClient;
     @Autowired
     private UserDtoFeignClient userDtoFeignClient;
+
     @RequestMapping("/kafka")
     public String hello(@RequestParam String worlds) {
         ListenableFuture<SendResult<String, Object>> future = kafkaTemplate.send("hello", worlds);
@@ -124,10 +125,10 @@ public class BatchController {
 
     @GetMapping("/start/{jobName}/{name}/{age}")
     public String start(@PathVariable String jobName,
-                              @RequestParam(required = false) String batchDate,
-                              @RequestParam(required = false) String param,
-                              @PathVariable String name, @PathVariable String age
-                        ) throws Exception {
+                        @RequestParam(required = false) String batchDate,
+                        @RequestParam(required = false) String param,
+                        @PathVariable String name, @PathVariable long age
+    ) throws Exception {
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("jobName", jobName);
         map.put("name", name);
@@ -136,25 +137,37 @@ public class BatchController {
         map.put("batchDate", batchDate == null ? LocalDate.now().minusDays(2).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) : batchDate);
         map.put("age", age);
         return batchService.start(map).toString();
-        //return batchService.start(jobName,param,batchDate).toString();
+    }
+
+    @GetMapping("/csv/{jobName}")
+    public String getCsv(@PathVariable String jobName,
+                         @RequestParam(required = false, defaultValue = "2020-06-06") String batchDate,
+                         @RequestParam(required = false, defaultValue = "system") String param) throws Exception {
+        Map<String, String> map = new LinkedHashMap();
+        map.put("jobName", jobName);
+        map.put("startDate", LocalDate.now().toString());
+        map.put("param", param == null ? "system" : param);
+        map.put("batchDate", batchDate);
+        return batchService.getCsv(map);
     }
 
     @RequestMapping("/provider")
-    public List<UserDtoReq> getUserDtoReqs(@RequestBody UserDtoReq userDtoReq){
-        List<UserDtoReq> userDtos = userFeignClient.getUserDtos(userDtoReq.getName(),userDtoReq.getAge());
-          log.info("userDtos:{}", JSON.toJSONString(userDtos));
-          return userDtos;
+    public List<UserDtoReq> getUserDtoReqs(@RequestBody UserDtoReq userDtoReq) {
+        List<UserDtoReq> userDtos = userFeignClient.getUserDtos(userDtoReq.getName(), userDtoReq.getAge());
+        log.info("userDtos:{}", JSON.toJSONString(userDtos));
+        return userDtos;
     }
+
     @RequestMapping("/feign")
-    public List<UserDtoReq> get(){
-        UserDtoReq userDtoReq=new UserDtoReq();
+    public List<UserDtoReq> get() {
+        UserDtoReq userDtoReq = new UserDtoReq();
         userDtoReq.setName("赵敏");
         List<UserDtoReq> userDtoReqs = userDtoFeignClient.select2(userDtoReq);
-        log.info("batch服务调用test服务,userDtoReqs:{}",JSON.toJSONString(userDtoReqs));
+        log.info("batch服务调用test服务,userDtoReqs:{}", JSON.toJSONString(userDtoReqs));
         List<UserDtoReq> userDtoReqList = userDtoFeignClient.updateUserDto(userDtoReqs.get(0).getName(), 1);
-        log.info("batch服务调用test服务,userDtoReqList:{}",JSON.toJSONString(userDtoReqList));
+        log.info("batch服务调用test服务,userDtoReqList:{}", JSON.toJSONString(userDtoReqList));
         userDtoReqs.addAll(userDtoReqList);
-        Set<UserDtoReq> set=new HashSet<>(userDtoReqs);
+        Set<UserDtoReq> set = new HashSet<>(userDtoReqs);
         return new ArrayList<UserDtoReq>(set);
     }
 

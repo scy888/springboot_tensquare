@@ -39,6 +39,7 @@ import java.util.List;
 @SpringBootTest
 @AutoConfigureMockMvc
 public class DomeTest {
+    String a="中国";
     @Autowired
     private UserDomeDao userDomeDao;
     @Autowired
@@ -79,5 +80,11 @@ public class DomeTest {
         //userDomeDao.insertUserDtoList(userDtoList);
         //userDomeDao.addUserList(userDtoList);
         userDomeDao.addList(userDtoList);
+    }
+    @Test
+    public void test(){
+
+        a=a+"日本";
+        System.out.println(a);
     }
 }

@@ -1,5 +1,6 @@
 package com.tensquare.test.pojo;
 
+import com.tensquare.test.enums.StatusMent;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

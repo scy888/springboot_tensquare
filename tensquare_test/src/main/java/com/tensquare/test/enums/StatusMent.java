@@ -1,6 +1,5 @@
-package com.tensquare.test.pojo;
+package com.tensquare.test.enums;
 
-import lombok.Data;
 import lombok.Getter;
 
 /**

@@ -3,19 +3,16 @@ package com.tensquare.batch.config;
 import com.alibaba.fastjson.JSON;
 import com.tensquare.batch.feginClient.UserDtoFeignClient;
 import com.tensquare.req.UserDtoReq;
-import jdk.nashorn.internal.runtime.logging.Logger;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.configuration.JobRegistry;
-import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.configuration.support.JobRegistryBeanPostProcessor;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
@@ -91,9 +88,9 @@ public class BatchConfig {
             @Override
             public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
                 String name = (String) chunkContext.getStepContext().getJobParameters().get("name");
-                String age = (String) chunkContext.getStepContext().getJobParameters().get("age");
+                long age = (long) chunkContext.getStepContext().getJobParameters().get("age");
                 log.info("从jobParameters获取的参数name:{}，age:{}", name, age);
-                List<UserDtoReq> userDtoReqList = userDtoFeignClient.updateUserDto(name, Integer.parseInt(age));
+                List<UserDtoReq> userDtoReqList = userDtoFeignClient.updateUserDto(name, (int) age);
                 log.info("从步骤getTasklet2中获取userDtoReqList：{},", JSON.toJSONString(userDtoReqList));
                 return RepeatStatus.FINISHED;
             }
