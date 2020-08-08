@@ -1,8 +1,13 @@
 package com.tensquare.batch.feginClient;
 
 import com.tensquare.client.UserClient;
+import com.tensquare.req.UserDtoReq;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.List;
 
 /**
  * @author: scyang

@@ -90,8 +90,8 @@ public class BatchConfig {
                 String name = (String) chunkContext.getStepContext().getJobParameters().get("name");
                 long age = (long) chunkContext.getStepContext().getJobParameters().get("age");
                 log.info("从jobParameters获取的参数name:{}，age:{}", name, age);
-                List<UserDtoReq> userDtoReqList = userDtoFeignClient.updateUserDto(name, (int) age);
-                log.info("从步骤getTasklet2中获取userDtoReqList：{},", JSON.toJSONString(userDtoReqList));
+                //List<UserDtoReq> userDtoReqList = userDtoFeignClient.updateUserDto(name, (int) age);
+                log.info("从步骤getTasklet2中获取userDtoReqList：{},", JSON.toJSONString("userDtoReqList"));
                 return RepeatStatus.FINISHED;
             }
         };

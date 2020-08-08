@@ -1,6 +1,7 @@
 package com.tensquare.batch.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.tensquare.batch.feginClient.UserDtoFeignClient;
 import com.tensquare.batch.feginClient.UserFeignClient;
 import com.tensquare.batch.pojo.Instance;
@@ -152,8 +153,12 @@ public class BatchController {
     }
 
     @RequestMapping("/provider")
-    public List<UserDtoReq> getUserDtoReqs(@RequestBody UserDtoReq userDtoReq) {
-        List<UserDtoReq> userDtos = userFeignClient.getUserDtos(userDtoReq.getName(), userDtoReq.getAge());
+    public List<UserDtoReq> getUserDtoReqs(@RequestBody String paramJson) {
+        JSONObject jsonObject = JSON.parseObject(paramJson);
+        String name = jsonObject.getObject("name", String.class);
+        Integer age = jsonObject.getInteger("age");
+        log.info("name:{},age:{}",name,age);
+        List<UserDtoReq> userDtos = userFeignClient.getUserDtos(name, age);
         log.info("userDtos:{}", JSON.toJSONString(userDtos));
         return userDtos;
     }

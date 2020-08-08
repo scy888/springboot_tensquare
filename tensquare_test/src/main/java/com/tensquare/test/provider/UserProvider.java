@@ -27,7 +27,7 @@ public class UserProvider implements UserClient {
     @Autowired
     private UserDtoDaoJpa userDtoDaoJpa;
     @Override
-    public List<UserDtoReq> getUserDtos(@PathVariable("name")String name, @PathVariable("age")int age) {
+    public List<UserDtoReq> getUserDtos(@PathVariable("name") String name, @PathVariable("age") int age) {
         UserDtoReq userDtoReq=new UserDtoReq();
         userDtoReq.setAge(age).setName(name);
         List<UserDto> userDtoList = userDtoDaoJpa.findAll(Example.of(JSON.parseObject(JSON.toJSONString(userDtoReq), UserDto.class)));
