@@ -48,12 +48,17 @@ public class BatchService {
         return jobExecution;
     }
 
-    public String getCsv(Map<String, String> map) throws Exception {
+    public String getCsv(Map<String, Object> map) throws Exception {
         Job job = jobRegistry.getJob((String) map.get("jobName"));
         log.info("获取的job：{}", job);
         JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
-        for (Map.Entry<String, String> entry : map.entrySet()) {
-            jobParametersBuilder.addString(entry.getKey(),  entry.getValue() );
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            if (entry.getValue().getClass().equals(String.class)){
+                jobParametersBuilder.addString(entry.getKey(), (String) entry.getValue());
+            }
+           else {
+                jobParametersBuilder.addLong(entry.getKey(), (Long) entry.getValue());
+            }
         }
         JobParameters jobParameters = jobParametersBuilder.toJobParameters();
         jobLauncher.run(job, jobParameters);

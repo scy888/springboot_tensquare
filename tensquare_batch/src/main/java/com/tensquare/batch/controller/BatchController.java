@@ -143,12 +143,16 @@ public class BatchController {
     @GetMapping("/csv/{jobName}")
     public String getCsv(@PathVariable String jobName,
                          @RequestParam(required = false, defaultValue = "2020-06-06") String batchDate,
-                         @RequestParam(required = false, defaultValue = "system") String param) throws Exception {
-        Map<String, String> map = new LinkedHashMap();
+                         @RequestParam(required = false, defaultValue = "system") String param,
+                         @RequestParam(required = false,defaultValue = "2") long pageNum,
+                         @RequestParam(required = false,defaultValue = "2") long pageSize) throws Exception {
+        Map<String, Object> map = new LinkedHashMap();
         map.put("jobName", jobName);
         map.put("startDate", LocalDate.now().toString());
-        map.put("param", param == null ? "system" : param);
+        map.put("param", param);
         map.put("batchDate", batchDate);
+        map.put("pageNum", pageNum);
+        map.put("pageSize", pageSize);
         return batchService.getCsv(map);
     }
 
