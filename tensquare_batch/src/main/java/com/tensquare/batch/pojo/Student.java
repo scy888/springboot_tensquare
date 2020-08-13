@@ -7,6 +7,7 @@ import lombok.experimental.Accessors;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -38,6 +39,7 @@ public class Student implements Serializable {
     private String address;
     private LocalDate birthday;
     @CreatedDate
+    @Column(updatable=false)
     private LocalDateTime createDate;
     @LastModifiedDate
     private LocalDateTime lastUpDate;

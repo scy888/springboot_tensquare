@@ -1,4 +1,4 @@
-package com.tensquare.batch.config;
+package com.tensquare.batch.batch;
 
 import com.alibaba.fastjson.JSON;
 import com.tensquare.batch.feginClient.UserDtoFeignClient;
@@ -33,8 +33,7 @@ import java.util.List;
 public class BatchConfig {
     @Autowired
     private UserDtoFeignClient userDtoFeignClient;
-//    @Value("#{jobParameters[name]}")
-//    private String name;
+
     @Bean
     public JobRegistryBeanPostProcessor jobRegistryBeanPostProcessor(JobRegistry jobRegistry) {
         JobRegistryBeanPostProcessor jobRegistryBeanPostProcessor = new JobRegistryBeanPostProcessor();
@@ -82,7 +81,7 @@ public class BatchConfig {
     /**
      * 第二个步骤
      */
-    @Bean
+
     public Tasklet getTasklet2() {
         return new Tasklet() {
             @Override
@@ -92,6 +91,28 @@ public class BatchConfig {
                 log.info("从jobParameters获取的参数name:{}，age:{}", name, age);
                 //List<UserDtoReq> userDtoReqList = userDtoFeignClient.updateUserDto(name, (int) age);
                 log.info("从步骤getTasklet2中获取userDtoReqList：{},", JSON.toJSONString("userDtoReqList"));
+                return RepeatStatus.FINISHED;
+            }
+        };
+    }
+    /** 第三个步骤 */
+
+    public Tasklet getTasklet3(){
+        return new Tasklet() {
+            @Override
+            public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
+                log.info("执行步骤三...");
+                return RepeatStatus.FINISHED;
+            }
+        };
+    }
+    /** 第四个步骤 */
+
+    public Tasklet getTasklet4(){
+        return new Tasklet() {
+            @Override
+            public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
+                log.info("执行步骤四...");
                 return RepeatStatus.FINISHED;
             }
         };

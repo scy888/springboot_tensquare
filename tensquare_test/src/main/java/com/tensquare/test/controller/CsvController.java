@@ -61,7 +61,6 @@ public class CsvController {
             }
         }
         log.info("insertList的size():{}条,updateList的size():{}条",insertList.size(),updateList.size());
-        //insertList=insertList.stream().map(e->e.setId(idWorker().nextId()+"")).collect(Collectors.toList());
         csvDao.insertList(insertList);
         csvDao.updateList(updateList);
         return Result.ok("success");

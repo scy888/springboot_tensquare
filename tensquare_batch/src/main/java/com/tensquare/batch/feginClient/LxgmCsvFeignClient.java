@@ -15,7 +15,7 @@ import java.util.List;
  * @date: 2020-08-06 23:49:04
  * @describe:
  */
-@FeignClient(name = "tensquare-test",serviceId = "lxgmCsvFeignClient",url = "127.0.0.1:9003")
+@FeignClient(name = "tensquare-test",serviceId = "lxgmCsvFeignClient",url = "127.0.0.1:9023")
 public interface LxgmCsvFeignClient {
     @RequestMapping("test/saveRepaymentPlan")
     Result saveRepaymentPlan(@RequestBody List<LxgmRepaymentPlanReq> lxgmRepaymentPlanReqs);
