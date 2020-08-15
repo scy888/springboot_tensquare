@@ -12,6 +12,11 @@ spring:
     #url: jdbc:mysql://localhost/tensquare?characterEncoding=UTF8
     #username: root
     #password: root
+
+  #项目启动时不调用 Job
+  batch:
+    job:
+      enabled: false
   jpa: 
     database: MySQL
     show-sql: true

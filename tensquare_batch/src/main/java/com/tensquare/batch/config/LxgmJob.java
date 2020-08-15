@@ -14,6 +14,8 @@ import org.springframework.batch.core.configuration.annotation.StepBuilderFactor
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
+import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -43,21 +45,22 @@ public class LxgmJob {
     private LxgmJpaDao lxgmJpaDao;
 
     @Bean
-    public Step getLxgmReadAndWriterStep() {
+    public Step getLxgmReadAndWriterStep(FlatFileItemReader<LxgmRepaymentPlanReq> getLxgmRead,
+                                         ItemWriter<RepaymentPlan> getLxgmWriter) {
         Step step = stepBuilderFactory.get("解析国民乐信CSV文件")
                 .<LxgmRepaymentPlanReq, RepaymentPlan>chunk(50)
-                .reader(lxgmTasklet.getLxgmRead())
+                .reader(getLxgmRead)
                 .processor(lxgmTasklet.getLxgmProcessor())
-                .writer(lxgmTasklet.getLxgmWriter())
+                .writer(getLxgmWriter)
                 .taskExecutor(lxgmTasklet.getLxmTaskExecutor())
-                .throttleLimit(2)
+                .throttleLimit(4)
                 .build();
         return step;
     }
 
     @Bean
-    Step getStep() {
-        return stepBuilderFactory.get("getStep")
+    Step getPageStep() {
+        return stepBuilderFactory.get("getPageStep")
                 .tasklet(new Tasklet() {
                     @Override
                     public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
@@ -70,11 +73,11 @@ public class LxgmJob {
                         log.info("参数 args=>batchDate:{},pageNum:{},pageSize:{}", batchDate, pageNum, pageSize);
                         int totalCount = lxgmJpaDao.countByBatchDate(LocalDate.parse(batchDate));
                         long index = (pageNum - 1) * pageSize;
-                        List<RepaymentPlan> data=lxgmJpaDao.selectByBatchDate(LocalDate.parse(batchDate),index,pageSize);
+                        List<RepaymentPlan> data = lxgmJpaDao.selectByBatchDate(LocalDate.parse(batchDate), index, pageSize);
                         pageBean.setPageNum((int) pageNum);
                         pageBean.setPageSize((int) pageSize);
                         pageBean.setTatolCount(totalCount);
-                        pageBean.setTotalPage((int) Math.ceil(totalCount*1.0/pageSize));
+                        pageBean.setTotalPage((int) Math.ceil(totalCount * 1.0 / pageSize));
                         pageBean.setData(data);
                         log.info("pageBean:{}", JSON.toJSONString(pageBean));
                         return RepeatStatus.FINISHED;
@@ -83,12 +86,20 @@ public class LxgmJob {
     }
 
     @Bean
-    public Job getLxgmReadAndWriterJob() {
+    public Step getLoopStep() {
+       return stepBuilderFactory.get("getLoopStep")
+                .tasklet(lxgmTasklet.getLoopTasklet())
+                .build();
+    }
+
+    @Bean
+    public Job getLxgmReadAndWriterJob(Step getLxgmReadAndWriterStep) {
         return jobBuilderFactory.get("lxgmJob")
                 .incrementer(new RunIdIncrementer())
                 .listener(lxgmTasklet.getLxgmListener())
-                //.start(getLxgmReadAndWriterStep())
-                .start(getStep())
+                //.start(getLxgmReadAndWriterStep)
+                .start(getPageStep())
+                .next( getLoopStep())
                 .build();
     }
 }
