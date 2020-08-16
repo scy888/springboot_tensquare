@@ -22,6 +22,11 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: update
+
+mybatis:
+  type-aliases-package: com.tensquare.batch.pojo
+  mapper-locations: classpath:com/tensquare/batch/dao/*Dao.xml
+
 jwt:
   config:
     key: itcast

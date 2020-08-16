@@ -2,6 +2,7 @@ package com.tensquare.batch.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.tensquare.batch.dao.LxgmDao;
+import com.tensquare.batch.dao.LxgmPlanDao;
 import com.tensquare.batch.feginClient.LxgmCsvFeignClient;
 import com.tensquare.batch.pojo.RepaymentPlan;
 import com.tensquare.req.LxgmRepaymentPlanReq;
@@ -31,10 +32,14 @@ public class LxgmController {
     private LxgmDao lxgmDao;
     @Autowired
     private LxgmCsvFeignClient lxgmCsvFeignClient;
+    @Autowired
+    private LxgmPlanDao lxgmPlanDao;
+
     @RequestMapping("/saveList")
     public void saveList(@RequestBody List<RepaymentPlan> repaymentPlans) {
         log.info("repaymentPlans:{}", JSON.toJSONString(repaymentPlans));
         List<RepaymentPlan> exsitList = lxgmDao.findDueBillNosAndTerms(repaymentPlans);
+        //List<RepaymentPlan> exsitList= lxgmPlanDao.findDueBillNosAndTerms(repaymentPlans);
         log.info("根据dueBillNo和Term查询出来的exsitList的size():{}条", exsitList.size());
         List<RepaymentPlan> insertList = new ArrayList<>();
         List<RepaymentPlan> updateList = new ArrayList<>();
@@ -56,6 +61,13 @@ public class LxgmController {
         if (updateList != null && updateList.size() > 0) {
             count = lxgmDao.updateList(updateList);
             log.info("更新：{}条", count);
+            try {
+                Thread.sleep(5000);
+                //lxgmPlanDao.updateList(updateList);
+                log.info("睡眠5秒执行...");
+            } catch (InterruptedException e) {
+                log.error("睡眠5秒后更新失败：{}",e.getMessage());
+            }
         }
     }
     /** 远程调用 */
