@@ -8,13 +8,10 @@ import com.tensquare.batch.pojo.RepaymentPlan;
 import com.tensquare.req.LxgmRepaymentPlanReq;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -66,19 +63,40 @@ public class LxgmController {
                 //lxgmPlanDao.updateList(updateList);
                 log.info("睡眠5秒执行...");
             } catch (InterruptedException e) {
-                log.error("睡眠5秒后更新失败：{}",e.getMessage());
+                log.error("睡眠5秒后更新失败：{}", e.getMessage());
             }
         }
     }
-    /** 远程调用 */
+
+    /**
+     * 远程调用
+     */
     @RequestMapping("/addList")
-    public void addList(@RequestBody List<LxgmRepaymentPlanReq> lxgmRepaymentPlanReqs){
+    public void addList(@RequestBody List<LxgmRepaymentPlanReq> lxgmRepaymentPlanReqs) {
         try {
             log.info("batch服务调用test服务开始...");
             lxgmCsvFeignClient.saveRepaymentPlan(lxgmRepaymentPlanReqs);
             log.info("batch服务调用test服务结束...");
         } catch (Exception e) {
-            log.info("batch服务调用test服务异常：{}",e.getMessage());
+            log.info("batch服务调用test服务异常：{}", e.getMessage());
         }
+    }
+
+    @RequestMapping("/random/{num}")
+    public List<String> randomDueBillNo(@PathVariable int num,
+                                        @RequestParam(name = "isFlag", required = false, defaultValue = "true") String flag) {
+        log.info("num:{},flag:{}",num,flag);
+        List<String> dueBillNos = lxgmDao.selectAll(LocalDate.parse("2020-06-06"));
+        List<String> returnList = new ArrayList<>();
+        log.info("查询所有dueBillNos:{}", dueBillNos);
+        if (Boolean.valueOf(flag)) {
+            for (int i = 0; i < num; i++) {
+                returnList.add(dueBillNos.get(new Random().nextInt(dueBillNos.size())));
+            }
+        }
+        Set<String> set=new HashSet<>(returnList);
+        returnList=new ArrayList<>(set);
+        log.info("添加查询所有returnList的个数为:{},returnList:{}", num, returnList);
+        return returnList;
     }
 }

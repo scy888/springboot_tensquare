@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -75,5 +76,10 @@ public class LxgmDao {
         int[] ints = jdbcTemplate.batchUpdate(sql, list);
         log.info("update sql语句:{}", sql);
         return Arrays.stream(ints).sum();
+    }
+
+    public List<String> selectAll(LocalDate batchDate) {
+        List<String> dueBillNoS = jdbcTemplate.queryForList("select distinct due_bill_no from repayment_plan where batch_date=?", String.class, batchDate);
+        return dueBillNoS;
     }
 }
