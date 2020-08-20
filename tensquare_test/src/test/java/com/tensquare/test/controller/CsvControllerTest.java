@@ -3,6 +3,7 @@ package com.tensquare.test.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.tensquare.req.LxgmRepaymentPlanReq;
+import com.tensquare.test.dao.CsvDao;
 import com.tensquare.test.pojo.LxgmRepaymentPlan;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.After;
@@ -39,6 +40,8 @@ public class CsvControllerTest {
     private CsvController csvController;
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private CsvDao csvDao;
     private String jsonStr = null;
 
     @Before
@@ -72,5 +75,11 @@ public class CsvControllerTest {
         jdbcTemplate.update("delete from lxgm_repayment_plan where (due_bill_no,term) in ("
                 + repaymentPlanReqList.stream().map(e -> "('" + e.getDueBillNo() + "','" + e.getTerm() + "')").collect(Collectors.joining(",")) + ")");
         csvController.saveRepaymentPlan(repaymentPlanReqList);
+    }
+    @Test
+    public void test(){
+        List<LxgmRepaymentPlanReq> repaymentPlanReqList = JSON.parseArray(jsonStr, LxgmRepaymentPlanReq.class);
+        List<Integer> list = csvDao.selectByDueBillNos(repaymentPlanReqList.stream().map(LxgmRepaymentPlanReq::getDueBillNo).collect(Collectors.toList()));
+        log.info("查询出来的list：{}",JSON.toJSONString(list));
     }
 }

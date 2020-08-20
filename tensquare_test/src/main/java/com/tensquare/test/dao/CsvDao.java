@@ -57,6 +57,14 @@ public class CsvDao {
         return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(LxgmRepaymentPlan.class),list.toArray(new Object[list.size()]));
     }
 
+    public List<Integer> selectByDueBillNos(List<String> list){
+        String sql="select term from lxgm_repayment_plan where due_bill_no in("+list.stream().map(a->{return "?";})
+                .collect(Collectors.joining(","))+")";
+        List<Object> objectList=new ArrayList<>();
+        list.forEach(a->objectList.add(a));
+
+        return jdbcTemplate.queryForList(sql, Integer.class, list.toArray(new Object[list.size()]));
+    }
     public Integer insertList(List<LxgmRepaymentPlan> plans) {
         if (plans == null || plans.isEmpty()) {
             return 0;
