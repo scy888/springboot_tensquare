@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import utils.IdWorker;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,7 +30,7 @@ public class CsvDao {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    public List<LxgmRepaymentPlan> selectByDueBillNoAndTerm(List<DueBillNoTermVo> dueBillVos) {
+    public List<LxgmRepaymentPlan> selectByDueBillNoAndTerm2(List<DueBillNoTermVo> dueBillVos) {
         String query = dueBillVos.stream().map(e -> {
             return "('" + e.getDueBillNo() + "'," + "'" + e.getTerm() + "')";
         }).collect(Collectors.joining(", "));
@@ -38,7 +39,23 @@ public class CsvDao {
         //Integer count = jdbcTemplate.queryForObject(sql, Integer.class, "");
         return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(LxgmRepaymentPlan.class));
     }
+    public List<LxgmRepaymentPlan> selectByDueBillNoAndTerm(List<DueBillNoTermVo> dueBillVos) {
+        String query = dueBillVos.stream().map(e ->
+                "("+ "?"+ "," + "?" + ")"
+        ).collect(Collectors.joining(", "));
+        String sql = "SELECT * FROM lxgm_repayment_plan WHERE ( due_bill_no, term ) IN ( " + query + " )";
 
+       List<Object> list=new ArrayList<>();
+//        for (DueBillNoTermVo dueBillVo : dueBillVos) {
+//            list.add(dueBillVo.getDueBillNo());
+//            list.add(dueBillVo.getTerm());
+//        }
+        dueBillVos.forEach(a->{
+            list.add(a.getDueBillNo());
+            list.add(a.getTerm());
+        });
+        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(LxgmRepaymentPlan.class),list.toArray(new Object[list.size()]));
+    }
 
     public Integer insertList(List<LxgmRepaymentPlan> plans) {
         if (plans == null || plans.isEmpty()) {
