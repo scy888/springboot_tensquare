@@ -1,5 +1,7 @@
 package com.tensquare.test.dao;
 
+import com.tensquare.test.pojo.ActualAmount;
+import com.tensquare.test.pojo.AssetAmount;
 import com.tensquare.test.pojo.DueBillNoTermVo;
 import com.tensquare.test.pojo.LxgmRepaymentPlan;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -141,5 +144,47 @@ public class CsvDao {
         log.info("update sql语句:{}",sql);
 
         return Arrays.stream(ints).sum();
+    }
+
+    public void addActualList(List<ActualAmount> actualList) {
+      String sql="insert into actual_amount (due_bill_no,term,batch_date,term_amount,status)values(?,?,?,?,?)";
+        List<Object[]> list = actualList.stream().map(actualAmount -> {
+            Object[] objects = new Object[]{
+                    actualAmount.getDueBillNo(),
+                    actualAmount.getTerm(),
+                    actualAmount.getBatchDate(),
+                    actualAmount.getTermAmount(),
+                    actualAmount.getStatus()
+            };
+            return objects;
+        }).collect(Collectors.toList());
+        jdbcTemplate.batchUpdate(sql,list);
+    }
+
+    public void addAssetList(List<AssetAmount> assetList) {
+      String sql="insert into asset_amount (due_bill_no,batch_date,total_amount,status)values(?,?,?,?)";
+        List<Object[]> list = assetList.stream().map(assentAmount -> new Object[]{
+                assentAmount.getDueBillNo(),
+                assentAmount.getBatchDate(),
+                assentAmount.getTotalAmount(),
+                assentAmount.getStatus()
+        }).collect(Collectors.toList());
+        jdbcTemplate.batchUpdate(sql,list);
+
+    }
+
+    public List<Map<String, Object>> check() {
+        String sql="SELECT m.due_bill_no, m.term_amount, n.total_amount FROM \n" +
+                "(SELECT due_bill_no, SUM(term_amount) term_amount FROM actual_amount WHERE due_bill_no IN (SELECT due_bill_no FROM asset_amount WHERE STATUS='结清')\n" +
+                " GROUP BY due_bill_no ORDER BY due_bill_no) m,\n" +
+                "(SELECT due_bill_no,SUM(total_amount) total_amount FROM asset_amount WHERE STATUS='结清' GROUP BY due_bill_no) n\n" +
+                "WHERE m.due_bill_no=n.due_bill_no AND m.term_amount!=n.total_amount;";
+        return jdbcTemplate.queryForList(sql);
+    }
+
+    public Map<String, Object> check2() {
+        String sql="SELECT SUM(m.term_amount),SUM(n.total_amount) FROM (SELECT SUM(term_amount) term_amount,due_bill_no FROM actual_amount WHERE due_bill_no IN(SELECT due_bill_no FROM asset_amount WHERE STATUS='结清')\n" +
+                " GROUP BY due_bill_no) m ,(SELECT SUM(total_amount) total_amount,due_bill_no FROM asset_amount WHERE STATUS='结清' GROUP BY due_bill_no) n WHERE m.due_bill_no=n.due_bill_no;";
+        return jdbcTemplate.queryForMap(sql);
     }
 }
