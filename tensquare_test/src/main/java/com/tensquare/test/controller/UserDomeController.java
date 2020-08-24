@@ -402,6 +402,15 @@ public class UserDomeController {
             session = request.getSession();
             session.setMaxInactiveInterval(60);
             session.setAttribute("ADMIN_ID", admin);
+            StringBuffer url = request.getRequestURL();
+            String uri = request.getRequestURI();
+            String ip = request.getRemoteAddr();
+            String path = request.getContextPath();
+            
+            log.info("url:{}",url);
+            log.info("uri:{}",uri);
+            log.info("ip:{}",ip);
+            log.info("path:{}",path);
             msg="登陆成功!";
         }
         else {
