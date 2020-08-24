@@ -6,6 +6,7 @@ import com.tensquare.test.pojo.User;
 import com.tensquare.test.pojo.UserDto;
 import common.JacksonUtils;
 import common.NumUtils;
+import common.SecurityUtil;
 import common.SnowFlake;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
@@ -14,6 +15,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -48,6 +50,10 @@ public class DomeTest {
     private WebApplicationContext context;
     private MockMvc mockMvc;
 
+    @Bean
+    public SecurityUtil getSecurityUtil(){
+        return new SecurityUtil();
+    }
     @Before
     public void init(){
         mockMvc= MockMvcBuilders.webAppContextSetup(context).build();
@@ -83,7 +89,8 @@ public class DomeTest {
     }
     @Test
     public void test(){
-
+        System.out.println(getSecurityUtil().encoder("盛重阳","MD5"));
+        System.out.println(SecurityUtil.encoder("盛重阳","MD5" ));
         a=a+"日本";
         System.out.println(a);
     }

@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.tensquare.req.LxgmRepaymentPlanReq;
 import com.tensquare.test.dao.CsvDao;
 import com.tensquare.test.pojo.LxgmRepaymentPlan;
+import common.SecurityUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.After;
 import org.junit.Before;
@@ -12,6 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -43,6 +45,10 @@ public class CsvControllerTest {
     @Autowired
     private CsvDao csvDao;
     private String jsonStr = null;
+    @Bean
+    public SecurityUtil getSecurityUtil(){
+        return new SecurityUtil();
+    }
 
     @Before
     public void init() {
@@ -81,5 +87,10 @@ public class CsvControllerTest {
         List<LxgmRepaymentPlanReq> repaymentPlanReqList = JSON.parseArray(jsonStr, LxgmRepaymentPlanReq.class);
         List<Integer> list = csvDao.selectByDueBillNos(repaymentPlanReqList.stream().map(LxgmRepaymentPlanReq::getDueBillNo).collect(Collectors.toList()));
         log.info("查询出来的list：{}",JSON.toJSONString(list));
+    }
+    @Test
+    public void test_(){
+        System.out.println("盛重阳"+getSecurityUtil().encoder("盛重阳","MD5"));
+        System.out.println("盛重阳"+SecurityUtil.encoder("盛重阳","MD5" ));
     }
 }

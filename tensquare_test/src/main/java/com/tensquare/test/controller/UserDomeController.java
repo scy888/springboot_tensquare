@@ -4,13 +4,14 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.tensquare.req.UserDtoReq;
+import com.tensquare.test.annotation.AdminId;
 import com.tensquare.test.annotation.AdminName;
 import com.tensquare.test.dao.AdminDaoJpa;
 import com.tensquare.test.dao.UserDomeDao;
 import com.tensquare.test.dao.UserDomeDaoJpa;
 import com.tensquare.test.dao.UserDtoDaoJpa;
-import com.tensquare.test.pojo.*;
 import com.tensquare.test.enums.ExceptionEnum;
+import com.tensquare.test.pojo.*;
 import common.*;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -35,6 +36,7 @@ import javax.persistence.criteria.Root;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -367,7 +369,52 @@ public class UserDomeController {
         }
         return loginMsg;
     }
-
+    @PostMapping("/addAdminId")
+    public String addAdminId(@RequestBody Admin admin){
+         String msg="";
+        Admin admin2 = adminDaoJpa.findOne(Example.of(new Admin().setAdmin(admin.getAdmin()))).orElseGet(() -> {
+            Admin e = new Admin();
+            e.setAdminId(idWorker.nextId() + "");
+            e.setAdmin(admin.getAdmin());
+            e.setPassword(SecurityUtil.encoder(admin.getPassword(), "MD5"));
+            e.setIsEffetive(true);
+            e.setAuthCode("SCY2");
+            return e;
+        });
+        log.info("admin2:{}",JSON.toJSONString(admin2));
+        try {
+            Admin save = adminDaoJpa.save(admin2);
+            msg="添加admin成功:"+JSON.toJSONString(save);
+        } catch (Exception e) {
+            e.printStackTrace();
+            msg="添加admin失败:"+e.getMessage();
+        }
+        log.info("msg:{}",msg);
+        return msg;
+    }
+    @GetMapping("/login2/{admin}/{password}")
+    public String login2(@PathVariable String admin,@PathVariable String password) throws Exception {
+        String msg="";
+        boolean exists = adminDaoJpa.exists(Example.of(new Admin().setAdmin(admin)
+                .setPassword(SecurityUtil.encoder(password, "MD5"))));
+        HttpSession session=null;
+        if (exists) {
+            session = request.getSession();
+            session.setMaxInactiveInterval(60);
+            session.setAttribute("ADMIN_ID", admin);
+            msg="登陆成功!";
+        }
+        else {
+            msg= "登录失败!";
+        }
+        log.info("msg:{}, session:{}",msg,session);
+        return JSON.toJSONString(msg);
+    }
+    @RequestMapping("/annotation2")
+    public String getString2(@AdminId String adminId) {
+        log.info("参数adminId：{}", adminId);
+        return adminId;
+    }
     @RequestMapping("/annotation")
     public String getString(@AdminName String adminName) {
         log.info("参数adminName：{}", adminName);

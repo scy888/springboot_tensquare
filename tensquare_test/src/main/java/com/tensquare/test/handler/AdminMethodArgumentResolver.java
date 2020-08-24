@@ -28,6 +28,7 @@ public class AdminMethodArgumentResolver implements HandlerMethodArgumentResolve
 
         return  methodParameter.getParameterType().isAssignableFrom(String.class)
                 && methodParameter.hasParameterAnnotation(AdminName.class);
+
     }
 
     @Override
