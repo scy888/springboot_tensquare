@@ -8,7 +8,9 @@ import com.tensquare.batch.pojo.RepaymentPlan;
 import com.tensquare.req.LxgmRepaymentPlanReq;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.*;
+import utils.IdWorker;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -41,7 +43,8 @@ public class LxgmController {
         List<RepaymentPlan> insertList = new ArrayList<>();
         List<RepaymentPlan> updateList = new ArrayList<>();
         Map<String, RepaymentPlan> map = exsitList.stream()
-                .collect(Collectors.toMap(e -> e.getDueBillNo() + "_" + e.getTerm(), Function.identity()));
+                .collect(Collectors.toMap(e -> e.getDueBillNo() + "_" + e.getTerm(),
+                        Function.identity(),(a,b)->a));
         for (RepaymentPlan repaymentPlan : repaymentPlans) {
             if (map.get(repaymentPlan.getDueBillNo() + "_" + repaymentPlan.getTerm()) == null) {
                 insertList.add(repaymentPlan);

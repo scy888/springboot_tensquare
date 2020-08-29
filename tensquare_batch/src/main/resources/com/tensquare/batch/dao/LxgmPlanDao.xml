@@ -4,7 +4,7 @@
     <update id="updateList" parameterType="com.tensquare.batch.pojo.RepaymentPlan">
         <if test="updateList!=null and updateList.size()>0">
             <foreach collection="updateList" open="" item="item" separator=";" close="">
-                update repayment_plan set project_no=#{item.projectNo}, partner_no=#{item.partnerNo}/*,batch_date=#{item.batchDate}*/, term_status=#{item.termStatus.name}, last_modified_date=#{item.lastModifiedDate}
+                update repayment_plan set project_no=#{item.projectNo},partner_no=#{item.partnerNo},batch_date=#{item.batchDate},term_status=#{item.termStatus.name}, last_modified_date=#{item.lastModifiedDate}
                 where (due_bill_no,term) in ((#{item.dueBillNo},#{item.term}))
             </foreach>
         </if>

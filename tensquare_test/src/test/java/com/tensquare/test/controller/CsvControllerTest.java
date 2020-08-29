@@ -16,13 +16,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
+import utils.IdWorker;
 
 import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
@@ -92,5 +96,13 @@ public class CsvControllerTest {
     public void test_(){
         System.out.println("盛重阳"+getSecurityUtil().encoder("盛重阳","MD5"));
         System.out.println("盛重阳"+SecurityUtil.encoder("盛重阳","MD5" ));
+    }
+    @Test
+    public void test02() {
+        Set<Long> set=new HashSet<>();
+        for (int i = 0; i < 500; i++) {
+            set.add(new IdWorker().nextId());
+        }
+        System.out.println("set的长度："+set.size());
     }
 }

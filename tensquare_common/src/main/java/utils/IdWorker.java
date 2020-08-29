@@ -1,5 +1,7 @@
 package utils;
 
+import org.junit.Test;
+
 import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -52,15 +54,14 @@ public class IdWorker {
     // 数据标识id部分
     private final long datacenterId;
 
-    public IdWorker(){
+    public IdWorker() {
         this.datacenterId = getDatacenterId(maxDatacenterId);
         this.workerId = getMaxWorkerId(datacenterId, maxWorkerId);
     }
+
     /**
-     * @param workerId
-     *            工作机器ID 每一台主机标识
-     * @param datacenterId
-     *           数据中心id 业务id
+     * @param workerId     工作机器ID 每一台主机标识
+     * @param datacenterId 数据中心id 业务id
      */
     public IdWorker(long workerId, long datacenterId) {
         if (workerId > maxWorkerId || workerId < 0) {
@@ -72,6 +73,7 @@ public class IdWorker {
         this.workerId = workerId;
         this.datacenterId = datacenterId;
     }
+
     /**
      * 获取下一个ID
      *
@@ -124,14 +126,14 @@ public class IdWorker {
         mpid.append(datacenterId);
         String name = ManagementFactory.getRuntimeMXBean().getName();
         if (!name.isEmpty()) {
-         /*
-          * GET jvmPid
-          */
+            /*
+             * GET jvmPid
+             */
             mpid.append(name.split("@")[0]);
         }
-      /*
-       * MAC + PID 的 hashcode 获取16个低位
-       */
+        /*
+         * MAC + PID 的 hashcode 获取16个低位
+         */
         return (mpid.toString().hashCode() & 0xffff) % (maxWorkerId + 1);
     }
 
@@ -158,6 +160,4 @@ public class IdWorker {
         }
         return id;
     }
-
-
 }
