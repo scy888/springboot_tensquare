@@ -22,6 +22,7 @@ import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -51,6 +52,8 @@ public class LxgmTasklet {
     private LxgmController lxgmController;
     @Autowired
     private LxgmJpaDao lxgmJpaDao;
+    @Autowired
+    private ApplicationEventPublisher publisher;
     private static final int pageSize = 4;
 
     /**
@@ -124,9 +127,9 @@ public class LxgmTasklet {
                 int pageTotal = (int) Math.ceil(countTotal * 1.0 / pageSize);
                 for (int pageNum = 1; pageNum <= pageTotal; pageNum++) {
                     List<String> dueBillNoList = lxgmJpaDao.findByBatchDate(LocalDate.parse(batchDate), (pageNum - 1) * pageSize, pageSize);
-                    log.info("当前页为第：{}页,一共：{}页,每页：{}条,当前的dueBillNoList：{}",pageNum,pageTotal,pageSize,JSON.toJSONString(dueBillNoList));
-                   List<LocalDate> createdDateList=lxgmJpaDao.findByDueBillNoList(dueBillNoList);
-                   log.info("createdDateList:{}",createdDateList);
+                    log.info("当前页为第：{}页,一共：{}页,每页：{}条,当前的dueBillNoList：{}", pageNum, pageTotal, pageSize, JSON.toJSONString(dueBillNoList));
+                    List<LocalDate> createdDateList = lxgmJpaDao.findByDueBillNoList(dueBillNoList);
+                    log.info("createdDateList:{}", createdDateList);
                 }
                 return RepeatStatus.FINISHED;
             }
@@ -146,6 +149,9 @@ public class LxgmTasklet {
             @Override
             public void afterJob(JobExecution jobExecution) {
                 log.info("完成执行乐信国民作业{}：", jobExecution.getJobInstance().getJobName());
+                log.info("开始发布事件....");
+                publisher.publishEvent(jobExecution.getJobInstance().getJobName());
+                log.info("发布事件结束....");
             }
         };
     }
