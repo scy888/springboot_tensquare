@@ -3,8 +3,10 @@ package com.tensquare.batch.controller;
 import com.alibaba.fastjson.JSON;
 import com.tensquare.batch.dao.LxgmDao;
 import com.tensquare.batch.dao.LxgmPlanDao;
+import com.tensquare.batch.dao.StudentJpaDao;
 import com.tensquare.batch.feginClient.LxgmCsvFeignClient;
 import com.tensquare.batch.pojo.RepaymentPlan;
+import com.tensquare.batch.pojo.Student;
 import com.tensquare.req.LxgmRepaymentPlanReq;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,8 @@ public class LxgmController {
     private LxgmCsvFeignClient lxgmCsvFeignClient;
     @Autowired
     private LxgmPlanDao lxgmPlanDao;
+    @Autowired
+    private StudentJpaDao studentJpaDao;
 
     @RequestMapping("/saveList")
     public void saveList(@RequestBody List<RepaymentPlan> repaymentPlans) {
@@ -44,7 +48,7 @@ public class LxgmController {
         List<RepaymentPlan> updateList = new ArrayList<>();
         Map<String, RepaymentPlan> map = exsitList.stream()
                 .collect(Collectors.toMap(e -> e.getDueBillNo() + "_" + e.getTerm(),
-                        Function.identity(),(a,b)->a));
+                        Function.identity(), (a, b) -> a));
         for (RepaymentPlan repaymentPlan : repaymentPlans) {
             if (map.get(repaymentPlan.getDueBillNo() + "_" + repaymentPlan.getTerm()) == null) {
                 insertList.add(repaymentPlan);
@@ -88,7 +92,7 @@ public class LxgmController {
     @RequestMapping("/random/{num}")
     public List<String> randomDueBillNo(@PathVariable int num,
                                         @RequestParam(name = "isFlag", required = false, defaultValue = "true") String flag) {
-        log.info("num:{},flag:{}",num,flag);
+        log.info("num:{},flag:{}", num, flag);
         List<String> dueBillNos = lxgmDao.selectAll(LocalDate.parse("2020-06-06"));
         List<String> returnList = new ArrayList<>();
         log.info("查询所有dueBillNos:{}", dueBillNos);
@@ -97,9 +101,14 @@ public class LxgmController {
                 returnList.add(dueBillNos.get(new Random().nextInt(dueBillNos.size())));
             }
         }
-        Set<String> set=new HashSet<>(returnList);
-        returnList=new ArrayList<>(set);
+        Set<String> set = new HashSet<>(returnList);
+        returnList = new ArrayList<>(set);
         log.info("添加查询所有returnList的个数为:{},returnList:{}", num, returnList);
         return returnList;
+    }
+
+    @RequestMapping("/addStudent")
+    public void addStudent(@RequestBody Student student){
+        studentJpaDao.save(student);
     }
 }
