@@ -1,4 +1,4 @@
-package com.tensquare.batch.pojo;
+package com.tensquare.test.pojo;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -34,6 +34,8 @@ public class PlantAmount {
     private int id;
     @Column(columnDefinition = "varchar(32) not null comment '借据号'")
     private String dueBillNo;
+    @Column(columnDefinition = "varchar(2) not null comment '总期次数'")
+    private String termCount;
     @Column(columnDefinition = "date not null comment '最终还款日期'")
     private LocalDate batchDate;
     @Column(columnDefinition = "decimal(12,2) default 0.00 comment '实际还款(元)'")
@@ -43,6 +45,7 @@ public class PlantAmount {
     private LocalDateTime createDate;
     @LastModifiedDate
     @Column(columnDefinition = "datetime not null comment '最后修改时间'")
+    private LocalDateTime modiyDate;
     @Transient
-    private List<ActualAmount> actualAmounts;
+    private List<RealAmount> realAmounts;
 }

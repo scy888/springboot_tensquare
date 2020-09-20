@@ -4,13 +4,11 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.tensquare.req.LxgmRepaymentPlanReq;
 import com.tensquare.result.DataCheckResult;
-import com.tensquare.result.LxgmTermStatus;
 import com.tensquare.result.Result;
 import com.tensquare.test.dao.CsvDao;
-import com.tensquare.test.pojo.ActualAmount;
-import com.tensquare.test.pojo.AssetAmount;
-import com.tensquare.test.pojo.DueBillNoTermVo;
-import com.tensquare.test.pojo.LxgmRepaymentPlan;
+import com.tensquare.test.dao.PlantAmountDaoJpa;
+import com.tensquare.test.dao.RealAmountDaoJpa;
+import com.tensquare.test.pojo.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -45,6 +44,10 @@ public class CsvController {
 
     @Autowired
     private CsvDao csvDao;
+    @Autowired
+    private PlantAmountDaoJpa plantAmountDaoJpa;
+    @Autowired
+    private RealAmountDaoJpa realAmountDaoJpa;
 
     @RequestMapping("/saveRepaymentPlan")
     Result saveRepaymentPlan(@RequestBody List<LxgmRepaymentPlanReq> lxgmRepaymentPlanReqs) {
@@ -105,6 +108,7 @@ public class CsvController {
         log.info("msg:{}", msg);
         return msg;
     }
+
     private Map<String, Object> getMap(List<ActualAmount> actualList) throws Exception {
         Map<String, Object> map = new HashMap<>();
         LocalDate maxBatchDate = actualList.stream().max((a, b) -> a.getBatchDate().compareTo(b.getBatchDate())).get().getBatchDate();
@@ -125,19 +129,100 @@ public class CsvController {
         log.info("map:{}", JSON.toJSONString(map));
         return map;
     }
+
     @RequestMapping("/check")
-    public DataCheckResult check(){
-        List<Map<String,Object>> list=csvDao.check();
-        log.info("list:{}",JSON.toJSONString(list));
+    public DataCheckResult check() {
+        List<Map<String, Object>> list = csvDao.check();
+        log.info("list:{}", JSON.toJSONString(list));
         return DataCheckResult.ok("校验实际还款和资产信息表", list.size());
     }
+
     @RequestMapping("/check2")
-    public DataCheckResult check2(){
+    public DataCheckResult check2() {
         Map<String, Object> map = csvDao.check2();
-        log.info("list:{}",JSON.toJSONString(map));
+        log.info("list:{}", JSON.toJSONString(map));
         BigDecimal term = (BigDecimal) map.get("SUM(m.term_amount)");
         BigDecimal total = (BigDecimal) map.get("SUM(n.total_amount)");
-        return term.compareTo(total)==0?DataCheckResult.ok("校验实际还款和资产信息表",0 )
-                :DataCheckResult.ok("校验实际还款和资产信息表", 1);
+        return term.compareTo(total) == 0 ? DataCheckResult.ok("校验实际还款和资产信息表", 0)
+                : DataCheckResult.ok("校验实际还款和资产信息表", 1);
+    }
+
+    @RequestMapping("/addList2")
+    public Result addList2(@RequestBody List<PlantAmount> plantAmountList) {
+        /**
+         * @Description: 批量添加还款计划信息(对应多条实际还款信息)
+         * @methodName: addList2
+         * @Param: [plantAmountList]
+         * @return: com.tensquare.result.Result
+         * @Author: scyang
+         * @Date: 2020/9/20 20:24
+         */
+        log.info("plantAmountList:{}",JSON.toJSONString(plantAmountList));
+        //根据借据号查找
+        List<PlantAmount> dbPlantAmounts= plantAmountDaoJpa.findByDueBillNoIn(plantAmountList.stream()
+                .map(PlantAmount::getDueBillNo)
+                .collect(Collectors.toList()));
+        Map<String, PlantAmount> plantAmountMap = dbPlantAmounts.stream().collect(Collectors.toMap(PlantAmount::getDueBillNo, Function.identity(), (a, b) -> b));
+
+        for (PlantAmount plantAmount : plantAmountList) {
+
+            Map<String,Object> setMap=getParmsMap(plantAmount.getRealAmounts(),plantAmount.getDueBillNo());
+            plantAmount.setTotalAmount((BigDecimal) setMap.get("amountSun"))
+           .setBatchDate((LocalDate) setMap.get("maxBatchDate"))
+            .setTermCount(String.valueOf(setMap.get("termCount")) );
+
+            for (RealAmount realAmount : plantAmount.getRealAmounts()) {
+                realAmount.setDueBillNo(plantAmount.getDueBillNo());
+                //保存之前根据借据号和期次查询
+                RealAmount dbRealAmount=realAmountDaoJpa.findByDueBillNoAndTerm(realAmount.getDueBillNo(),realAmount.getTerm());
+                if (dbRealAmount==null){
+                    //新增
+                    realAmountDaoJpa.save(realAmount);
+                    log.info("realAmount走新增逻辑...");
+                }
+                else {
+                    //更新
+                    realAmountDaoJpa.save(realAmount.setId(dbRealAmount.getId()));
+                    log.info("realAmount走更新逻辑...");
+
+                }
+            }
+            PlantAmount dbPlantAmount = plantAmountMap.get(plantAmount.getDueBillNo());
+            if (dbPlantAmount==null){
+                //新增
+                plantAmountDaoJpa.save(plantAmount);
+                log.info("plantAmount走新增逻辑...");
+            }
+           else {
+               //更新
+                plantAmountDaoJpa.save(plantAmount.setId(dbPlantAmount.getId()));
+                log.info("plantAmount走更新逻辑...");
+
+            }
+        }
+        return Result.ok();
+    }
+
+    private Map<String, Object> getParmsMap(List<RealAmount> realAmounts, String dueBillNo) {
+        /**
+         * @Description: set参数的值
+         * @methodName: getParmsMap
+         * @Param: [realAmounts, dueBillNo]
+         * @return: java.util.Map<java.lang.String,java.lang.Object>
+         * @Author: scyang
+         * @Date: 2020/9/20 21:10
+         */
+        Map<String, Object> returnMap=new HashMap<>();
+        BigDecimal amountSun = realAmounts.stream().map(RealAmount::getTermAmount).reduce( BigDecimal::add).orElse(BigDecimal.ZERO);
+        RealAmount realAmount = realAmounts.stream().max((a, b) -> a.getBatchDate().compareTo(b.getBatchDate())).orElseGet(() -> {
+            return new RealAmount()
+                    .setBatchDate(LocalDate.parse("2020-12-31"))
+                    .setTerm(10);
+        });
+        returnMap.put("amountSun",amountSun );
+        returnMap.put("maxBatchDate",realAmount.getBatchDate());
+        returnMap.put("termCount",realAmount.getTerm());
+        log.info("对应的借据号:{},还款的总费用:{},最后的还款日:{},总期数：{}", dueBillNo, amountSun,realAmount.getBatchDate(),realAmount.getTerm());
+        return returnMap;
     }
 }

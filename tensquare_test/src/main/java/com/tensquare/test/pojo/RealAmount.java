@@ -1,4 +1,4 @@
-package com.tensquare.batch.pojo;
+package com.tensquare.test.pojo;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -25,10 +25,10 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 @EntityListeners(AuditingEntityListener.class)
 @javax.persistence.Table(indexes = {
-        @Index(name = "plan_due_bill_no_and_term", unique = true, columnList = "dueBillNo, term")
+        @Index(name = "real_due_bill_no_and_term", unique = true, columnList = "dueBillNo, term")
 })
-@Table(appliesTo = "actual_amount",comment = "实际还款信息")
-public class ActualAmount {
+@Table(appliesTo = "real_amount",comment = "实际还款信息")
+public class RealAmount {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
