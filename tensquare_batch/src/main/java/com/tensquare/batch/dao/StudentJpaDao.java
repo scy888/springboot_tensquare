@@ -2,6 +2,9 @@ package com.tensquare.batch.dao;
 
 import com.tensquare.batch.pojo.Student;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import java.util.List;
 
 /**
  * @author: scyang
@@ -11,4 +14,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @describe:
  */
 public interface StudentJpaDao extends JpaRepository<Student,Integer> {
+
+    List<Student> findByAge(int age);
 }

@@ -9,10 +9,9 @@ import com.tensquare.batch.pojo.RepaymentPlan;
 import com.tensquare.batch.pojo.Student;
 import com.tensquare.req.LxgmRepaymentPlanReq;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.*;
-import utils.IdWorker;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -110,5 +109,20 @@ public class LxgmController {
     @RequestMapping("/addStudent")
     public void addStudent(@RequestBody Student student){
         studentJpaDao.save(student);
+    }
+
+    @RequestMapping("/selectByAge/{age}")
+    public Student selectByAge(@PathVariable int age){
+        List<Student> students= studentJpaDao.findByAge(age);
+        Student student = students.stream().max((a, b) -> a.getCreateDate().compareTo(b.getCreateDate())).orElseGet(() -> {
+            return new Student();
+        });
+        if (student.getName().equals("scy")) {
+            student.setName("scy1");
+            Student tem=new Student();
+            BeanUtils.copyProperties(student,tem );
+            lxgmDao.saveStudent(tem);
+        }
+        return student;
     }
 }

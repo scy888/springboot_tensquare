@@ -1,6 +1,7 @@
 package com.tensquare.batch.dao;
 
 import com.tensquare.batch.pojo.RepaymentPlan;
+import com.tensquare.batch.pojo.Student;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -81,5 +82,11 @@ public class LxgmDao {
     public List<String> selectAll(LocalDate batchDate) {
         List<String> dueBillNoS = jdbcTemplate.queryForList("select distinct due_bill_no from repayment_plan where batch_date=?", String.class, batchDate);
         return dueBillNoS;
+    }
+
+    public void saveStudent(Student tem) {
+       String sql="insert into tb_student (name, sex, age, address, birthday, create_date, last_up_date) values (?, ?, ?, ?, ?, ?, ?)";
+        Object[] args=new Object[]{tem.getName(),tem.getSex(),tem.getAge(),tem.getAddress(),tem.getBirthday(),LocalDateTime.now(),LocalDateTime.now()};
+        jdbcTemplate.update(sql,args);
     }
 }
