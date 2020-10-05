@@ -105,7 +105,6 @@ public class LxgmController {
         log.info("添加查询所有returnList的个数为:{},returnList:{}", num, returnList);
         return returnList;
     }
-
     @RequestMapping("/addStudent")
     public void addStudent(@RequestBody Student student){
         studentJpaDao.save(student);
