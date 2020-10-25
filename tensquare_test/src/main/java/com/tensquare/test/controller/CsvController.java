@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.tensquare.req.LxgmRepaymentPlanReq;
 import com.tensquare.result.DataCheckResult;
 import com.tensquare.result.Result;
+import com.tensquare.result.Tuple3;
 import com.tensquare.test.dao.CsvDao;
 import com.tensquare.test.dao.PlantAmountDaoJpa;
 import com.tensquare.test.dao.RealAmountDaoJpa;
@@ -13,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -224,5 +226,10 @@ public class CsvController {
         returnMap.put("termCount",realAmount.getTerm());
         log.info("对应的借据号:{},还款的总费用:{},最后的还款日:{},总期数：{}", dueBillNo, amountSun,realAmount.getBatchDate(),realAmount.getTerm());
         return returnMap;
+    }
+
+    @RequestMapping("/getRepaymentPlan/{projectNo}")
+    public Result<List<Tuple3<String,BigDecimal,Integer>>> getRepaymentPlan(@PathVariable String projectNo){
+        return Result.ok(csvDao.getRepaymentPlan(projectNo));
     }
 }
