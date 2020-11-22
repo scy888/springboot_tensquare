@@ -59,6 +59,7 @@ public class CsvControllerTest {
 
         try {
             byte[] bytes = Files.readAllBytes(Paths.get(Thread.currentThread().getContextClassLoader().getResource("csv.json").toURI()));
+           // byte[] bytes = Files.readAllBytes(Paths.get("csv.json"));
             jsonStr = new String(bytes, "utf-8");
         } catch (Exception e) {
             // e.printStackTrace();
