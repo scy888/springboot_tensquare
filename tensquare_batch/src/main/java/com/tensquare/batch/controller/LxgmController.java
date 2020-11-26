@@ -105,21 +105,22 @@ public class LxgmController {
         log.info("添加查询所有returnList的个数为:{},returnList:{}", num, returnList);
         return returnList;
     }
+
     @RequestMapping("/addStudent")
-    public void addStudent(@RequestBody Student student){
+    public void addStudent(@RequestBody Student student) {
         studentJpaDao.save(student);
     }
 
     @RequestMapping("/selectByAge/{age}")
-    public Student selectByAge(@PathVariable int age){
-        List<Student> students= studentJpaDao.findByAge(age);
+    public Student selectByAge(@PathVariable int age) {
+        List<Student> students = studentJpaDao.findByAge(age);
         Student student = students.stream().max((a, b) -> a.getCreateDate().compareTo(b.getCreateDate())).orElseGet(() -> {
             return new Student();
         });
         if (student.getName().equals("scy")) {
             student.setName("scy1");
-            Student tem=new Student();
-            BeanUtils.copyProperties(student,tem );
+            Student tem = new Student();
+            BeanUtils.copyProperties(student, tem);
             lxgmDao.saveStudent(tem);
         }
         return student;

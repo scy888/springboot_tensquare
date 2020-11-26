@@ -23,11 +23,13 @@ public class DynamicProxyHandler implements InvocationHandler {
     }
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+
         logger.info(method.getName()+"()  "+new Date());
 
         return method.invoke(target,args);
     }
     public Object getDynamicProxyObj(){
+
        return Proxy.newProxyInstance(target.getClass().getClassLoader(),target.getClass().getInterfaces() ,this );
     }
 }

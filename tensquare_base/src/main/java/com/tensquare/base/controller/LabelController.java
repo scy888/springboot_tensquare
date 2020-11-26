@@ -24,6 +24,7 @@ public class LabelController {
      @RequestMapping(method = RequestMethod.GET)
     public Result findAll(){
     List<Label> labelList= labelService.findAll();
+         System.out.println();
     return new Result(true, StatusCode.OK,"查询成功",labelList);
      }
     /**

@@ -5,9 +5,7 @@ import com.tensquare.test.dao.UserDomeDao;
 import com.tensquare.test.pojo.User;
 import com.tensquare.test.pojo.UserDto;
 import common.JacksonUtils;
-import common.NumUtils;
 import common.SecurityUtil;
-import common.SnowFlake;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,7 +17,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MockMvcBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -89,7 +86,7 @@ public class DomeTest {
     }
     @Test
     public void test(){
-        System.out.println(getSecurityUtil().encoder("盛重阳","MD5"));
+        //System.out.println(getSecurityUtil().encoder("盛重阳","MD5"));
         System.out.println(SecurityUtil.encoder("盛重阳","MD5" ));
         a=a+"日本";
         System.out.println(a);
