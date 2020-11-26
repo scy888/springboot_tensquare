@@ -43,12 +43,12 @@ public class ArticleController {
 	@RequestMapping(value="/{id}",method= RequestMethod.GET)
 	public Result findById(@PathVariable String id){
      /**
-      * @Description: 
+      * @Description: jjjj
       * @methodName: findById
       * @Param: [id]
       * @return: entity.Result
       * @Author: scyang
-      * @Date: 2020/11/27 0:22
+      * @Date: 2020/11/27 0:28
       */
 		return new Result(true,StatusCode.OK,"查询成功",articleService.findById(id));
 	}

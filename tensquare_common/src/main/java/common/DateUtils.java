@@ -17,12 +17,12 @@ import java.time.format.DateTimeFormatter;
  */
 @Data
 public class DateUtils {
-    private     final String PATTERN_ONE="yyyy-MM-dd";
-    private    final String PATTERN_TWO="yyyy年MM月dd日";
-    private    final String PATTERN_THREE="yyyyMMdd";
-    private    final String PATTERN_FOUR="yyyyMMddHHmmss";
-    private    final String PATTERN_FIVE="yyyy-MM-dd HH:mm:ss";
-    private    final String PATTERN_SIX="yyyy年MM月dd日 HH时mm分ss秒";
+    private final String PATTERN_ONE="yyyy-MM-dd";
+    private final String PATTERN_TWO="yyyy年MM月dd日";
+    private final String PATTERN_THREE="yyyyMMdd";
+    private final String PATTERN_FOUR="yyyyMMddHHmmss";
+    private final String PATTERN_FIVE="yyyy-MM-dd HH:mm:ss";
+    private final String PATTERN_SIX="yyyy年MM月dd日 HH时mm分ss秒";
 
     public String getDateStr(int year,int month,int day,String pattern){
         String dateStr = LocalDate.of(year, month, day).format(DateTimeFormatter.ofPattern(pattern));
