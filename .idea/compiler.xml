@@ -6,6 +6,7 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="maven-archiver" />
         <module name="tensquare_article" />
         <module name="tensquare_base" />
         <module name="tensquare_batch" />
@@ -25,5 +26,26 @@
         <module name="tensquare_web" />
       </profile>
     </annotationProcessing>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="tensquare_article" options="" />
+      <module name="tensquare_base" options="" />
+      <module name="tensquare_batch" options="" />
+      <module name="tensquare_common" options="" />
+      <module name="tensquare_config" options="" />
+      <module name="tensquare_eureka" options="" />
+      <module name="tensquare_friend" options="" />
+      <module name="tensquare_gathering" options="" />
+      <module name="tensquare_manager" options="" />
+      <module name="tensquare_qa" options="" />
+      <module name="tensquare_search" options="" />
+      <module name="tensquare_service" options="" />
+      <module name="tensquare_sms" options="" />
+      <module name="tensquare_spit" options="" />
+      <module name="tensquare_test" options="" />
+      <module name="tensquare_user" options="" />
+      <module name="tensquare_web" options="" />
+    </option>
   </component>
 </project>
