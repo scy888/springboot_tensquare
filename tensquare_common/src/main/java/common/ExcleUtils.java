@@ -1,8 +1,8 @@
 package common;
 
 import entity.User;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.streaming.SXSSFCell;
 import org.apache.poi.xssf.streaming.SXSSFRow;
@@ -13,6 +13,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import javax.servlet.http.HttpServletResponse;
 import java.io.FileOutputStream;
 import java.math.BigDecimal;
@@ -64,6 +65,7 @@ public class ExcleUtils {
         fos.flush();
         fos.close();
         workbook.close();
+
         /*ServletOutputStream os = response.getOutputStream();*//** 取得输出流 *//*
         path = new String(path.getBytes("GB2312"), "ISO8859-1");
         response.reset();*//** 清空输出流 *//*
@@ -107,6 +109,7 @@ public class ExcleUtils {
             num++;
         }
     }
+
     private static CellStyle createContextStyle(SXSSFWorkbook workbook) {
         /**
          * @Description: 设置内容行样式
@@ -159,6 +162,7 @@ public class ExcleUtils {
         style_.setFont(font_);
         return style_;
     }
+
     private static Font createHeadFont(SXSSFWorkbook workbook) {
         /**
          * @Description: 设置头行字体
@@ -218,12 +222,16 @@ public class ExcleUtils {
          * @Date: 2020/4/18 12:55
          */
         CellStyle style_ = workbook.createCellStyle();
-        /* style_.setBorderTop(CellStyle.BORDER_THIN);*//** 设置上边框 *//*
-        style_.setBorderBottom(CellStyle.BORDER_THIN);*//** 设置下边框 *//*
-        style_.setBorderLeft(CellStyle.BORDER_THIN);*//** 设置左边框 *//*
-        style_.setBorderRight(CellStyle.BORDER_THIN);*//** 设置右边框 *//*
-        style_.setAlignment(CellStyle.ALIGN_CENTER);*//** 左右居中 *//*
-        style_.setVerticalAlignment(CellStyle.VERTICAL_CENTER);*//** 上下居中 */
+        style_.setAlignment(HorizontalAlignment.CENTER);//左右居中
+        style_.setVerticalAlignment(VerticalAlignment.CENTER);//上下居中
+        style_.setBorderTop(BorderStyle.THIN);//设置上边框
+        style_.setBorderBottom(BorderStyle.THIN);//设置下边框
+        style_.setBorderLeft(BorderStyle.THIN);//设置左边框
+        style_.setBorderRight(BorderStyle.THIN);//设置右边框
+        style_.setTopBorderColor(HSSFColor.HSSFColorPredefined.BLACK.getIndex());
+        style_.setBottomBorderColor(HSSFColor.HSSFColorPredefined.BLACK.getIndex());
+        style_.setLeftBorderColor(HSSFColor.HSSFColorPredefined.BLACK.getIndex());
+        style_.setRightBorderColor(HSSFColor.HSSFColorPredefined.BLACK.getIndex());
         style_.setWrapText(true);/** 自动换行 */
         return style_;
     }
