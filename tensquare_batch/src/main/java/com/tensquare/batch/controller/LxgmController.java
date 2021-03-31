@@ -64,13 +64,13 @@ public class LxgmController {
         if (updateList != null && updateList.size() > 0) {
             count = lxgmDao.updateList(updateList);
             log.info("更新：{}条", count);
-            try {
-                Thread.sleep(5000);
-                //lxgmPlanDao.updateList(updateList);
-                log.info("睡眠5秒执行...");
-            } catch (InterruptedException e) {
-                log.error("睡眠5秒后更新失败：{}", e.getMessage());
-            }
+//            try {
+//                Thread.sleep(5000);
+//                //lxgmPlanDao.updateList(updateList);
+//                log.info("睡眠5秒执行...");
+//            } catch (InterruptedException e) {
+//                log.error("睡眠5秒后更新失败：{}", e.getMessage());
+//            }
         }
     }
 

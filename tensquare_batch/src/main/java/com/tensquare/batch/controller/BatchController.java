@@ -2,6 +2,7 @@ package com.tensquare.batch.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.tensquare.batch.batch_.BatchConfig;
 import com.tensquare.batch.feginClient.UserDtoFeignClient;
 import com.tensquare.batch.feginClient.UserFeignClient;
 import com.tensquare.batch.pojo.Instance;
@@ -9,6 +10,7 @@ import com.tensquare.batch.pojo.Job;
 import com.tensquare.batch.pojo.Step;
 import com.tensquare.batch.service.BatchService;
 import com.tensquare.req.UserDtoReq;
+import common.SnowFlake;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobInstance;
@@ -17,11 +19,13 @@ import org.springframework.batch.core.configuration.JobRegistry;
 import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 import org.springframework.web.bind.annotation.*;
+import utils.IdWorker;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -38,8 +42,8 @@ import java.util.*;
 @RestController
 @RequestMapping("/batch")
 public class BatchController {
-    @Autowired
-    private KafkaTemplate<String, Object> kafkaTemplate;
+    //    @Autowired
+//    private KafkaTemplate<String, Object> kafkaTemplate;
     @Autowired
     private JobRegistry jobRegistry;
     @Autowired
@@ -52,26 +56,28 @@ public class BatchController {
     private UserFeignClient userFeignClient;
     @Autowired
     private UserDtoFeignClient userDtoFeignClient;
-
-    @RequestMapping("/kafka")
-    public String hello(@RequestParam String worlds) {
-        ListenableFuture<SendResult<String, Object>> future = kafkaTemplate.send("hello", worlds);
-        StringBuilder result = new StringBuilder("发送：" + worlds + "，结果：");
-        future.addCallback(new ListenableFutureCallback() {
-
-            @Override
-            public void onSuccess(Object o) {
-                log.error("发送消息成功：{}", o.toString());
-            }
-
-            @Override
-            public void onFailure(Throwable throwable) {
-                result.append(throwable.getMessage());
-                log.error("发送消息失败：{}", throwable.getMessage());
-            }
-        });
-        return "发送消息成功";
-    }
+    @Autowired
+    @Qualifier(value = "idWorker")
+    private IdWorker getIdWorker22;
+//    @RequestMapping("/kafka")
+//    public String hello(@RequestParam String worlds) {
+//        ListenableFuture<SendResult<String, Object>> future = kafkaTemplate.send("hello", worlds);
+//        StringBuilder result = new StringBuilder("发送：" + worlds + "，结果：");
+//        future.addCallback(new ListenableFutureCallback() {
+//
+//            @Override
+//            public void onSuccess(Object o) {
+//                log.error("发送消息成功：{}", o.toString());
+//            }
+//
+//            @Override
+//            public void onFailure(Throwable throwable) {
+//                result.append(throwable.getMessage());
+//                log.error("发送消息失败：{}", throwable.getMessage());
+//            }
+//        });
+//        return "发送消息成功";
+//    }
 
     @GetMapping("/jobInfo/{jobName}")
     public List<Instance> jobInfo(@PathVariable String jobName) {
@@ -124,19 +130,15 @@ public class BatchController {
         return instanceList;
     }
 
-    @GetMapping("/start/{jobName}/{name}/{age}")
+    @GetMapping("/start/{jobName}/{batchDate}")
     public String start(@PathVariable String jobName,
-                        @RequestParam(required = false) String batchDate,
-                        @RequestParam(required = false) String param,
-                        @PathVariable String name, @PathVariable long age
+                        @PathVariable String batchDate,
+                        @RequestParam(required = false) String param
     ) throws Exception {
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("jobName", jobName);
-        map.put("name", name);
-        map.put("startDate", LocalDate.now().toString());
         map.put("param", param == null ? "system" : param);
-        map.put("batchDate", batchDate == null ? LocalDate.now().minusDays(2).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) : batchDate);
-        map.put("age", age);
+        map.put("batchDate", batchDate);
         return batchService.start(map).toString();
     }
 
@@ -144,8 +146,8 @@ public class BatchController {
     public String getCsv(@PathVariable String jobName,
                          @RequestParam(required = false, defaultValue = "2020-06-06") String batchDate,
                          @RequestParam(required = false, defaultValue = "system") String param,
-                         @RequestParam(required = false,defaultValue = "2") long pageNum,
-                         @RequestParam(required = false,defaultValue = "2") long pageSize) throws Exception {
+                         @RequestParam(required = false, defaultValue = "2") long pageNum,
+                         @RequestParam(required = false, defaultValue = "2") long pageSize) throws Exception {
         Map<String, Object> map = new LinkedHashMap();
         map.put("jobName", jobName);
         map.put("startDate", LocalDate.now().toString());
@@ -161,7 +163,7 @@ public class BatchController {
         JSONObject jsonObject = JSON.parseObject(paramJson);
         String name = jsonObject.getObject("name", String.class);
         Integer age = jsonObject.getInteger("age");
-        log.info("name:{},age:{}",name,age);
+        log.info("name:{},age:{}", name, age);
         List<UserDtoReq> userDtos = userFeignClient.getUserDtos(name, age);
         log.info("userDtos:{}", JSON.toJSONString(userDtos));
         return userDtos;
@@ -180,4 +182,9 @@ public class BatchController {
         return new ArrayList<UserDtoReq>(set);
     }
 
+    @RequestMapping(value = "/text", method = RequestMethod.GET)
+    public String gettext() {
+        long nextId = getIdWorker22.nextId();
+        return nextId + "";
+    }
 }

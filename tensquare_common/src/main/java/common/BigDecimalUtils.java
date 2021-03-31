@@ -157,7 +157,7 @@ public class BigDecimalUtils {
         if (one == null || two == null) {
             return false;
         }
-        return one.compareTo(two) == 0 ? true : false;
+        return one.compareTo(two) == 0;
     }
 
     @Test
@@ -179,7 +179,7 @@ public class BigDecimalUtils {
         if (num == null) {
             return false;
         }
-        return num.compareTo(BigDecimal.ZERO) >= 0 ? true : false;
+        return num.compareTo(BigDecimal.ZERO) >= 0;
     }
 
     @Test
@@ -327,7 +327,7 @@ public class BigDecimalUtils {
     }
 
     public static boolean getMaxBigDecimal(BigDecimal one, BigDecimal two) {
-        return one.compareTo(two) > 0 ? true : false;
+        return one.compareTo(two) > 0;
     }
 
     @Test

@@ -1,5 +1,6 @@
 package com.tensquare.batch;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -21,8 +22,11 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @EnableJpaAuditing//自动加载时间的
 @EnableDiscoveryClient
 @EnableFeignClients
+@Slf4j
 public class BatchApplication {
     public static void main(String[] args) {
+        long millis = System.currentTimeMillis();
         SpringApplication.run(BatchApplication.class);
+        log.info("batch服务启动时间：{}毫秒",System.currentTimeMillis()-millis);
     }
 }

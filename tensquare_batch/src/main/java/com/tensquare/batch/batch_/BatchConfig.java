@@ -1,8 +1,9 @@
-package com.tensquare.batch.batch;
+package com.tensquare.batch.batch_;
 
 import com.alibaba.fastjson.JSON;
 import com.tensquare.batch.feginClient.UserDtoFeignClient;
 import com.tensquare.req.UserDtoReq;
+import common.SnowFlake;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionListener;
@@ -17,6 +18,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import utils.IdWorker;
 
 import java.util.List;
 
@@ -49,7 +51,9 @@ public class BatchConfig {
         return threadPoolTaskExecutor;
     }
 
-    /** 监听器*/
+    /**
+     * 监听器
+     */
     public JobExecutionListener getJobListener() {
         return new JobExecutionListener() {
             @Override
@@ -63,6 +67,7 @@ public class BatchConfig {
             }
         };
     }
+
     /**
      * 第一个步骤
      */
@@ -95,9 +100,12 @@ public class BatchConfig {
             }
         };
     }
-    /** 第三个步骤 */
 
-    public Tasklet getTasklet3(){
+    /**
+     * 第三个步骤
+     */
+
+    public Tasklet getTasklet3() {
         return new Tasklet() {
             @Override
             public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
@@ -106,9 +114,12 @@ public class BatchConfig {
             }
         };
     }
-    /** 第四个步骤 */
 
-    public Tasklet getTasklet4(){
+    /**
+     * 第四个步骤
+     */
+
+    public Tasklet getTasklet4() {
         return new Tasklet() {
             @Override
             public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
@@ -116,5 +127,10 @@ public class BatchConfig {
                 return RepeatStatus.FINISHED;
             }
         };
+    }
+
+   @Bean(name = "idWorker")
+    public IdWorker getIdWorker() {
+        return new IdWorker(1, 1);
     }
 }

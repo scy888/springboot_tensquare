@@ -8,6 +8,8 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
+import java.nio.file.Files;
+
 /**
  * @author: scyang
  * @program: tensquare_parent
@@ -25,5 +27,6 @@ public class jobRun implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
        log.info("batch初始化......");
+       log.info("容器里面的job列表:{}",jobRegistry.getJobNames());
     }
 }

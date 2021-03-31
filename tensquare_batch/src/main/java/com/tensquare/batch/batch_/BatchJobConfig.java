@@ -1,4 +1,4 @@
-package com.tensquare.batch.batch;
+package com.tensquare.batch.batch_;
 
 import com.alibaba.fastjson.JSON;
 import com.tensquare.batch.feginClient.UserDtoFeignClient;

@@ -75,6 +75,12 @@
              <groupId>org.freemarker</groupId>
              <artifactId>freemarker</artifactId>
          </dependency>
+         <dependency>
+             <groupId>com.jcraft</groupId>
+             <artifactId>jsch</artifactId>
+             <version>0.1.54</version>
+             <scope>compile</scope>
+         </dependency>
          <!--<dependency>-->
              <!--<groupId>org.hibernate</groupId>-->
              <!--<artifactId>hibernate-core</artifactId>-->

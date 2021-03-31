@@ -1,10 +1,10 @@
 package com.tensquare.test.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.tensquare.req.LxgmRepaymentPlanReq;
 import com.tensquare.test.dao.CsvDao;
-import com.tensquare.test.pojo.LxgmRepaymentPlan;
+import com.tensquare.test.pojo.UserDto;
+import common.ReflectUtils;
 import common.SecurityUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.After;
@@ -18,18 +18,16 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 import utils.IdWorker;
 
-import java.io.*;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import static org.junit.Assert.*;
 
 /**
  * @author: scyang
@@ -59,7 +57,7 @@ public class CsvControllerTest {
 
         try {
             byte[] bytes = Files.readAllBytes(Paths.get(Thread.currentThread().getContextClassLoader().getResource("csv.json").toURI()));
-           // byte[] bytes = Files.readAllBytes(Paths.get("csv.json"));
+            //byte[] bytes = Files.readAllBytes(Paths.get("csv.json"));
             jsonStr = new String(bytes, "utf-8");
         } catch (Exception e) {
             // e.printStackTrace();
@@ -105,5 +103,18 @@ public class CsvControllerTest {
             set.add(new IdWorker().nextId());
         }
         System.out.println("set的长度："+set.size());
+    }
+
+    @Test
+    public void test__(){
+        List<UserDto> userDtoList = Arrays.asList(new UserDto[]{new UserDto("张无忌", "男", 20, LocalDateTime.of(2012, 6, 12, 12, 12, 12)),
+                new UserDto("赵敏", "女", 19, LocalDateTime.of(2012, 6, 12, 12, 12, 12)),
+                new UserDto("周芷若", "女", 18, LocalDateTime.of(2012, 6, 12, 12, 12, 12)),
+                new UserDto("小昭", "女", 17, LocalDateTime.of(2012, 6, 12, 12, 12, 12)),
+                new UserDto("阿离", "女", 16, LocalDateTime.of(2012, 6, 12, 12, 12, 12))});
+
+        UserDto userDto = new UserDto("阿离", "女", 16, LocalDateTime.of(2012, 6, 12, 12, 12, 12));
+        System.out.println(ReflectUtils.getFieldNames(userDto));
+        System.out.println(ReflectUtils.getFieldValues(userDto));
     }
 }

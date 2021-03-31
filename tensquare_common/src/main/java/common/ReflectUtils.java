@@ -1,13 +1,26 @@
 package common;
 
-import org.apache.poi.ss.formula.functions.T;
+import com.google.common.collect.Interners;
+import entity.User;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.ResourceBundle;
+import javax.mail.internet.InternetAddress;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.net.InetAddress;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author: scyang
@@ -17,27 +30,27 @@ import java.util.ResourceBundle;
  * @describe: 反射调用工具类
  */
 public class ReflectUtils {
-    private static final Logger logger= LoggerFactory.getLogger(ReflectUtils.class);
-    private static final ReflectUtils instance_=new ReflectUtils();
+    private static final Logger logger = LoggerFactory.getLogger(ReflectUtils.class);
+    private static final ReflectUtils instance_ = new ReflectUtils();
 
-    public static ReflectUtils getInstance(){
+    public static ReflectUtils getInstance() {
         return instance_;
     }
 
-    public Object reflectMethodByParams(Object object, String methodName, Object...params) throws Exception {
-        Object target=null;
+    public Object reflectMethodByParams(Object object, String methodName, Object... params) throws Exception {
+        Object target = null;
         Class clazz = object.getClass();
         Object instance = clazz.newInstance();
-            List<Class> calssList=new ArrayList<>();
-            List<Object> paramList=new ArrayList<>();
-            for (Object param : params) {
-                calssList.add(param.getClass());
-                paramList.add(param);
-            }
+        List<Class> calssList = new ArrayList<>();
+        List<Object> paramList = new ArrayList<>();
+        for (Object param : params) {
+            calssList.add(param.getClass());
+            paramList.add(param);
+        }
         try {
-            target= clazz.getDeclaredMethod(methodName, calssList.toArray(new Class[calssList.size()]))
-                    .invoke(object,paramList.toArray(new Object[paramList.size()]));
-            logger.info("{target}"+target);
+            target = clazz.getDeclaredMethod(methodName, calssList.toArray(new Class[calssList.size()]))
+                    .invoke(object, paramList.toArray(new Object[paramList.size()]));
+            logger.info("{target}" + target);
 
         } catch (IllegalAccessException e) {
             e.printStackTrace();
@@ -46,26 +59,172 @@ public class ReflectUtils {
         return target;
     }
 
-    public Object reflectMethodByParams(String baseName,String keyName,String methodName,Object...params) throws Exception {
+    public Object reflectMethodByParams(String baseName, String keyName, String methodName, Object... params) throws Exception {
         ResourceBundle bundle = ResourceBundle.getBundle(baseName);
         Enumeration<String> keys = bundle.getKeys();
-        Object target=null;
-        while (keys.hasMoreElements()){
+        Object target = null;
+        while (keys.hasMoreElements()) {
             String key = keys.nextElement();
-            if (keyName.equals(key)){
+            if (keyName.equals(key)) {
                 String className = bundle.getString(key);
                 Class<?> clazz = Class.forName(className);
-                List<Class> classList=new ArrayList<>();
-                List<Object> paramsList=new ArrayList<>();
+                List<Class> classList = new ArrayList<>();
+                List<Object> paramsList = new ArrayList<>();
                 for (Object param : params) {
                     classList.add(param.getClass());
                     paramsList.add(param);
                 }
-                target=clazz.getDeclaredMethod(methodName,classList.toArray(new Class[classList.size()]))
-                        .invoke(clazz.newInstance(),paramsList.toArray(new Object[paramsList.size()]));
+                target = clazz.getDeclaredMethod(methodName, classList.toArray(new Class[classList.size()]))
+                        .invoke(clazz.newInstance(), paramsList.toArray(new Object[paramsList.size()]));
                 break;
             }
         }
         return target;
+    }
+
+    public static <T> String getFieldNames(Class<T> clazz) {
+        /**
+         * @Description: 通过反射获取对象的属性名
+         * @methodName: getFieldNames
+         * @Param: [t]
+         * @return: java.lang.String
+         * @Author: scyang
+         * @Date: 2021/1/10 14:10
+         */
+        StringBuffer sb = null;
+        try {
+            //Class<T> clazz = (Class<T>) t.getClass();
+            Field[] declaredFields = clazz.getDeclaredFields();
+            sb = new StringBuffer();
+            for (Field field : declaredFields) {
+                sb.append(field.getName()).append(",");
+            }
+            logger.info("通过反射获取的对象属性名调用正常...");
+        } catch (SecurityException e) {
+            e.printStackTrace();
+            logger.error("通过反射获取的对象属性名调用失败...");
+        }
+        return sb.deleteCharAt(sb.lastIndexOf(",")).toString();
+    }
+
+    public static <T> List<String> getFieldNameList(Class<T> clazz) {
+        /**
+         * @Description: 通过反射获取对象的属性名
+         * @methodName: getFieldNames
+         * @Param: [t]
+         * @return: java.lang.String
+         * @Author: scyang
+         * @Date: 2021/1/10 14:10
+         */
+        List<String> collect = null;
+        try {
+            //Class<T> clazz = (Class<T>) t.getClass();
+            Field[] declaredFields = clazz.getDeclaredFields();
+            collect = Arrays.stream(declaredFields).map(Field::getName).collect(Collectors.toList());
+            logger.info("通过反射获取的对象属性名调用正常...");
+        } catch (SecurityException e) {
+            e.printStackTrace();
+            logger.error("通过反射获取的对象属性名调用失败...");
+        }
+        return collect;
+    }
+
+    public static <T> String getFieldValues(T t) {
+        /**
+         * @Description: 通过反射获取对象名的属性值
+         * @methodName: getFieldValues
+         * @Param: [t]
+         * @return: java.lang.String
+         * @Author: scyang
+         * @Date: 2021/1/10 14:55
+         */
+        Class<?> clazz = t.getClass();
+        StringBuffer sb = new StringBuffer();
+        try {
+            Object instance = clazz.newInstance();
+            for (Field field : clazz.getDeclaredFields()) {
+                String fieldName = field.getName();
+
+                String methodName = "get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+                Method getMethod = clazz.getDeclaredMethod(methodName);
+                Object value = getMethod.invoke(t);
+                sb.append(Objects.isNull(value) ? "" : value).append(",");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return sb.substring(0, sb.length() - 1);
+    }
+
+    public static <T> String getFieldValues_(T t) {
+        /**
+         * @Description: 通过反射获取对象名的属性值
+         * @methodName: getFieldValues
+         * @Param: [t]
+         * @return: java.lang.String
+         * @Author: scyang
+         * @Date: 2021/1/10 14:55
+         */
+        Class<?> clazz = t.getClass();
+        StringBuffer sb = new StringBuffer();
+        List<Object> list = new ArrayList<>();
+        String str = null;
+        try {
+            for (Field field : clazz.getDeclaredFields()) {
+                field.setAccessible(true);
+                list.add(Optional.ofNullable(field.get(t)).orElse(""));
+            }
+            str = list.stream().map(e -> String.valueOf(e)).collect(Collectors.joining(","));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return str;
+    }
+
+    @Test
+    public void test() throws IOException {
+        String fieldNames = getFieldNames(User.class);
+        List<String> fieldNameList = getFieldNameList(User.class);
+        System.out.println(fieldNames);
+        System.out.println(fieldNameList);
+        Path path = Paths.get("/userFile", "user");
+        if (Files.notExists(path)) {
+            Files.createDirectories(path);
+        }
+        Files.write(Paths.get(String.valueOf(path), "userStr.csv"), fieldNames.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE);
+        List<String> list = new ArrayList<>();
+        list.add(fieldNameList.stream().collect(Collectors.joining(",")));
+        Files.write(Paths.get(String.valueOf(path), "userList.csv"), list, StandardOpenOption.CREATE);
+    }
+
+    @Test
+    public void test_() throws Exception {
+        InetAddress inetAddress = InetAddress.getLocalHost();
+        System.out.println(inetAddress.getHostName());
+        System.out.println(inetAddress.getHostAddress());
+        User user1 = new User(1, "赵敏", null, 18, "女", "蒙古", "123", "132", BigDecimal.TEN);
+        User user2 = new User(2, "周芷若", null, 19, "女", "峨嵋", "123", "132", BigDecimal.TEN);
+        User user3 = new User(3, "小昭", null, 20, "女", "波斯", "123", "132", BigDecimal.TEN);
+        User user4 = new User(4, "殷离", null, 21, "女", "灵蛇岛", "123", "132", BigDecimal.TEN);
+        List<User> userList = new ArrayList<>();
+        Collections.addAll(userList, user1, user2, user3, user4);
+        System.out.println(getFieldValues_(user1));
+        System.out.println(getFieldValues(user1));
+
+        String fieldNames = getFieldNames(User.class);
+        Path path = Paths.get("/userFile", "user");
+        if (Files.notExists(path)) {
+            Files.createDirectories(path);
+        }
+
+        List<String> list = new ArrayList<>();
+        list.add(getFieldNames(User.class));
+
+        for (User user : userList) {
+            list.add(getFieldValues(user));
+        }
+
+        Files.write(Paths.get(String.valueOf(path),"user_.csv"),list,StandardOpenOption.CREATE);
+        Files.write(Paths.get(String.valueOf(path),"user__.csv"),String.join(System.lineSeparator(),list).getBytes("GBK"),StandardOpenOption.CREATE);
     }
 }

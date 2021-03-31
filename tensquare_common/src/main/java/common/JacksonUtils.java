@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.std.DateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -172,5 +173,21 @@ public class JacksonUtils {
             e.printStackTrace();
         }
         return vList;
+    }
+    public static String toJsonNode(String str, String nodeName) {
+        try {
+            JsonNode jsonNode = object_mapper.readTree(str).get(nodeName);
+            if (jsonNode == null) {
+                return null;
+            }
+            if (jsonNode.isTextual()) {
+                return jsonNode.asText();
+            } else {
+                return jsonNode.toString();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

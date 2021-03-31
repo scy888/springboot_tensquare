@@ -63,7 +63,6 @@ public class LxgmTasklet {
     @StepScope
     public FlatFileItemReader<LxgmRepaymentPlanReq> getLxgmRead(@Value("#{jobParameters[batchDate]}") String batchDate) {
         String dateStr = LocalDate.parse(batchDate).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        String path2 = "E:/lxgm/" + dateStr + "/LX_GMXT_QC_05_WS_" + dateStr + ".csv";
         String path = url + dateStr + "\\LX_GMXT_QC_05_WS_" + dateStr + ".csv";
         Resource resource = new FileSystemResource(path);
         log.info("LX_GMXT_QC_05_WS_ resource:{}", path);
@@ -87,6 +86,7 @@ public class LxgmTasklet {
     /**
      * 数据的转换
      */
+    @Bean
     public ItemProcessor<LxgmRepaymentPlanReq, RepaymentPlan> getLxgmProcessor() {
         return new ItemProcessor<LxgmRepaymentPlanReq, RepaymentPlan>() {
 
@@ -161,8 +161,8 @@ public class LxgmTasklet {
     @Bean
     public TaskExecutor getLxmTaskExecutor() {
         ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
-        threadPoolTaskExecutor.setCorePoolSize(8);
-        threadPoolTaskExecutor.setMaxPoolSize(16);
+        threadPoolTaskExecutor.setCorePoolSize(2);
+        threadPoolTaskExecutor.setMaxPoolSize(2);
         return threadPoolTaskExecutor;
     }
 }

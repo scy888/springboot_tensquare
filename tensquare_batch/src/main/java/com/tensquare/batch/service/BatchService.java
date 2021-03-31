@@ -34,10 +34,9 @@ public class BatchService {
         log.info("获取的job：{}", job);
         JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
         for (Map.Entry<String, Object> entry : map.entrySet()) {
-            if (entry.getKey()=="age"){
+            if (entry.getKey().equals("age")) {
                 jobParametersBuilder.addLong(entry.getKey(), (Long) entry.getValue());
-            }
-            else {
+            } else {
                 jobParametersBuilder.addString(entry.getKey(), (String) entry.getValue());
             }
         }
@@ -53,10 +52,9 @@ public class BatchService {
         log.info("获取的job：{}", job);
         JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
         for (Map.Entry<String, Object> entry : map.entrySet()) {
-            if (entry.getValue().getClass().equals(String.class)){
+            if (entry.getValue().getClass().equals(String.class)) {
                 jobParametersBuilder.addString(entry.getKey(), (String) entry.getValue());
-            }
-           else {
+            } else {
                 jobParametersBuilder.addLong(entry.getKey(), (Long) entry.getValue());
             }
         }

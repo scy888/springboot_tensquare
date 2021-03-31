@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import org.apache.commons.compress.archivers.zip.ZipUtil;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -31,7 +32,7 @@ import java.time.LocalDateTime;
        /* @Index(name = "index_age", columnList = "age", unique = true)*/})
 @org.hibernate.annotations.Table(appliesTo = "user_dto", comment = "校验参数信息表")
 public class UserDto implements Serializable {
-    private static final long serialVersionUID = 7729098393490305945L;
+    //private static final long serialVersionUID = 7729098393490305945L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer userId;

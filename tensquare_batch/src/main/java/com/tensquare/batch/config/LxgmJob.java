@@ -47,13 +47,15 @@ public class LxgmJob {
     @Bean
     public Step getLxgmReadAndWriterStep(FlatFileItemReader<LxgmRepaymentPlanReq> getLxgmRead,
                                          ItemWriter<RepaymentPlan> getLxgmWriter) {
+        log.info("dddddddddddddddddddadsadasd");
         Step step = stepBuilderFactory.get("解析国民乐信CSV文件")
-                .<LxgmRepaymentPlanReq, RepaymentPlan>chunk(50)
+                .<LxgmRepaymentPlanReq, RepaymentPlan>chunk(10)
                 .reader(getLxgmRead)
                 .processor(lxgmTasklet.getLxgmProcessor())
                 .writer(getLxgmWriter)
                 .taskExecutor(lxgmTasklet.getLxmTaskExecutor())
                 .throttleLimit(4)
+                .allowStartIfComplete(true)
                 .build();
         return step;
     }
@@ -82,24 +84,26 @@ public class LxgmJob {
                         log.info("pageBean:{}", JSON.toJSONString(pageBean));
                         return RepeatStatus.FINISHED;
                     }
-                }).build();
+                })
+                .allowStartIfComplete(true)
+                .build();
     }
 
     @Bean
     public Step getLoopStep() {
-       return stepBuilderFactory.get("getLoopStep")
+        return stepBuilderFactory.get("getLoopStep")
                 .tasklet(lxgmTasklet.getLoopTasklet())
                 .build();
     }
 
     @Bean
     public Job getLxgmReadAndWriterJob(Step getLxgmReadAndWriterStep) {
-        return jobBuilderFactory.get("lxgmJob")
+        return jobBuilderFactory.get("lxgmJob_")
                 .incrementer(new RunIdIncrementer())
                 .listener(lxgmTasklet.getLxgmListener())
-                //.start(getLxgmReadAndWriterStep)
-                .start(getPageStep())
-                .next( getLoopStep())
+                .start(getLxgmReadAndWriterStep)
+                //.start(getPageStep())
+                // .next(getLoopStep())
                 .build();
     }
 }

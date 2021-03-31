@@ -29,10 +29,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import utils.IdWorker;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -369,9 +366,10 @@ public class UserDomeController {
         }
         return loginMsg;
     }
+
     @PostMapping("/addAdminId")
-    public String addAdminId(@RequestBody Admin admin){
-         String msg="";
+    public String addAdminId(@RequestBody Admin admin) {
+        String msg = "";
         Admin admin2 = adminDaoJpa.findOne(Example.of(new Admin().setAdmin(admin.getAdmin()))).orElseGet(() -> {
             Admin e = new Admin();
             e.setAdminId(idWorker.nextId() + "");
@@ -381,23 +379,24 @@ public class UserDomeController {
             e.setAuthCode("SCY2");
             return e;
         });
-        log.info("admin2:{}",JSON.toJSONString(admin2));
+        log.info("admin2:{}", JSON.toJSONString(admin2));
         try {
             Admin save = adminDaoJpa.save(admin2);
-            msg="添加admin成功:"+JSON.toJSONString(save);
+            msg = "添加admin成功:" + JSON.toJSONString(save);
         } catch (Exception e) {
             e.printStackTrace();
-            msg="添加admin失败:"+e.getMessage();
+            msg = "添加admin失败:" + e.getMessage();
         }
-        log.info("msg:{}",msg);
+        log.info("msg:{}", msg);
         return msg;
     }
+
     @GetMapping("/login2/{admin}/{password}")
-    public String login2(@PathVariable String admin,@PathVariable String password) throws Exception {
-        String msg="";
+    public String login2(@PathVariable String admin, @PathVariable String password) throws Exception {
+        String msg = "";
         boolean exists = adminDaoJpa.exists(Example.of(new Admin().setAdmin(admin)
                 .setPassword(SecurityUtil.encoder(password, "MD5"))));
-        HttpSession session=null;
+        HttpSession session = null;
         if (exists) {
             session = request.getSession();
             session.setMaxInactiveInterval(60);
@@ -406,24 +405,25 @@ public class UserDomeController {
             String uri = request.getRequestURI();
             String ip = request.getRemoteAddr();
             String path = request.getContextPath();
-            
-            log.info("url:{}",url);
-            log.info("uri:{}",uri);
-            log.info("ip:{}",ip);
-            log.info("path:{}",path);
-            msg="登陆成功!";
+
+            log.info("url:{}", url);
+            log.info("uri:{}", uri);
+            log.info("ip:{}", ip);
+            log.info("path:{}", path);
+            msg = "登陆成功!";
+        } else {
+            msg = "登录失败!";
         }
-        else {
-            msg= "登录失败!";
-        }
-        log.info("msg:{}, session:{}",msg,session);
+        log.info("msg:{}, session:{}", msg, session);
         return JSON.toJSONString(msg);
     }
+
     @RequestMapping("/annotation2")
     public String getString2(@AdminId String adminId) {
         log.info("参数adminId：{}", adminId);
         return adminId;
     }
+
     @RequestMapping("/annotation")
     public String getString(@AdminName String adminName) {
         log.info("参数adminName：{}", adminName);
@@ -541,10 +541,22 @@ public class UserDomeController {
                     predicateList.add(criteriaBuilder.like(root.get("context").as(String.class), (String) map.get("context") + "%"));
                 }
                 if ((Integer) map.get("age") != null) {
-
-                    predicateList.add(criteriaBuilder.ge(root.get("age").as(Integer.class), (Integer) map.get("age")));
+                    // predicateList.add(criteriaBuilder.ge(root.get("age").as(Integer.class), (Integer) map.get("age")));
                 }
-                return criteriaBuilder.or(predicateList.toArray(new Predicate[predicateList.size()]));
+                List<Integer> ageList = (List<Integer>) map.get("ageList");
+                if (ageList != null && !ageList.isEmpty()) {
+                    CriteriaBuilder.In<Object> in = criteriaBuilder.in(root.get("age"));
+                    for (Integer age : ageList) {
+                        in.value(age);
+                    }
+                    predicateList.add(in);
+                }
+                if ((String) map.get("sex") != null) {
+                    Predicate predicate = criteriaBuilder.equal(root.get("sex"), map.get("sex"));
+                    //predicateList.add(criteriaBuilder.or(predicate));
+                }
+                criteriaQuery.orderBy(criteriaBuilder.desc(root.get("age").as(Integer.class)));
+                return criteriaBuilder.and(predicateList.toArray(new Predicate[predicateList.size()]));
             }
         };
         Page<UserDto> userDtoPage = userDtoDaoJpa.findAll(specification,
@@ -566,14 +578,14 @@ public class UserDomeController {
     }
 
     @RequestMapping("/updateUserDto/{name}/{age}")
-    public List<UserDtoReq> updateUserDto(@PathVariable String name,@PathVariable int age) {
+    public List<UserDtoReq> updateUserDto(@PathVariable String name, @PathVariable int age) {
         List<UserDto> userDtoList = userDtoDaoJpa.findByName(name);
-        log.info("姓名：{},修改前的年龄：age:{}",userDtoList.get(0).getName(),userDtoList.get(0).getAge());
-        userDtoDaoJpa.updateUserDto(name,age);
-         userDtoList = userDtoDaoJpa.findByName(name);
-        log.info("姓名：{},修改后的年龄：age:{},",userDtoList.get(0).getName(),userDtoList.get(0).getAge());
+        log.info("姓名：{},修改前的年龄：age:{}", userDtoList.get(0).getName(), userDtoList.get(0).getAge());
+        userDtoDaoJpa.updateUserDto(name, age);
+        userDtoList = userDtoDaoJpa.findByName(name);
+        log.info("姓名：{},修改后的年龄：age:{},", userDtoList.get(0).getName(), userDtoList.get(0).getAge());
         return userDtoList.stream().map(userDto -> {
-            UserDtoReq userDtoReq=new UserDtoReq();
+            UserDtoReq userDtoReq = new UserDtoReq();
             BeanUtils.copyProperties(userDto, userDtoReq);
             return userDtoReq;
         }).collect(Collectors.toList());

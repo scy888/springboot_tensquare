@@ -17,10 +17,10 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class KafkaListener {
-    @org.springframework.kafka.annotation.KafkaListener(topics = "hello")
+  /*  @org.springframework.kafka.annotation.KafkaListener(topics = "hello")
     public void hello(ConsumerRecord<String,Object> consumerRecord, Acknowledgment acknowledgment, Consumer<?,?> consumer){
         Object value = consumerRecord.value();
         log.info("获得消息：{}",value);
         acknowledgment.acknowledge();
-    }
+    }*/
 }
