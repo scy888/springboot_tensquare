@@ -2,12 +2,16 @@ package common;
 
 import com.google.common.collect.Interners;
 import entity.User;
+import jodd.io.ZipUtil;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 
 import javax.mail.internet.InternetAddress;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -21,6 +25,8 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
 
 /**
  * @author: scyang
@@ -174,7 +180,7 @@ public class ReflectUtils {
                 field.setAccessible(true);
                 list.add(Optional.ofNullable(field.get(t)).orElse(""));
             }
-            str = list.stream().map(e -> String.valueOf(e)).collect(Collectors.joining(","));
+            str = list.stream().map(String::valueOf).collect(Collectors.joining(","));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -224,7 +230,69 @@ public class ReflectUtils {
             list.add(getFieldValues(user));
         }
 
-        Files.write(Paths.get(String.valueOf(path),"user_.csv"),list,StandardOpenOption.CREATE);
-        Files.write(Paths.get(String.valueOf(path),"user__.csv"),String.join(System.lineSeparator(),list).getBytes("GBK"),StandardOpenOption.CREATE);
+        Files.write(Paths.get(String.valueOf(path), "user_.csv"), list, StandardOpenOption.CREATE);
+        Files.write(Paths.get(String.valueOf(path), "user__.csv"), String.join(System.lineSeparator(), list).getBytes("GBK"), StandardOpenOption.CREATE);
+
+        Thread.sleep(3 * 1000);
+        list.clear();
+        File file = new File(String.valueOf(path));
+        for (File file_ : Arrays.stream(Objects.requireNonNull(file.listFiles())).filter(e -> e.getName().endsWith("_.csv")).collect(Collectors.toList())) {
+            list.add(new String(Files.readAllBytes(Paths.get(file_.getAbsolutePath())), StandardCharsets.UTF_8));
+        }
+
+        Files.write(Paths.get(String.valueOf(path), "userCat.csv"), String.join(System.lineSeparator(), list).getBytes("GBK"), StandardOpenOption.CREATE);
+
+        Path zipPath = Paths.get("/userFile", "zip");
+        if (Files.notExists(zipPath)) {
+            Files.createDirectories(zipPath);
+        }
+        //压缩
+        try (
+                ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream(new File(Paths.get(String.valueOf(zipPath), "user.zip").toUri())))
+        ) {
+            for (File file_ : Objects.requireNonNull(new File(Paths.get(String.valueOf(path)).toUri()).listFiles())) {
+                ZipUtil.addToZip(zipOutputStream, Files.readAllBytes(Paths.get(file_.getAbsolutePath())), file_.getName(), "zip");
+                //ZipUtil.addToZip(zipOutputStream,new File(file_.getAbsolutePath()),file_.getName(),"zip",false);
+            }
+        }
+        //解压
+        Path unZipPath = Paths.get("/userFile", "unZip");
+        if (Files.notExists(unZipPath)) {
+            Files.createDirectories(unZipPath);
+        }
+        for (File file_ : new File(Paths.get(String.valueOf(zipPath)).toUri()).listFiles()) {
+            ZipUtil.unzip(String.valueOf(file_.getAbsoluteFile()), String.valueOf(unZipPath));
+        }
+    }
+
+    @Test
+    public void test006() {
+       // List<String> 省份 = Arrays.asList("湖北省", "湖南省", "河北省", "河南省");
+        //List<String> 省会 = Arrays.asList("武汉市", "长沙市", "石家庄市", "郑州市");
+
+        List<String> 省份=new ArrayList<>();
+        Collections.addAll(省份,"湖北省", "湖南省", "河北省", "河南省");
+        List<String> 省会=new ArrayList<>();
+        Collections.addAll(省会,"武汉市", "长沙市", "石家庄市", "郑州市");
+//        for (int i = 省份.size()-1; i >= 0; i--) {
+//            String sheng = 省份.get(i);
+//            for (int j = i; j >=0; j--) {
+//                String shi = 省会.get(j);
+//                System.out.println(sheng+":"+shi);
+//                //省份.remove(sheng);
+//                //省会.remove(shi);
+//                break;
+//            }
+//        }
+        for (int i =0;i< 省份.size(); i++) {
+            String sheng = 省份.get(i);
+            for (int j = i; j >=0; j--) {
+                String shi = 省会.get(j);
+                System.out.println(sheng+":"+shi);
+                //省份.remove(sheng);
+                //省会.remove(shi);
+                break;
+            }
+        }
     }
 }

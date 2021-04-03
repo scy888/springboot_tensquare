@@ -1,8 +1,12 @@
 package common;
+
 import org.junit.Test;
+
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.*;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -108,7 +112,7 @@ public class StringUtils {
 
     /**********************************************************************************/
 
-    public static boolean isCarCard(String strCarCard){
+    public static boolean isCarCard(String strCarCard) {
         /**
          * @Description: 车牌号校验 粤B 5F6K8
          * @methodName: isCarCard
@@ -117,12 +121,39 @@ public class StringUtils {
          * @Author: scyang
          * @Date: 2019/9/26 22:14
          */
-        strCarCard=strCarCard.replaceAll(" ","" );
-        String regExp="^[\\u4e00-\\u9fa5][A-Z]•\\w{5}$";
+        strCarCard = strCarCard.replaceAll(" ", "");
+        String regExp = "^[\\u4e00-\\u9fa5][A-Z]•\\w{5}$";
         return Pattern.compile(regExp).matcher(strCarCard).matches();
     }
 
-    public static boolean isEqualStr(String strOne,String strTwo){
+    //    **
+//            * 下划线转驼峰, eg: user_name -> userName
+// *
+//         * @param underline
+// * @return
+//         */
+    public static String underlineToCamelLowerCase(String underline) {
+        underline = underline.toLowerCase();
+        Matcher matcher = Pattern.compile("_(\\w)").matcher(underline);
+        StringBuffer sb = new StringBuffer();
+        while (matcher.find()) {
+            matcher.appendReplacement(sb, matcher.group(1).toUpperCase());
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
+    }
+
+    /**
+     * 驼峰转下划线， eg: userName -> user_name
+     *
+     * @param str
+     * @return
+     */
+    public static String camelLowerCaseToUnderline(String str) {
+        return str.replaceAll("[A-Z]", "_$0").toLowerCase();
+    }
+
+    public static boolean isEqualStr(String strOne, String strTwo) {
         /**
          * @Description: 两个字符串是否相等
          * @methodName: isEqualStr
@@ -131,11 +162,12 @@ public class StringUtils {
          * @Author: scyang
          * @Date: 2020/4/13 20:40
          */
-        strOne=strOne==null ? "":strOne.trim();
-        strTwo=strTwo==null ? "":strTwo.trim();
+        strOne = strOne == null ? "" : strOne.trim();
+        strTwo = strTwo == null ? "" : strTwo.trim();
         return strOne.equals(strTwo);
-     }
-     public static String canceNull(String str){
+    }
+
+    public static String canceNull(String str) {
         /**
          * @Description: 为null返回""
          * @methodName: canceNull
@@ -144,16 +176,18 @@ public class StringUtils {
          * @Author: scyang
          * @Date: 2020/4/13 20:50
          */
-        return str==null ? "":str.trim();
-     }
-     @Test
-     public void test00(){
-         System.out.println(isEqualStr("a", " a"));
-         System.out.println(isEqualStr(null, null));
-         System.out.println(canceNull(null).length());
-         System.out.println(canceNull(" aa"));
+        return str == null ? "" : str.trim();
+    }
 
-     }
+    @Test
+    public void test00() {
+        System.out.println(isEqualStr("a", " a"));
+        System.out.println(isEqualStr(null, null));
+        System.out.println(canceNull(null).length());
+        System.out.println(canceNull(" aa"));
+
+    }
+
     public static boolean isEqualTwoStr(String str1, String str2) {
         /**
          * @Description: 判断两个字符串是否相等 ""和null视为相等
@@ -163,7 +197,7 @@ public class StringUtils {
          * @Author: scyang
          * @Date: 2019/10/13 9:01
          */
-        if ((str1 == "" && str2 == null)||(str1 == null && str2 == "")||(str1==null&&str2==null)) {
+        if ((str1 == "" && str2 == null) || (str1 == null && str2 == "") || (str1 == null && str2 == null)) {
             return true;
         }
         return str1.equals(str2) ? true : false;
@@ -195,12 +229,14 @@ public class StringUtils {
         return oject.toString();*/
         return oject == null ? "" : oject.toString();
     }
-    public static String getStringValue(String str,String deflautValue){
-        if (null==str||"".equals(str.toString().trim())){
+
+    public static String getStringValue(String str, String deflautValue) {
+        if (null == str || "".equals(str.toString().trim())) {
             return deflautValue;
         }
         return str;
     }
+
     @Test
     public void test02() {
         System.out.println(StringUtils.nullToStr(null));
@@ -216,8 +252,9 @@ public class StringUtils {
      * @Author: scyang
      * @Date: 2019/10/13 9:43
      */
-        return (str==null||"".equals(str.trim())) ? true : false;
+        return (str == null || "".equals(str.trim())) ? true : false;
     }
+
     @Test
     public void test03() {
         System.out.println(StringUtils.isEmpyStr(" "));
@@ -332,21 +369,20 @@ public class StringUtils {
         System.out.println(StringUtils.selectLength("盛重dd阳55aa"));
         System.out.println(StringUtils.selectLength("0"));
 
-        String card="盛重阳42220219910909349X";
-        Character[] ch={'0','1','2','3','4','5','6','7','8','9','X'};
+        String card = "盛重阳42220219910909349X";
+        Character[] ch = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'X'};
         List<Character> list = Arrays.asList(ch);
         char[] chars = card.toCharArray();
-        System.out.println(chars[0]+""+chars[1]+chars[2]);
-        int count=0;
+        System.out.println(chars[0] + "" + chars[1] + chars[2]);
+        int count = 0;
         for (int i = 3; i < chars.length; i++) {
-            if ((StringUtils.selectLength(chars[0]+""+chars[1]+chars[2])!=6)||!list.contains(chars[i])){
+            if ((StringUtils.selectLength(chars[0] + "" + chars[1] + chars[2]) != 6) || !list.contains(chars[i])) {
                 count++;
             }
         }
-        if (count!=0){
+        if (count != 0) {
             System.out.println("请核对正确的证件号....");
-        }
-        else {
+        } else {
             System.out.println("证件号符合规定...");
         }
     }
@@ -584,7 +620,7 @@ public class StringUtils {
         birthdayInstance.set(Calendar.YEAR, nowInstance.get(Calendar.YEAR));
         /** 今年的生日期在现在日期之前表示今年已经过了生日*/
         if (birthdayInstance.before(nowInstance)) {
-           // birthdayInstance小于nowInstance
+            // birthdayInstance小于nowInstance
             return ageNum;
         }
         return ageNum - 1;
@@ -743,7 +779,7 @@ public class StringUtils {
         System.out.println(transferNulltoStr(null));
         System.out.println(transferNulltoStr("null"));
         System.out.println(transferNulltoStr("盛重阳"));
-       // System.out.println(transferNulltoStr(new User()));
+        // System.out.println(transferNulltoStr(new User()));
     }
 
     public static boolean objIsNullOrEmpty(Object obj) {
@@ -829,71 +865,71 @@ public class StringUtils {
 
     @Test
     public void test200() {
-      int sum=0;
-        List<Integer> list=new ArrayList<>();
+        int sum = 0;
+        List<Integer> list = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
             list.add(i);
         }
         for (Integer integer : list) {
-            sum= sum+integer;
+            sum = sum + integer;
         }
         System.out.println(sum);
     }
+
     @Test
-    public void test300(){
-        int sum=0;
+    public void test300() {
+        int sum = 0;
         for (int i = 0; i < 100; i++) {
-            if (i/2==1){
-                sum=sum+i;
+            if (i / 2 == 1) {
+                sum = sum + i;
             }
         }
         System.out.println(sum);
     }
-    public static void validateParams(Object...obj){
+
+    public static void validateParams(Object... obj) {
         /**
-         * @Description: 校验参数是否为空,为空抛出异常
+         * @Description: 校验参数是否为空, 为空抛出异常
          * @methodName: validateParams
          * @Param: [obj]
          * @return: void
          * @Author: scyang
          * @Date: 2019/12/9 20:11
          */
-        if (obj==null){
-            throw new RuntimeException(obj+"的值不可为null...");
+        if (obj == null) {
+            throw new RuntimeException(obj + "的值不可为null...");
 
         }
         for (Object o : obj) {
-            if (null==o){
-                throw new RuntimeException(o+"的值不可为null...");
-            }
-            else if (o instanceof String){
-                if ("".equals(((String) o).trim())){
-                    throw new RuntimeException(o+"的值不可为空...");
+            if (null == o) {
+                throw new RuntimeException(o + "的值不可为null...");
+            } else if (o instanceof String) {
+                if ("".equals(((String) o).trim())) {
+                    throw new RuntimeException(o + "的值不可为空...");
+                }
+            } else if (o instanceof Collection) {
+                if (((Collection) o).isEmpty()) {
+                    throw new RuntimeException(o + "的值不可为空...");
+                }
+            } else if (o instanceof Map) {
+                if (((Map) o).isEmpty()) {
+                    throw new RuntimeException(o + "的值不可为空...");
+                }
+            } else if (o instanceof Object[]) {
+                if (((Object[]) o).length == 0) {
+                    throw new RuntimeException(o + "的值不可为空...");
                 }
             }
-           else if (o instanceof Collection){
-               if (((Collection) o).isEmpty()){
-                   throw new RuntimeException(o+"的值不可为空...");
-               }
-           }
-           else if (o instanceof Map){
-               if (((Map) o).isEmpty()){
-                   throw new RuntimeException(o+"的值不可为空...");
-               }
-           }
-           else if (o instanceof Object[]){
-               if (((Object[]) o).length==0){
-                   throw new RuntimeException(o+"的值不可为空...");
-               }
-           }
         }
     }
+
     @Test
-    public void test20(){
-        Map map=new HashMap();
+    public void test20() {
+        Map map = new HashMap();
         validateParams(null);
     }
-    public static boolean validateParamsIsEmpty(Object...obj){
+
+    public static boolean validateParamsIsEmpty(Object... obj) {
         /**
          * @Description: 校验参数是否为空
          * @methodName: validateParams
@@ -902,51 +938,48 @@ public class StringUtils {
          * @Author: scyang
          * @Date: 2019/12/9 20:11
          */
-        boolean isTrue=false;
-        if (obj==null){
-            isTrue=true;
+        boolean isTrue = false;
+        if (obj == null) {
+            isTrue = true;
 
         }
         for (Object o : obj) {
-            if (null==o){
-                isTrue=true;
-            }
-             else if (o instanceof String){
-                if ("".equals(((String) o).trim())){
-                    isTrue=true;
+            if (null == o) {
+                isTrue = true;
+            } else if (o instanceof String) {
+                if ("".equals(((String) o).trim())) {
+                    isTrue = true;
                 }
-            }
-            else if (o instanceof Collection){
-                if (((Collection) o).isEmpty()){
-                    isTrue=true;
+            } else if (o instanceof Collection) {
+                if (((Collection) o).isEmpty()) {
+                    isTrue = true;
                 }
-            }
-            else if (o instanceof Map){
-                if (((Map) o).isEmpty()){
-                    isTrue=true;
+            } else if (o instanceof Map) {
+                if (((Map) o).isEmpty()) {
+                    isTrue = true;
                 }
-            }
-            else if (o instanceof Object[]){
-                if (((Object[]) o).length==0){
-                    isTrue=true;
+            } else if (o instanceof Object[]) {
+                if (((Object[]) o).length == 0) {
+                    isTrue = true;
                 }
             }
         }
         return isTrue;
     }
+
     @Test
-    public void test21(){
-        System.out.println(validateParamsIsEmpty(null,"aa"));
+    public void test21() {
+        System.out.println(validateParamsIsEmpty(null, "aa"));
     }
 
     /*******************************************************************************************************************************/
-    public static final List<String> nameList=Arrays.asList( "司马","欧阳","东方","南宫","上官",
-            "夏侯","诸葛","宇文","北堂","西门",
-            "司空","公孙","左丘","长孙","东郭",
-            "皇甫","慕容","令狐","鲜余","百里",
-            "端木","尉迟","长孙","太史","独孤");
+    public static final List<String> nameList = Arrays.asList("司马", "欧阳", "东方", "南宫", "上官",
+            "夏侯", "诸葛", "宇文", "北堂", "西门",
+            "司空", "公孙", "左丘", "长孙", "东郭",
+            "皇甫", "慕容", "令狐", "鲜余", "百里",
+            "端木", "尉迟", "长孙", "太史", "独孤");
 
-    private static String createmask(int length){
+    private static String createmask(int length) {
         /**
          * @Description: 创建掩饰符
          * @methodName: createmask
@@ -955,13 +988,14 @@ public class StringUtils {
          * @Author: scyang
          * @Date: 2020/4/3 22:56
          */
-        StringBuffer sb=new StringBuffer();
+        StringBuffer sb = new StringBuffer();
         for (int i = 0; i < length; i++) {
             sb.append("*");
         }
         return sb.toString();
     }
-    private static boolean isChinese(String plainText){
+
+    private static boolean isChinese(String plainText) {
         /**a
          * @Description: 判断是否全是中文
          * @methodName: isChunese
@@ -970,10 +1004,11 @@ public class StringUtils {
          * @Author: scyang
          * @Date: 2020/4/4 0:43
          */
-        String regExp="^[\\u4e00-\\u9fa5]+$";
+        String regExp = "^[\\u4e00-\\u9fa5]+$";
         return plainText.matches(regExp);
     }
-    private static boolean isEnglish(String plainText){
+
+    private static boolean isEnglish(String plainText) {
         /**
          * @Description: 判断是否包含英文 字母,数字,下划线至少出现一次
          * @methodName: isEnglish
@@ -982,10 +1017,11 @@ public class StringUtils {
          * @Author: scyang
          * @Date: 2020/4/4 1:11
          */
-        String regExp="^[a-zA-Z\\s]+$";
+        String regExp = "^[a-zA-Z\\s]+$";
         return plainText.matches(regExp);
     }
-    public static String firstMask(String plainText,int length){
+
+    public static String firstMask(String plainText, int length) {
 
         /**
          * @Description: 前length位掩码
@@ -995,18 +1031,18 @@ public class StringUtils {
          * @Author: scyang
          * @Date: 2020/4/3 23:11
          */
-        plainText=plainText.replaceAll(" ", "").trim();
-        if ("".equals(plainText.trim())||null==plainText){
+        plainText = plainText.replaceAll(" ", "").trim();
+        if ("".equals(plainText.trim()) || null == plainText) {
             throw new RuntimeException("掩码的字符串不能为空或为null...");
-        }
-        else if (plainText.length()<length){
+        } else if (plainText.length() < length) {
             return createmask(plainText.length());
         }
-        StringBuffer sb=new StringBuffer();
+        StringBuffer sb = new StringBuffer();
         return sb.append(createmask(length)).
                 append(plainText.substring(length, plainText.length())).toString();
     }
-    public static String lastMask(String plainText,int length){
+
+    public static String lastMask(String plainText, int length) {
         /**
          * @Description: 字符串后length位掩码
          * @methodName: lastMask
@@ -1015,17 +1051,17 @@ public class StringUtils {
          * @Author: scyang
          * @Date: 2020/4/3 23:31
          */
-        plainText=plainText.replaceAll(" ", "").trim();
-        if ("".equals(plainText.trim())||null==plainText){
+        plainText = plainText.replaceAll(" ", "").trim();
+        if ("".equals(plainText.trim()) || null == plainText) {
             throw new RuntimeException("掩码的字符串不能为空或为null...");
-        }
-        else if (plainText.length()<length){
+        } else if (plainText.length() < length) {
             return createmask(plainText.length());
         }
-        return plainText.substring(0, plainText.length()-length)
+        return plainText.substring(0, plainText.length() - length)
                 .concat(createmask(length));
     }
-    public static String middleMask(String plainText,int prefixSize,int suffixSize ){
+
+    public static String middleMask(String plainText, int prefixSize, int suffixSize) {
         /**
          * @Description: 中间掩码
          * @methodName: middleMask
@@ -1034,18 +1070,18 @@ public class StringUtils {
          * @Author: scyang
          * @Date: 2020/4/3 23:38
          */
-        plainText=plainText.replaceAll(" ", "").trim();
-        if ("".equals(plainText.trim())||null==plainText){
+        plainText = plainText.replaceAll(" ", "").trim();
+        if ("".equals(plainText.trim()) || null == plainText) {
             throw new RuntimeException("掩码的字符串不能为空或为null...");
-        }
-        else if (plainText.length()<prefixSize+suffixSize){
+        } else if (plainText.length() < prefixSize + suffixSize) {
             return createmask(plainText.length());
         }
-        return plainText.substring(0,prefixSize )
-                .concat(createmask(plainText.length()-prefixSize-suffixSize))
-                .concat(plainText.substring(plainText.length()-suffixSize,plainText.length() ));
+        return plainText.substring(0, prefixSize)
+                .concat(createmask(plainText.length() - prefixSize - suffixSize))
+                .concat(plainText.substring(plainText.length() - suffixSize, plainText.length()));
     }
-    public static String mailMask(String plainText){
+
+    public static String mailMask(String plainText) {
         /**
          * @Description: 邮箱掩码 @前面掩码 如:*******@qq.com
          * @methodName: mailMask
@@ -1054,15 +1090,16 @@ public class StringUtils {
          * @Author: scyang
          * @Date: 2020/4/3 23:59
          */
-        plainText=plainText.replaceAll(" ", "").trim();
-        if ("".equals(plainText)||null==plainText){
+        plainText = plainText.replaceAll(" ", "").trim();
+        if ("".equals(plainText) || null == plainText) {
             throw new RuntimeException("掩码的字符串不能为空或为null...");
         }
         int index = plainText.indexOf("@");
         return createmask(index).
                 concat(plainText.substring(index, plainText.length()));
     }
-    public static String idCardMask(String plainText){
+
+    public static String idCardMask(String plainText) {
         /**
          * @Description: 省份证掩码 如: 422202********3496
          * @methodName: idCardMask
@@ -1071,15 +1108,16 @@ public class StringUtils {
          * @Author: scyang
          * @Date: 2020/4/4 0:12
          */
-        plainText=plainText.replaceAll(" ", "").trim();
-        if ("".equals(plainText)||null==plainText){
+        plainText = plainText.replaceAll(" ", "").trim();
+        if ("".equals(plainText) || null == plainText) {
             throw new RuntimeException("掩码的字符串不能为空或为null...");
         }
-        return plainText.substring(0,6 )
+        return plainText.substring(0, 6)
                 .concat(createmask(8))
-                .concat(plainText.substring(14,18 ));
+                .concat(plainText.substring(14, 18));
     }
-    public static String renameMask(String plainText){
+
+    public static String renameMask(String plainText) {
         /**
          * @Description: 复姓掩码 司马**
          * @methodName: renameMask
@@ -1088,35 +1126,73 @@ public class StringUtils {
          * @Author: scyang
          * @Date: 2020/4/4 1:18
          */
-        plainText=plainText.replaceAll(" ", "").trim();
-        if ("".equals(plainText)||null==plainText){
+        plainText = plainText.replaceAll(" ", "").trim();
+        if ("".equals(plainText) || null == plainText) {
             throw new RuntimeException("掩码的字符串不能为空或为null...");
         }
-        if (plainText.length()>2&&isChinese(plainText)){
+        if (plainText.length() > 2 && isChinese(plainText)) {
             for (String name : nameList) {
-                if (plainText.contains(name)){
-                    return lastMask(plainText, plainText.length()-2);
+                if (plainText.contains(name)) {
+                    return lastMask(plainText, plainText.length() - 2);
                 }
             }
         }
         return null;
     }
+
     @Test
-    public void test25(){
+    public void test25() {
         System.out.println(createmask(6));
         System.out.println(firstMask("25", 4));
         System.out.println(firstMask("13297053048", 4));
-        System.out.println(lastMask("132 9705 3048",4 ));
-        System.out.println(middleMask("132 9705 3048",3 , 4));
+        System.out.println(lastMask("132 9705 3048", 4));
+        System.out.println(middleMask("132 9705 3048", 3, 4));
         System.out.println(mailMask("348691356@qq.com"));
         System.out.println(idCardMask("422202 19910909 3496"));
-        String c=" a b ";
+        String c = " a b ";
         System.out.println(c.length());
         // c=c.replaceAll(" ", "");
         System.out.println(c);
         System.out.println(c.trim().length());
         System.out.println(isChinese(""));
         System.out.println(renameMask("司马风"));
+    }
+
+    public static Integer getCurrentTerm(LocalDate firstDate, LocalDate endDate, LocalDate batchDate, Integer totalTerm) {
+        /**
+         * @Description: 获取当前的日期在那个期次里
+         * @methodName: getCurrentTerm
+         * @Param: [firstDate, endDate, batchDate, totalTerm]
+         * @return: java.lang.Integer
+         * @Author: scyang
+         * @Date: 2021/4/3 23:00
+         *
+         * 2021-05-15
+         * 2021-06-15
+         * 2021-07-15
+         * 2021-08-15
+         * 2021-09-15
+         * 2021-10-15
+         */
+        int num = 0;
+        for (LocalDate localDate = firstDate; !localDate.isAfter(endDate); localDate = localDate.plusMonths(1)) {
+            num++;
+            if (!batchDate.isAfter(localDate)) {
+                return num;
+            }
+        }
+        return totalTerm;
+    }
+
+    @Test
+    public void test26() {
+        System.out.println(getCurrentTerm(LocalDate.parse("2021-05-15"), LocalDate.parse("2021-10-15"), LocalDate.parse("2020-10-15"), 6));
+        System.out.println(getCurrentTerm(LocalDate.parse("2021-05-15"), LocalDate.parse("2021-10-15"), LocalDate.parse("2022-10-15"), 6));
+        System.out.println(getCurrentTerm(LocalDate.parse("2021-05-15"), LocalDate.parse("2021-10-15"), LocalDate.parse("2021-05-15"), 6));
+        System.out.println(getCurrentTerm(LocalDate.parse("2021-05-15"), LocalDate.parse("2021-10-15"), LocalDate.parse("2021-05-16"), 6));
+        System.out.println(getCurrentTerm(LocalDate.parse("2021-05-15"), LocalDate.parse("2021-10-15"), LocalDate.parse("2021-09-14"), 6));
+        System.out.println(getCurrentTerm(LocalDate.parse("2021-05-15"), LocalDate.parse("2021-10-15"), LocalDate.parse("2021-09-15"), 6));
+        System.out.println(getCurrentTerm(LocalDate.parse("2021-05-15"), LocalDate.parse("2021-10-15"), LocalDate.parse("2021-09-16"), 6));
     }
 }
 

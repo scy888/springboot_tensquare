@@ -114,7 +114,7 @@ public class CsvControllerTest {
                 new UserDto("阿离", "女", 16, LocalDateTime.of(2012, 6, 12, 12, 12, 12))});
 
         UserDto userDto = new UserDto("阿离", "女", 16, LocalDateTime.of(2012, 6, 12, 12, 12, 12));
-        System.out.println(ReflectUtils.getFieldNames(userDto));
+        System.out.println(ReflectUtils.getFieldNames(UserDto.class));
         System.out.println(ReflectUtils.getFieldValues(userDto));
     }
 }
