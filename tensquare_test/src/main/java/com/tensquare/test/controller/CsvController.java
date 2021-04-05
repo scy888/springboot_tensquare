@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.tensquare.req.LxgmRepaymentPlanReq;
 import com.tensquare.result.DataCheckResult;
+import com.tensquare.result.LxgmTermStatus;
 import com.tensquare.result.Result;
 import com.tensquare.result.Tuple3;
 import com.tensquare.test.dao.CsvDao;
@@ -14,18 +15,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import utils.IdWorker;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -159,30 +154,29 @@ public class CsvController {
          * @Author: scyang
          * @Date: 2020/9/20 20:24
          */
-        log.info("plantAmountList:{}",JSON.toJSONString(plantAmountList));
+        log.info("plantAmountList:{}", JSON.toJSONString(plantAmountList));
         //根据借据号查找
-        List<PlantAmount> dbPlantAmounts= plantAmountDaoJpa.findByDueBillNoIn(plantAmountList.stream()
+        List<PlantAmount> dbPlantAmounts = plantAmountDaoJpa.findByDueBillNoIn(plantAmountList.stream()
                 .map(PlantAmount::getDueBillNo)
                 .collect(Collectors.toList()));
         Map<String, PlantAmount> plantAmountMap = dbPlantAmounts.stream().collect(Collectors.toMap(PlantAmount::getDueBillNo, Function.identity(), (a, b) -> b));
 
         for (PlantAmount plantAmount : plantAmountList) {
 
-            Map<String,Object> setMap=getParmsMap(plantAmount.getRealAmounts(),plantAmount.getDueBillNo());
+            Map<String, Object> setMap = getParmsMap(plantAmount.getRealAmounts(), plantAmount.getDueBillNo());
             plantAmount.setTotalAmount((BigDecimal) setMap.get("amountSun"))
-           .setBatchDate((LocalDate) setMap.get("maxBatchDate"))
-            .setTermCount(String.valueOf(setMap.get("termCount")) );
+                    .setBatchDate((LocalDate) setMap.get("maxBatchDate"))
+                    .setTermCount(String.valueOf(setMap.get("termCount")));
 
             for (RealAmount realAmount : plantAmount.getRealAmounts()) {
                 realAmount.setDueBillNo(plantAmount.getDueBillNo());
                 //保存之前根据借据号和期次查询
-                RealAmount dbRealAmount=realAmountDaoJpa.findByDueBillNoAndTerm(realAmount.getDueBillNo(),realAmount.getTerm());
-                if (dbRealAmount==null){
+                RealAmount dbRealAmount = realAmountDaoJpa.findByDueBillNoAndTerm(realAmount.getDueBillNo(), realAmount.getTerm());
+                if (dbRealAmount == null) {
                     //新增
                     realAmountDaoJpa.save(realAmount);
                     log.info("realAmount走新增逻辑...");
-                }
-                else {
+                } else {
                     //更新
                     realAmountDaoJpa.save(realAmount.setId(dbRealAmount.getId()));
                     log.info("realAmount走更新逻辑...");
@@ -190,13 +184,12 @@ public class CsvController {
                 }
             }
             PlantAmount dbPlantAmount = plantAmountMap.get(plantAmount.getDueBillNo());
-            if (dbPlantAmount==null){
+            if (dbPlantAmount == null) {
                 //新增
                 plantAmountDaoJpa.save(plantAmount);
                 log.info("plantAmount走新增逻辑...");
-            }
-           else {
-               //更新
+            } else {
+                //更新
                 plantAmountDaoJpa.save(plantAmount.setId(dbPlantAmount.getId()));
                 log.info("plantAmount走更新逻辑...");
 
@@ -210,26 +203,36 @@ public class CsvController {
          * @Description: set参数的值
          * @methodName: getParmsMap
          * @Param: [realAmounts, dueBillNo]
-         * @return: java.util.Map<java.lang.String,java.lang.Object>
+         * @return: java.util.Map<java.lang.String , java.lang.Object>
          * @Author: scyang
          * @Date: 2020/9/20 21:10
          */
-        Map<String, Object> returnMap=new HashMap<>();
-        BigDecimal amountSun = realAmounts.stream().map(RealAmount::getTermAmount).reduce( BigDecimal::add).orElse(BigDecimal.ZERO);
+        Map<String, Object> returnMap = new HashMap<>();
+        BigDecimal amountSun = realAmounts.stream().map(RealAmount::getTermAmount).reduce(BigDecimal::add).orElse(BigDecimal.ZERO);
         RealAmount realAmount = realAmounts.stream().max((a, b) -> a.getBatchDate().compareTo(b.getBatchDate())).orElseGet(() -> {
             return new RealAmount()
                     .setBatchDate(LocalDate.parse("2020-12-31"))
                     .setTerm(10);
         });
-        returnMap.put("amountSun",amountSun );
-        returnMap.put("maxBatchDate",realAmount.getBatchDate());
-        returnMap.put("termCount",realAmount.getTerm());
-        log.info("对应的借据号:{},还款的总费用:{},最后的还款日:{},总期数：{}", dueBillNo, amountSun,realAmount.getBatchDate(),realAmount.getTerm());
+        returnMap.put("amountSun", amountSun);
+        returnMap.put("maxBatchDate", realAmount.getBatchDate());
+        returnMap.put("termCount", realAmount.getTerm());
+        log.info("对应的借据号:{},还款的总费用:{},最后的还款日:{},总期数：{}", dueBillNo, amountSun, realAmount.getBatchDate(), realAmount.getTerm());
         return returnMap;
     }
 
     @RequestMapping("/getRepaymentPlan/{projectNo}")
-    public Result<List<Tuple3<String,BigDecimal,Integer>>> getRepaymentPlan(@PathVariable String projectNo){
+    public Result<List<Tuple3<String, BigDecimal, Integer>>> getRepaymentPlan(@PathVariable String projectNo) {
         return Result.ok(csvDao.getRepaymentPlan(projectNo));
+    }
+
+    @RequestMapping(value = "/getRepaymentPlanList", method = RequestMethod.GET)
+    public Result<List<LxgmRepaymentPlan>> getRepaymentPlanList(@RequestParam("projectNo") String projectNo, @RequestParam("dueBillNos") String dueBillNoList) {
+        return Result.ok(csvDao.getgetRepaymentPlanList(projectNo, Arrays.asList(dueBillNoList.split(","))));
+    }
+
+    @RequestMapping(value = "/getRepaymentPlanList2", method = RequestMethod.GET)
+    public Result<List<Tuple3<String, String, String>>> getRepaymentPlanList2(@RequestParam("projectNo") String projectNo, @RequestParam("dueBillNos") String dueBillNoList) {
+        return Result.ok(csvDao.getgetRepaymentPlanList2(projectNo, Arrays.asList(dueBillNoList.split(","))));
     }
 }

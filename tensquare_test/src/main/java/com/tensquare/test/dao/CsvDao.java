@@ -1,6 +1,7 @@
 package com.tensquare.test.dao;
 
 import com.alibaba.fastjson.JSON;
+import com.tensquare.result.LxgmTermStatus;
 import com.tensquare.result.Tuple3;
 import com.tensquare.test.pojo.ActualAmount;
 import com.tensquare.test.pojo.AssetAmount;
@@ -211,18 +212,43 @@ public class CsvDao {
         log.info("sum:{}", sum);
         String sql2 = "SELECT due_bill_no,term,IFNULL(SUM(IFNULL(term_term_prin,0)+IFNULL(term_term_int,0)),0) sum_term FROM \n" +
                 " lxgm_repayment_plan WHERE project_no=:projectNo and due_bill_no in(:dueBillNos) GROUP BY due_bill_no,term;";
-        Map<String,Object> map=new HashMap<>();
+        Map<String, Object> map = new HashMap<>();
         map.put("projectNo", projectNo);
         map.put("dueBillNos", list1.stream().map(Tuple3::getFirst).collect(Collectors.toList()));
         List<Tuple3<String, Integer, BigDecimal>> list2 = namedParameterJdbcTemplate.query(sql2, map, new RowMapper<Tuple3<String, Integer, BigDecimal>>() {
             @Override
             public Tuple3<String, Integer, BigDecimal> mapRow(ResultSet rs, int i) throws SQLException {
-                return new Tuple3<String, Integer, BigDecimal>(rs.getString(1),rs.getInt(2),rs.getBigDecimal(3));
+                return new Tuple3<String, Integer, BigDecimal>(rs.getString(1), rs.getInt(2), rs.getBigDecimal(3));
             }
         });
         log.info("sql2:{}", sql2);
         log.info("list2:{}", JSON.toJSONString(list2));
         log.info("list2的长度:{}", list2.size());
         return list1;
+    }
+
+    public List<LxgmRepaymentPlan> getgetRepaymentPlanList(String projectNo, List<String> dueBillNoList) {
+        String sql = "select * from lxgm_repayment_plan where project_no=:projectNo and due_bill_no in (:dueBillNoList)";
+        Map<String, Object> map = new HashMap<>();
+        map.put("projectNo", projectNo);
+        map.put("dueBillNoList", dueBillNoList);
+        List<LxgmRepaymentPlan> plans = namedParameterJdbcTemplate.query(sql, map, new BeanPropertyRowMapper<>(LxgmRepaymentPlan.class));
+        log.info("plans:{}", JSON.toJSONString(plans));
+        return plans;
+    }
+
+    public List<Tuple3<String, String, String>> getgetRepaymentPlanList2(String projectNo, List<String> dueBillList) {
+        String sql = "select project_no,due_bill_no,term_status from lxgm_repayment_plan where project_no=:projectNo and due_bill_no in(:dueBillList)";
+        Map<String, Object> map = new HashMap<>();
+        map.put("projectNo", projectNo);
+        map.put("dueBillList", dueBillList);
+        List<Tuple3<String, String, String>> list = namedParameterJdbcTemplate.query(sql, map, new RowMapper<Tuple3<String, String, String>>() {
+            @Override
+            public Tuple3<String, String, String> mapRow(ResultSet resultSet, int i) throws SQLException {
+                return Tuple3.of(resultSet.getString(1), resultSet.getString(2), resultSet.getObject("term_status",String.class));
+            }
+        });
+        log.info("list:{}", JSON.toJSONString(list));
+        return list;
     }
 }
