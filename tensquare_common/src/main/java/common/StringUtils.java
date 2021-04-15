@@ -2,12 +2,15 @@ package common;
 
 import org.junit.Test;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author: scyang
@@ -153,6 +156,83 @@ public class StringUtils {
         return str.replaceAll("[A-Z]", "_$0").toLowerCase();
     }
 
+    public static String[] camelLowerCaseToUnderlines(String... strs) {
+        List<String> stringList = Arrays.stream(strs).map(StringUtils::camelLowerCaseToUnderline).collect(Collectors.toList());
+        return stringList.toArray(new String[stringList.size()]);
+    }
+
+    public static <T> String getInsertSql(String tableName, Class<T> clazz, String... strs) {
+        /**
+         * @Description:
+         * @methodName: getInsertSql
+         * @Param: [tableName, clazz, strs]
+         * @return: java.lang.String
+         * @Author: scyang
+         * @Date: 2021/4/14 21:49
+         *  inert into table_name (a,b,c,d) values (?,?,?,?)
+         */
+        StringBuffer sb = new StringBuffer("insert into" + " " + tableName + "\n");
+        Field[] fields = clazz.getDeclaredFields();
+        String str = Arrays.stream(fields).map(e -> camelLowerCaseToUnderline(e.getName()))
+                .collect(Collectors.joining(",", "(", ")"));
+        for (String s : strs) {
+            String[] split = str.split(",");
+            if (split[split.length - 1].equals(s + ")")) {
+                str = str.replace("," + s, "");
+            } else {
+                str = str.replace(s + ",", "");
+            }
+        }
+        sb.append(" ").append(str).append("\n").append("values").append("\n");
+        String str_ = Arrays.stream(fields).map(e -> "?").collect(Collectors.joining(",", "(", ")"));
+        //(?,?,?,?)
+        str_ = str_.substring(0, 1) + str_.substring(2 * strs.length + 1);
+        sb.append(str_);
+        return sb.toString();
+    }
+
+    public static <T> Object[] getFieldValue(T t, String... fieldNames) throws Exception {
+        /**
+         * @Description: 获取忽略字段后的属性这
+         * @methodName: getFieldValue
+         * @Param: [t, fieldNames]
+         * @return: java.lang.Object[]
+         * @Author: scyang
+         * @Date: 2021/4/15 14:04
+         */
+        List<Object> list = new ArrayList<>();
+        Class<T> clazz = (Class<T>) t.getClass();
+        Field[] fields = clazz.getDeclaredFields();
+        List<Field> fieldList = new ArrayList<>();
+        for (Field field : fields) {
+            fieldList.add(field);
+        }
+//        for (int i = 0; i < fieldList.size(); i++) {
+//            String name = fieldList.get(i).getName();
+//            for (int j = 0; j < fieldNames.length; j++) {
+//                String fieldName = fieldNames[j];
+//                if (name.equals(fieldName)) {
+//                    fieldList.remove(fieldList.get(i));
+//                }
+//            }
+//        }
+
+        for (String fieldName : fieldNames) {
+            fieldList.removeIf(e -> e.getName().equals(fieldName));
+        }
+        for (Field field : fieldList) {
+            field.setAccessible(true);
+            Object o = field.get(t);
+            if (o instanceof Enum) {
+                list.add(((Enum) o).name());
+            } else {
+                list.add(o);
+            }
+        }
+        //System.out.println(list);
+        return list.toArray(new Object[list.size()]);
+    }
+
     public static boolean isEqualStr(String strOne, String strTwo) {
         /**
          * @Description: 两个字符串是否相等
@@ -200,7 +280,7 @@ public class StringUtils {
         if ((str1 == "" && str2 == null) || (str1 == null && str2 == "") || (str1 == null && str2 == null)) {
             return true;
         }
-        return str1.equals(str2) ? true : false;
+        return str1.equals(str2);
     }
 
     @Test

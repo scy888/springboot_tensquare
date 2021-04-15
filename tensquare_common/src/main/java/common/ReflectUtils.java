@@ -9,10 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 
 import javax.mail.internet.InternetAddress;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -229,7 +226,8 @@ public class ReflectUtils {
         for (User user : userList) {
             list.add(getFieldValues(user));
         }
-
+//        InputStream inputStream = this.getClass().getResourceAsStream("");
+//        byte[] bytes = new byte[inputStream.available()];
         Files.write(Paths.get(String.valueOf(path), "user_.csv"), list, StandardOpenOption.CREATE);
         Files.write(Paths.get(String.valueOf(path), "user__.csv"), String.join(System.lineSeparator(), list).getBytes("GBK"), StandardOpenOption.CREATE);
 
@@ -267,13 +265,13 @@ public class ReflectUtils {
 
     @Test
     public void test006() {
-       // List<String> 省份 = Arrays.asList("湖北省", "湖南省", "河北省", "河南省");
+        // List<String> 省份 = Arrays.asList("湖北省", "湖南省", "河北省", "河南省");
         //List<String> 省会 = Arrays.asList("武汉市", "长沙市", "石家庄市", "郑州市");
 
-        List<String> 省份=new ArrayList<>();
-        Collections.addAll(省份,"湖北省", "湖南省", "河北省", "河南省");
-        List<String> 省会=new ArrayList<>();
-        Collections.addAll(省会,"武汉市", "长沙市", "石家庄市", "郑州市");
+        List<String> 省份 = new ArrayList<>();
+        Collections.addAll(省份, "湖北省", "湖南省", "河北省", "河南省");
+        List<String> 省会 = new ArrayList<>();
+        Collections.addAll(省会, "武汉市", "长沙市", "石家庄市", "郑州市");
 //        for (int i = 省份.size()-1; i >= 0; i--) {
 //            String sheng = 省份.get(i);
 //            for (int j = i; j >=0; j--) {
@@ -284,11 +282,11 @@ public class ReflectUtils {
 //                break;
 //            }
 //        }
-        for (int i =0;i< 省份.size(); i++) {
+        for (int i = 0; i < 省份.size(); i++) {
             String sheng = 省份.get(i);
-            for (int j = i; j >=0; j--) {
+            for (int j = i; j >= 0; j--) {
                 String shi = 省会.get(j);
-                System.out.println(sheng+":"+shi);
+                System.out.println(sheng + ":" + shi);
                 //省份.remove(sheng);
                 //省会.remove(shi);
                 break;

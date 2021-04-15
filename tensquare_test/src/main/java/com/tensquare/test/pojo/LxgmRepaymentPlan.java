@@ -119,6 +119,65 @@ public class LxgmRepaymentPlan {
     private LocalDateTime lastModifiedDate;
 
 
+    public LxgmRepaymentPlan(String projectNo, String dueBillNo, Integer term, BigDecimal termTermPrin, LxgmTermStatus termStatus, LocalDate batchDate) {
+        this.projectNo = projectNo;
+        this.dueBillNo = dueBillNo;
+        this.term = term;
+        this.termTermPrin = termTermPrin;
+        this.termStatus = termStatus;
+        this.batchDate = batchDate;
+    }
+
+    public LxgmRepaymentPlan(String projectNo, String partnerNo, String dueBillNo, Integer term, LocalDate termStartDate, LocalDate termDueDate, LocalDate termGraceDate, BigDecimal termTermPrin, BigDecimal termTermInt, LxgmTermStatus termStatus, LocalDate settleDate, LocalDate effectDate, LocalDate batchDate, LocalDateTime createdDate, LocalDateTime lastModifiedDate) {
+        this.projectNo = projectNo;
+        this.partnerNo = partnerNo;
+        this.dueBillNo = dueBillNo;
+        this.term = term;
+        this.termStartDate = termStartDate;
+        this.termDueDate = termDueDate;
+        this.termGraceDate = termGraceDate;
+        this.termTermPrin = termTermPrin;
+        this.termTermInt = termTermInt;
+
+        this.termStatus = termStatus;
+        this.settleDate = settleDate;
+        this.effectDate = effectDate;
+        this.batchDate = batchDate;
+        this.createdDate = createdDate;
+        this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public LxgmRepaymentPlan(String projectNo, String partnerNo, String dueBillNo, Integer term, LocalDate termStartDate, LocalDate termDueDate, LocalDate termGraceDate, BigDecimal termTermPrin, BigDecimal termTermInt, BigDecimal termTermPenalty, BigDecimal termTermFee, BigDecimal termRepayPrin, BigDecimal termRepayInt, BigDecimal termRepayPenalty, BigDecimal termRepayFee, BigDecimal termReducePrin, BigDecimal termReduceInt, BigDecimal termReducePenalty, BigDecimal termReduceFee, LxgmTermStatus termStatus, LocalDate settleDate, LocalDate effectDate, LocalDate batchDate, LocalDateTime createdDate, LocalDateTime lastModifiedDate) {
+        this.projectNo = projectNo;
+        this.partnerNo = partnerNo;
+        this.dueBillNo = dueBillNo;
+        this.term = term;
+        this.termStartDate = termStartDate;
+        this.termDueDate = termDueDate;
+        this.termGraceDate = termGraceDate;
+        this.termTermPrin = termTermPrin;
+        this.termTermInt = termTermInt;
+        this.termTermPenalty = termTermPenalty;
+        this.termTermFee = termTermFee;
+        this.termRepayPrin = termRepayPrin;
+        this.termRepayInt = termRepayInt;
+        this.termRepayPenalty = termRepayPenalty;
+        this.termRepayFee = termRepayFee;
+        this.termReducePrin = termReducePrin;
+        this.termReduceInt = termReduceInt;
+        this.termReducePenalty = termReducePenalty;
+        this.termReduceFee = termReduceFee;
+        this.termStatus = termStatus;
+        this.settleDate = settleDate;
+        this.effectDate = effectDate;
+        this.batchDate = batchDate;
+        this.createdDate = createdDate;
+        this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public LxgmRepaymentPlan() {
+    }
+
     /**
      * 对象连接的字符串，去掉了id、createdDate、lastModifiedDate（为了提升有效更新，先判断两个对象的joinedString是否一样）
      *

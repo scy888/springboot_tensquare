@@ -108,7 +108,7 @@ public class CsvController {
 
     private Map<String, Object> getMap(List<ActualAmount> actualList) throws Exception {
         Map<String, Object> map = new HashMap<>();
-        LocalDate maxBatchDate = actualList.stream().max((a, b) -> a.getBatchDate().compareTo(b.getBatchDate())).get().getBatchDate();
+        LocalDate maxBatchDate = actualList.stream().max(Comparator.comparing(ActualAmount::getBatchDate)).get().getBatchDate();
         BigDecimal totalAmount = actualList.stream().map(ActualAmount::getTermAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
 
         String status_ = "";

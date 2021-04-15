@@ -1,5 +1,8 @@
 package entity;
 
+import lombok.Data;
+import lombok.Getter;
+import lombok.experimental.Accessors;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
@@ -19,6 +22,7 @@ public class User implements Serializable {
     private String password;
     private String mobile;
     private BigDecimal money;
+    private Status status;
 
     public User() {
     }
@@ -36,13 +40,26 @@ public class User implements Serializable {
 
     }
 
+    public User(String username, Date birthday, int age, String sex, String address, String password, String mobile, BigDecimal money, Status status) {
+        this.username = username;
+        this.birthday = birthday;
+        this.age = age;
+        this.sex = sex;
+        this.address = address;
+        this.password = password;
+        this.mobile = mobile;
+        this.money = money;
+        this.status = status;
+    }
 
-    /** @Author:scyang @Date:2019/10/2 22:44 后台转换,给前端显示的是字符串日期 */
-    public String getBirthdayStr(){
-        if (birthday==null){
-          return "";
+    /**
+     * @Author:scyang @Date:2019/10/2 22:44 后台转换,给前端显示的是字符串日期
+     */
+    public String getBirthdayStr() {
+        if (birthday == null) {
+            return "";
         }
-        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return sdf.format(birthday);
     }
 
@@ -118,6 +135,14 @@ public class User implements Serializable {
         this.age = age;
     }
 
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
     @Override
     public String toString() {
         return new StringJoiner(", ", User.class.getSimpleName() + "[", "]")
@@ -131,5 +156,12 @@ public class User implements Serializable {
                 .add("mobile='" + mobile + "'")
                 .add("money=" + money)
                 .toString();
+    }
+
+    @Getter
+    public enum Status {
+        N,
+        O,
+        F;
     }
 }

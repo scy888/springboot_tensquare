@@ -31,10 +31,10 @@ import java.util.List;
  * @describe:
  */
 public class JacksonUtils {
-    private static final JacksonUtils _instance=new JacksonUtils();
-    private final ObjectMapper objectMapper=new ObjectMapper();
+    private static final JacksonUtils _instance = new JacksonUtils();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public static JacksonUtils getInstance(){
+    public static JacksonUtils getInstance() {
         return _instance;
     }
 
@@ -42,15 +42,15 @@ public class JacksonUtils {
         return this.objectMapper.writeValueAsString(value);
     }
 
-    public <T> T readValue(String content,Class<T> valueType){
+    public <T> T readValue(String content, Class<T> valueType) {
         return this.readValue(content, valueType);
     }
 
-    public <T> T convertValue(Object fromValue,Class<T> toValueType){
-        return this.objectMapper.convertValue(fromValue,toValueType );
+    public <T> T convertValue(Object fromValue, Class<T> toValueType) {
+        return this.objectMapper.convertValue(fromValue, toValueType);
     }
 
-   /********************************************************************************************/
+    /********************************************************************************************/
 
     private static final ObjectMapper object_mapper = new ObjectMapper();
 
@@ -84,7 +84,7 @@ public class JacksonUtils {
     }
 
 
-    public static String toString(Object object){
+    public static String toString(Object object, Boolean... booleans) {
         /**
          * @Description: 将对象转成json字符串
          * @methodName: toString
@@ -93,17 +93,21 @@ public class JacksonUtils {
          * @Author: scyang
          * @Date: 2020/7/6 23:03
          */
-        String value=null;
+        String value = null;
         try {
-             value = object_mapper.writeValueAsString(object);
+            if (booleans.length > 0 && booleans[0]) {
+                value = object_mapper.writerWithDefaultPrettyPrinter().writeValueAsString(object);
+            } else {
+                value = object_mapper.writeValueAsString(object);
+            }
         } catch (JsonProcessingException e) {
-            value=e.getMessage();
+            value = e.getMessage();
             throw new RuntimeException("对象转换json字符串异常....");
         }
-      return value;
+        return value;
     }
 
-    public static<T> T toObject(Object object,Class<T> clazz){
+    public static <T> T toObject(Object object, Class<T> clazz) {
         /**
          * @Description: 将对象转换成对象
          * @methodName: toObject
@@ -121,7 +125,7 @@ public class JacksonUtils {
         return t;
     }
 
-    public static <T> T toObject(String jsonStr,Class<T> clazz){
+    public static <T> T toObject(String jsonStr, Class<T> clazz) {
         /**
          * @Description: 将json字符串装换成对象
          * @methodName: toObject
@@ -130,16 +134,16 @@ public class JacksonUtils {
          * @Author: scyang
          * @Date: 2020/7/6 23:12
          */
-        T t=null;
+        T t = null;
         try {
-             t = object_mapper.readValue(jsonStr, clazz);
+            t = object_mapper.readValue(jsonStr, clazz);
         } catch (IOException e) {
             e.printStackTrace();
         }
         return t;
     }
 
-    public static <T,V> List<V> toList(List<T> paramList, TypeReference<List<V>> typeReference){
+    public static <T, V> List<V> toList(List<T> paramList, TypeReference<List<V>> typeReference) {
         /**
          * @Description: 将集合转换成集合
          * @methodName: toList
@@ -148,16 +152,16 @@ public class JacksonUtils {
          * @Author: scyang
          * @Date: 2020/7/6 23:16
          */
-        List<V> vList=null;
+        List<V> vList = null;
         try {
-             vList =object_mapper.convertValue(paramList, typeReference);
+            vList = object_mapper.convertValue(paramList, typeReference);
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         }
         return vList;
     }
 
-    public static <T,V> List<V> toList(String jsonStr,TypeReference<List<V>> typeReference){
+    public static <T, V> List<V> toList(String jsonStr, TypeReference<List<V>> typeReference) {
         /**
          * @Description: 将json字符串装换成集合
          * @methodName: toList
@@ -166,14 +170,15 @@ public class JacksonUtils {
          * @Author: scyang
          * @Date: 2020/7/6 23:22
          */
-        List<V> vList=null;
+        List<V> vList = null;
         try {
-            vList=object_mapper.readValue(jsonStr, typeReference);
+            vList = object_mapper.readValue(jsonStr, typeReference);
         } catch (IOException e) {
             e.printStackTrace();
         }
         return vList;
     }
+
     public static String toJsonNode(String str, String nodeName) {
         try {
             JsonNode jsonNode = object_mapper.readTree(str).get(nodeName);
