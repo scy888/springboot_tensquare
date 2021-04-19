@@ -7,10 +7,11 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.StringJoiner;
 
+@Data
+@Accessors(chain = true)
 public class User implements Serializable {
     private Integer id;
     private String username;
@@ -52,16 +53,29 @@ public class User implements Serializable {
         this.status = status;
     }
 
+    public User(Integer id, String username, Date birthday, int age, String sex, String address, String password, String mobile, BigDecimal money, Status status) {
+        this.id = id;
+        this.username = username;
+        this.birthday = birthday;
+        this.age = age;
+        this.sex = sex;
+        this.address = address;
+        this.password = password;
+        this.mobile = mobile;
+        this.money = money;
+        this.status = status;
+    }
+
     /**
      * @Author:scyang @Date:2019/10/2 22:44 后台转换,给前端显示的是字符串日期
      */
-    public String getBirthdayStr() {
-        if (birthday == null) {
-            return "";
-        }
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        return sdf.format(birthday);
-    }
+//    public String getBirthdayStr() {
+//        if (birthday == null) {
+//            return "";
+//        }
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//        return sdf.format(birthday);
+//    }
 
     public BigDecimal getMoney() {
         return money;

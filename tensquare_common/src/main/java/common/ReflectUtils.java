@@ -1,20 +1,18 @@
 package common;
 
-import com.google.common.collect.Interners;
 import entity.User;
 import jodd.io.ZipUtil;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 
-import javax.mail.internet.InternetAddress;
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.net.InetAddress;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -22,7 +20,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 /**
@@ -85,7 +82,7 @@ public class ReflectUtils {
         return target;
     }
 
-    public static <T> String getFieldNames(Class<T> clazz) {
+    public static <T> String getFieldNames(Class<T> clazz, String... fieldNames) {
         /**
          * @Description: 通过反射获取对象的属性名
          * @methodName: getFieldNames
@@ -96,8 +93,17 @@ public class ReflectUtils {
          */
         StringBuffer sb = null;
         try {
-            //Class<T> clazz = (Class<T>) t.getClass();
             Field[] declaredFields = clazz.getDeclaredFields();
+            if (fieldNames.length > 0) {
+                List<Field> fielidList = new ArrayList<>();
+                for (Field field : declaredFields) {
+                    fielidList.add(field);
+                }
+                for (String fieldName : fieldNames) {
+                    fielidList.removeIf(e -> e.getName().equals(fieldName));
+                }
+                declaredFields = fielidList.toArray(new Field[fielidList.size()]);
+            }
             sb = new StringBuffer();
             for (Field field : declaredFields) {
                 sb.append(field.getName()).append(",");
@@ -132,7 +138,7 @@ public class ReflectUtils {
         return collect;
     }
 
-    public static <T> String getFieldValues(T t) {
+    public static <T> String getFieldValues(T t, String... fieldNames) {
         /**
          * @Description: 通过反射获取对象名的属性值
          * @methodName: getFieldValues
@@ -144,10 +150,20 @@ public class ReflectUtils {
         Class<?> clazz = t.getClass();
         StringBuffer sb = new StringBuffer();
         try {
-            Object instance = clazz.newInstance();
-            for (Field field : clazz.getDeclaredFields()) {
-                String fieldName = field.getName();
+            Field[] fields = clazz.getDeclaredFields();
+            if (fieldNames.length > 0) {
+                List<Field> fielidList = new ArrayList<>();
+                for (Field field : fields) {
+                    fielidList.add(field);
+                }
+                for (String fieldName : fieldNames) {
+                    fielidList.removeIf(e -> e.getName().equals(fieldName));
+                }
+                fields = fielidList.toArray(new Field[fielidList.size()]);
+            }
 
+            for (Field field : fields) {
+                String fieldName = field.getName();
                 String methodName = "get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
                 Method getMethod = clazz.getDeclaredMethod(methodName);
                 Object value = getMethod.invoke(t);
@@ -205,10 +221,10 @@ public class ReflectUtils {
         InetAddress inetAddress = InetAddress.getLocalHost();
         System.out.println(inetAddress.getHostName());
         System.out.println(inetAddress.getHostAddress());
-        User user1 = new User(1, "赵敏", null, 18, "女", "蒙古", "123", "132", BigDecimal.TEN);
-        User user2 = new User(2, "周芷若", null, 19, "女", "峨嵋", "123", "132", BigDecimal.TEN);
-        User user3 = new User(3, "小昭", null, 20, "女", "波斯", "123", "132", BigDecimal.TEN);
-        User user4 = new User(4, "殷离", null, 21, "女", "灵蛇岛", "123", "132", BigDecimal.TEN);
+        User user1 = new User(1, "赵敏", null, 18, "女", "蒙古", "123", "132", BigDecimal.TEN, User.Status.F);
+        User user2 = new User(2, "周芷若", null, 19, "女", "峨嵋", "123", "132", BigDecimal.TEN, User.Status.F);
+        User user3 = new User(3, "小昭", null, 20, "女", "波斯", "123", "132", BigDecimal.TEN, User.Status.F);
+        User user4 = new User(4, "殷离", null, 21, "女", "灵蛇岛", "123", "132", BigDecimal.TEN, User.Status.F);
         List<User> userList = new ArrayList<>();
         Collections.addAll(userList, user1, user2, user3, user4);
         System.out.println(getFieldValues_(user1));
@@ -292,5 +308,20 @@ public class ReflectUtils {
                 break;
             }
         }
+    }
+
+    @Test
+    public void test007() {
+        String fieldNames = getFieldNames(User.class, "id", "birthday", "status", "password");//"id", "birthday", "status", "password"
+        User user1 = new User(1, "赵敏", null, 18, "女", "蒙古", "123456", "132", BigDecimal.TEN, User.Status.F);
+        User user2 = new User(2, "周芷若", null, 19, "女", "峨嵋", "123456", "132", BigDecimal.TEN, User.Status.F);
+        User user3 = new User(3, "小昭", null, 20, "女", "波斯", "123456", "132", BigDecimal.TEN, User.Status.F);
+        User user4 = new User(4, "殷离", null, 21, "女", "灵蛇岛", "123456", "132", BigDecimal.TEN, User.Status.F);
+        List<User> userList = new ArrayList<>();
+        Collections.addAll(userList, user1, user2, user3, user4);
+        System.out.println(
+                "打印信息如下:\n" + fieldNames + "\n"
+                        + userList.stream().map(e -> getFieldValues(e, "id", "birthday", "status", "password")).collect(Collectors.joining(System.lineSeparator()))
+        );
     }
 }

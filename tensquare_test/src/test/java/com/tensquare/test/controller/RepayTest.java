@@ -1,18 +1,21 @@
 package com.tensquare.test.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.tensquare.result.LxgmTermStatus;
 import com.tensquare.result.Tuple3;
 import com.tensquare.test.pojo.LxgmRepaymentPlan;
 import common.JacksonUtils;
+import common.JsonUtil;
 import common.ReflectUtils;
 import common.StringUtils;
 import entity.User;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.annotation.Order;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -20,6 +23,12 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.math.BigDecimal;
+import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -43,6 +52,8 @@ public class RepayTest {
     private JdbcTemplate jdbcTemplate;
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    @Value("${test.city}")
+    private List<String> cityList;
 
     @Test
     public void test0() {
@@ -158,17 +169,73 @@ public class RepayTest {
         jdbcTemplate.batchUpdate(insertSql, objectList);
     }
 
+    @Test
+    public void test005() {
+        User user = getUser(true);
+        user = Optional.ofNullable(user).map(e -> {
+            User user_ = new User();
+            BeanUtils.copyProperties(e, user_);
+            user_.setAge(user_.getAge() + 1);
+            return user_;
+        }).orElseThrow(() -> new RuntimeException("该对象为空..."));
+        System.out.println(String.format("打印的结果值:\n%s", JsonUtil.toJson(user, true)));
+    }
 
-    //    this.termTermPenalty = termTermPenalty;
-//        this.termTermFee = termTermFee;
-//        this.termRepayPrin = termRepayPrin;
-//        this.termRepayInt = termRepayInt;
-//        this.termRepayPenalty = termRepayPenalty;
-//        this.termRepayFee = termRepayFee;
-//        this.termReducePrin = termReducePrin;
-//        this.termReduceInt = termReduceInt;
-//        this.termReducePenalty = termReducePenalty;
-//        this.termReduceFee = termReduceFee;
+    private User getUser(boolean flag) {
+        if (flag) {
+            return new User("zhangsan", new Date(), 18, "男", "湖北", "123", "123", BigDecimal.ONE, User.Status.F);
+        } else {
+            return null;
+        }
+    }
+
+    @Test
+    public void test006() throws Exception {
+        List<User> userList = Arrays.asList(
+                new User("赵敏", new Date(2020 - 1900, 7 - 1, 6), 20, "女", "蒙古", "123", "123", BigDecimal.ONE, User.Status.F),
+                new User("周芷若", new Date(2020 - 1900, 8 - 1, 9), 19, "女", "峨嵋", "123", "123", BigDecimal.ONE, User.Status.F),
+                new User("殷离", new Date(2020 - 1900, 6 - 1, 5), 18, "女", "灵蛇岛", "123", "123", BigDecimal.ONE, User.Status.F),
+                new User("小昭", new Date(2020 - 1900, 5 - 1, 5), 17, "女", "波斯", "123", "123", BigDecimal.ONE, User.Status.F)
+        );
+        String jsonStr = JsonUtil.toJson(userList, true);
+        System.out.println("JsonUtil.toJson(userList):\n" + jsonStr);
+        Path path = Paths.get("/userFile", "jsonUser");
+        if (Files.notExists(path)) {
+            Files.createDirectories(path);
+        }
+        Files.write(Paths.get(String.valueOf(path), "jsonStrList.json"), jsonStr.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE);
+        /***********************************************************/
+        List<String> list = new ArrayList<>();
+        for (User user : userList) {
+            list.add(JsonUtil.toJson(user));
+        }
+        Files.write(Paths.get(String.valueOf(path), "jsonStr.json"), list.stream().collect(Collectors.joining(System.lineSeparator())).getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE);
+        System.out.println(list.stream().collect(Collectors.joining(System.lineSeparator())));
+        List<User> users = JsonUtil.fromJson(
+                list.stream().collect(Collectors.joining("," + System.lineSeparator(), "[", "]")),
+                new TypeReference<List<User>>() {}
+        );
+        System.out.println(JsonUtil.toJson(users, true));
+        /***********************************************************************/
+        list.clear();
+        for (User user : userList) {
+            list.add(JsonUtil.toJson(user, true));
+        }
+        Files.write(Paths.get(String.valueOf(path), "jsonStr_.json"),
+                list.stream().collect(Collectors.joining("," + System.lineSeparator(), "[", "]")).getBytes(StandardCharsets.UTF_8),
+                StandardOpenOption.CREATE);
+        System.out.println("===================================================================");
+        byte[] bytes = Files.readAllBytes(Paths.get(String.valueOf(path), "jsonStr_.json"));
+        users = JsonUtil.fromJson(new String(bytes, StandardCharsets.UTF_8), new TypeReference<List<User>>() {});
+
+        System.out.println("打印结果:\n"+
+        "username birthday age sex address password mobile money status \n"+
+                        users.stream().map(e->String.format("%1$2s %2$2s %3$2s %4$2s %5$2s %6$2s %7$2s %8$2s %9$2s",
+                                e.getUsername(),e.getBirthday(),e.getAge(),e.getSex(),e.getAddress(),e.getPassword(),e.getMobile(),e.getMoney(),e.getStatus()))
+                .collect(Collectors.joining("\n"))
+        );
+    }
+
     @Test
     public void test00() throws Exception {
         System.out.println(StringUtils.getInsertSql("lxgm_repayment_plan", LxgmRepaymentPlan.class, "id", "project_no", "effect_date", "last_modified_date", "created_date"));
@@ -184,5 +251,12 @@ public class RepayTest {
         }
         System.out.println(sb.toString());
         System.out.println(ReflectUtils.getFieldNames(LxgmRepaymentPlan.class));
+
+        InetAddress inetAddress = InetAddress.getLocalHost();
+        String hostName = inetAddress.getHostName();
+        String hostAddress = inetAddress.getHostAddress();
+        System.out.println(String.format("主机名称:%s\n主机id:%s", hostName, hostAddress));
+        System.out.println(String.format("配置文件上获取的城市名:%s", cityList));
+        System.out.println(String.format("配置文件上获取的城市名:%s", String.join(",", cityList)));
     }
 }

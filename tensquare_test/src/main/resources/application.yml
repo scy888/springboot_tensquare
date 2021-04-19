@@ -36,4 +36,8 @@ person:
   address: 湖北省
   age: 25
 
+test:
+  city:
+    北京,上海,广州,深圳
+
 
