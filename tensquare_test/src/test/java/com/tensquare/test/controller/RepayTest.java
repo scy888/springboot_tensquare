@@ -1,5 +1,6 @@
 package com.tensquare.test.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.tensquare.result.LxgmTermStatus;
 import com.tensquare.result.Tuple3;
@@ -23,6 +24,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
@@ -173,6 +175,33 @@ public class RepayTest {
     }
 
     @Test
+    public void test004() throws Exception {
+        InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("lxgm_repayment_plan.sql");
+        byte[] bytes = new byte[inputStream.available()];
+        inputStream.read(bytes);
+        String str = new String(bytes, StandardCharsets.UTF_8);
+        inputStream.close();
+        System.out.println("批量执行sql前...");
+        String[] sqls = str.split(";");
+        System.out.println(Arrays.asList(sqls));
+        String join = String.join(";", Arrays.asList(sqls));
+        System.out.println("sql语句:\n" + join);
+        jdbcTemplate.batchUpdate(sqls);
+        System.out.println("批量执行sql后...");
+
+        System.out.println("==============================================");
+
+        //byte[] readAllBytes = Files.readAllBytes(Paths.get(this.getClass().getResource("/lxgm_repayment_plan.sql").toURI()));
+        // jdbcTemplate.batchUpdate(new String(readAllBytes, StandardCharsets.UTF_8).split(";"));
+
+        List<String> list = Files.readAllLines(Paths.get(this.getClass().getResource("/lxgm_repayment_plan.sql").toURI()));
+        jdbcTemplate.batchUpdate(Arrays.stream(String.join(System.lineSeparator(), list)
+                .split(System.lineSeparator())).filter(e -> !e.equals(System.lineSeparator()))
+                .map(e -> e.substring(0, e.lastIndexOf(";")))
+                .toArray(String[]::new));
+    }
+
+    @Test
     public void test005() {
         User user = getUser(true);
         user = Optional.ofNullable(user).map(e -> {
@@ -190,6 +219,22 @@ public class RepayTest {
         } else {
             return null;
         }
+    }
+
+    @Test
+    public void test06() throws Exception {
+        List<String> lines = Files.readAllLines(Paths.get(this.getClass().getResource("/csv.json").toURI()));
+        String jsonStr = String.join(System.lineSeparator(), lines);
+        List<LxgmRepaymentPlan> plans = JSON.parseArray(jsonStr, LxgmRepaymentPlan.class);
+        System.out.println(JSON.toJSONString(plans, true));
+        System.out.println("======================================");
+
+        Files.write(Paths.get("E:\\ideaws\\springboot_tensquare\\tensquare_test\\src\\test\\resources", "csv_.json"),
+                jsonStr.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE);
+        Files.write(Paths.get("E:\\ideaws\\springboot_tensquare\\tensquare_test\\src\\test\\resources", "csv__.json"),
+                lines, StandardOpenOption.CREATE);
+        Files.write(Paths.get("E:\\ideaws\\springboot_tensquare\\tensquare_test\\src\\test\\resources", "csv___.json"),
+                JSON.toJSONString(plans, true).getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE);
     }
 
     @Test
@@ -263,5 +308,9 @@ public class RepayTest {
         System.out.println(String.format("主机名称:%s\n主机id:%s", hostName, hostAddress));
         System.out.println(String.format("配置文件上获取的城市名:%s", cityList));
         System.out.println(String.format("配置文件上获取的城市名:%s", String.join(",", cityList)));
+        System.out.println("========================================================");
+        List<String> list = Arrays.asList("静夜思", "唐*李白", "窗前明月光", "疑似地上霜", "举头望明月", "低头思故乡");
+        System.out.println(String.join(System.lineSeparator(), list));
+
     }
 }
