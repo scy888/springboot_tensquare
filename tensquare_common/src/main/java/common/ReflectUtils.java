@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.beans.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -323,5 +324,28 @@ public class ReflectUtils {
                 "打印信息如下:\n" + fieldNames + "\n"
                         + userList.stream().map(e -> getFieldValues(e, "id", "birthday", "status", "password")).collect(Collectors.joining(System.lineSeparator()))
         );
+    }
+
+    @Test
+    public void test008() throws Exception {
+        User user = new User(1, "赵敏", null, 18, "女", "蒙古", "123", "132", BigDecimal.TEN, User.Status.F);
+        PropertyDescriptor pd = new PropertyDescriptor("username", User.class);
+        Method readMethod = pd.getReadMethod();
+        System.out.println(readMethod.getName());
+        System.out.println(readMethod.invoke(user));
+        Method writeMethod = pd.getWriteMethod();
+        writeMethod.invoke(user, "周芷若");
+        System.out.println(user.getUsername());
+        System.out.println("======================================");
+        BeanInfo beanInfo = Introspector.getBeanInfo(User.class);
+        MethodDescriptor[] methodDescriptors = beanInfo.getMethodDescriptors();
+        for (MethodDescriptor methodDescriptor : methodDescriptors) {
+            System.out.println(methodDescriptor.getMethod().getName());
+        }
+        System.out.println("=======================================");
+        PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
+        for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
+            System.out.println(propertyDescriptor.getName());
+        }
     }
 }

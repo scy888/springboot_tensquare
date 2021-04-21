@@ -3,6 +3,8 @@ package entity;
 import lombok.Data;
 import lombok.Getter;
 import lombok.experimental.Accessors;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
@@ -12,7 +14,9 @@ import java.util.StringJoiner;
 
 @Data
 @Accessors(chain = true)
+@Document(collection = "user")
 public class User implements Serializable {
+    @Id
     private Integer id;
     private String username;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
@@ -76,7 +80,6 @@ public class User implements Serializable {
 //        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 //        return sdf.format(birthday);
 //    }
-
     public BigDecimal getMoney() {
         return money;
     }

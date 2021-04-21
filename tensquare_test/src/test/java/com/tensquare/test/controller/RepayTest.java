@@ -16,6 +16,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -52,6 +53,8 @@ public class RepayTest {
     private JdbcTemplate jdbcTemplate;
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    @Autowired
+    private MongoTemplate mongoTemplate;
     @Value("${test.city}")
     private List<String> cityList;
 
@@ -213,7 +216,8 @@ public class RepayTest {
         System.out.println(list.stream().collect(Collectors.joining(System.lineSeparator())));
         List<User> users = JsonUtil.fromJson(
                 list.stream().collect(Collectors.joining("," + System.lineSeparator(), "[", "]")),
-                new TypeReference<List<User>>() {}
+                new TypeReference<List<User>>() {
+                }
         );
         System.out.println(JsonUtil.toJson(users, true));
         /***********************************************************************/
@@ -226,13 +230,14 @@ public class RepayTest {
                 StandardOpenOption.CREATE);
         System.out.println("===================================================================");
         byte[] bytes = Files.readAllBytes(Paths.get(String.valueOf(path), "jsonStr_.json"));
-        users = JsonUtil.fromJson(new String(bytes, StandardCharsets.UTF_8), new TypeReference<List<User>>() {});
+        users = JsonUtil.fromJson(new String(bytes, StandardCharsets.UTF_8), new TypeReference<List<User>>() {
+        });
 
-        System.out.println("打印结果:\n"+
-        "username birthday age sex address password mobile money status \n"+
-                        users.stream().map(e->String.format("%1$2s %2$2s %3$2s %4$2s %5$2s %6$2s %7$2s %8$2s %9$2s",
-                                e.getUsername(),e.getBirthday(),e.getAge(),e.getSex(),e.getAddress(),e.getPassword(),e.getMobile(),e.getMoney(),e.getStatus()))
-                .collect(Collectors.joining("\n"))
+        System.out.println("打印结果:\n" +
+                "username birthday age sex address password mobile money status \n" +
+                users.stream().map(e -> String.format("%1$2s %2$2s %3$2s %4$2s %5$2s %6$2s %7$2s %8$2s %9$2s",
+                        e.getUsername(), e.getBirthday(), e.getAge(), e.getSex(), e.getAddress(), e.getPassword(), e.getMobile(), e.getMoney(), e.getStatus()))
+                        .collect(Collectors.joining("\n"))
         );
     }
 
