@@ -42,8 +42,8 @@ import java.util.*;
 @RestController
 @RequestMapping("/batch")
 public class BatchController {
-    //    @Autowired
-//    private KafkaTemplate<String, Object> kafkaTemplate;
+    @Autowired
+    private KafkaTemplate kafkaTemplate;
     @Autowired
     private JobRegistry jobRegistry;
     @Autowired
@@ -59,25 +59,27 @@ public class BatchController {
     @Autowired
     @Qualifier(value = "idWorker")
     private IdWorker getIdWorker22;
-//    @RequestMapping("/kafka")
-//    public String hello(@RequestParam String worlds) {
-//        ListenableFuture<SendResult<String, Object>> future = kafkaTemplate.send("hello", worlds);
-//        StringBuilder result = new StringBuilder("发送：" + worlds + "，结果：");
-//        future.addCallback(new ListenableFutureCallback() {
-//
-//            @Override
-//            public void onSuccess(Object o) {
-//                log.error("发送消息成功：{}", o.toString());
-//            }
-//
-//            @Override
-//            public void onFailure(Throwable throwable) {
-//                result.append(throwable.getMessage());
-//                log.error("发送消息失败：{}", throwable.getMessage());
-//            }
-//        });
-//        return "发送消息成功";
-//    }
+
+    @RequestMapping("/kafka")
+    public String hello(@RequestParam String worlds) {
+        ListenableFuture<SendResult<String, Object>> future = kafkaTemplate.send("hello", worlds);
+        StringBuilder result = new StringBuilder("发送：" + worlds + "，结果：");
+        future.addCallback(new ListenableFutureCallback() {
+
+            @Override
+            public void onSuccess(Object o) {
+                log.error("发送消息成功：{}", o.toString());
+            }
+
+            @Override
+            public void onFailure(Throwable throwable) {
+                result.append(throwable.getMessage());
+                log.error("发送消息失败：{}", throwable.getMessage());
+            }
+        });
+
+        return "发送消息成功";
+    }
 
     @GetMapping("/jobInfo/{jobName}")
     public List<Instance> jobInfo(@PathVariable String jobName) {
@@ -158,14 +160,12 @@ public class BatchController {
         return batchService.getCsv(map);
     }
 
-    @RequestMapping("/provider")
-    public List<UserDtoReq> getUserDtoReqs(@RequestBody String paramJson) {
-        JSONObject jsonObject = JSON.parseObject(paramJson);
-        String name = jsonObject.getObject("name", String.class);
-        Integer age = jsonObject.getInteger("age");
-        log.info("name:{},age:{}", name, age);
+    @RequestMapping("/provider/{name}/{age}")
+    public List<UserDtoReq> getUserDtoReqs(@PathVariable("name") String name, @PathVariable("age") int age) {
+
         List<UserDtoReq> userDtos = userFeignClient.getUserDtos(name, age);
         log.info("userDtos:{}", JSON.toJSONString(userDtos));
+        System.out.println("List<UserDtoReq> getUserDtoReqs...");
         return userDtos;
     }
 

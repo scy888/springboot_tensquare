@@ -5,11 +5,19 @@ spring:
     username: root
     password: root
 
+      #second:
+      #datasource:
+      #driverClassName: com.mysql.jdbc.Driver
+      #jdbcUrl: jdbc:mysql://10.83.16.43:3306/acc_repay?createDatabaseIfNotExist=true&characterEncoding=UTF8&rewriteBatchedStatements=true
+      #username: root
+      #password: zU!ykpx3EG)$$1e6
+    #type: com.zaxxer.hikari.HikariDataSource
+
   data:
     mongodb:
       host: localhost
       port: 27017
-      database: userdb
+      database: link
 
 logging:
   config: classpath:logger.xml

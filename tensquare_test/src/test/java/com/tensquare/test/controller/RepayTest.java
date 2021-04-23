@@ -5,10 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.tensquare.result.LxgmTermStatus;
 import com.tensquare.result.Tuple3;
 import com.tensquare.test.pojo.LxgmRepaymentPlan;
-import common.JacksonUtils;
-import common.JsonUtil;
-import common.ReflectUtils;
-import common.StringUtils;
+import common.*;
 import entity.User;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
@@ -18,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -287,6 +286,19 @@ public class RepayTest {
     }
 
     @Test
+    public void test007() {
+        mongoTemplate.dropCollection("user");
+        List<User> userList = Arrays.asList(
+                new User((int) SnowFlake.snowFlake.nextId(), "赵敏", new Date(2020 - 1900, 7 - 1, 6), 20, "女", "蒙古", "123", "123", BigDecimal.ONE, User.Status.F),
+                new User((int) SnowFlake.snowFlake.nextId(), "周芷若", new Date(2020 - 1900, 8 - 1, 9), 19, "女", "峨嵋", "123", "123", BigDecimal.ONE, User.Status.F),
+                new User((int) SnowFlake.snowFlake.nextId(), "殷离", new Date(2020 - 1900, 6 - 1, 5), 18, "女", "灵蛇岛", "123", "123", BigDecimal.ONE, User.Status.F),
+                new User((int) SnowFlake.snowFlake.nextId(), "小昭", new Date(2020 - 1900, 5 - 1, 5), 17, "女", "波斯", "123", "123", BigDecimal.ONE, User.Status.F)
+        );
+        //mongoTemplate.insert(new User(1, "赵敏", new Date(2020 - 1900, 7 - 1, 6), 20, "女", "蒙古", "123", "123", BigDecimal.ONE, User.Status.F), "user");
+        mongoTemplate.insert(userList, "user");
+    }
+
+    @Test
     public void test00() throws Exception {
         System.out.println(StringUtils.getInsertSql("lxgm_repayment_plan", LxgmRepaymentPlan.class, "id", "project_no", "effect_date", "last_modified_date", "created_date"));
         User user1 = new User("scy1", new Date(), 18, null, "应城1", "123_1", "123", BigDecimal.TEN, User.Status.F);
@@ -311,6 +323,8 @@ public class RepayTest {
         System.out.println("========================================================");
         List<String> list = Arrays.asList("静夜思", "唐*李白", "窗前明月光", "疑似地上霜", "举头望明月", "低头思故乡");
         System.out.println(String.join(System.lineSeparator(), list));
-
+        for (int i = 0; i < 10; i++) {
+            System.out.println(SnowFlake.getInstance().nextId());
+        }
     }
 }
