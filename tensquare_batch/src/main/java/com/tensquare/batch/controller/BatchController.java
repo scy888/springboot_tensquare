@@ -9,6 +9,7 @@ import com.tensquare.batch.pojo.Instance;
 import com.tensquare.batch.pojo.Job;
 import com.tensquare.batch.pojo.Step;
 import com.tensquare.batch.service.BatchService;
+import com.tensquare.client.UserClient;
 import com.tensquare.req.UserDtoReq;
 import common.SnowFlake;
 import lombok.extern.slf4j.Slf4j;
@@ -53,7 +54,7 @@ public class BatchController {
     @Autowired
     private BatchService batchService;
     @Autowired
-    private UserFeignClient userFeignClient;
+    private UserClient userClient;
     @Autowired
     private UserDtoFeignClient userDtoFeignClient;
     @Autowired
@@ -163,7 +164,7 @@ public class BatchController {
     @RequestMapping("/provider/{name}/{age}")
     public List<UserDtoReq> getUserDtoReqs(@PathVariable("name") String name, @PathVariable("age") int age) {
 
-        List<UserDtoReq> userDtos = userFeignClient.getUserDtos(name, age);
+        List<UserDtoReq> userDtos = userClient.getUserDtos(name, age);
         log.info("userDtos:{}", JSON.toJSONString(userDtos));
         System.out.println("List<UserDtoReq> getUserDtoReqs...");
         return userDtos;

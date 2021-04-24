@@ -222,10 +222,10 @@ public class ReflectUtils {
         InetAddress inetAddress = InetAddress.getLocalHost();
         System.out.println(inetAddress.getHostName());
         System.out.println(inetAddress.getHostAddress());
-        User user1 = new User(1, "赵敏", null, 18, "女", "蒙古", "123", "132", BigDecimal.TEN, User.Status.F);
-        User user2 = new User(2, "周芷若", null, 19, "女", "峨嵋", "123", "132", BigDecimal.TEN, User.Status.F);
-        User user3 = new User(3, "小昭", null, 20, "女", "波斯", "123", "132", BigDecimal.TEN, User.Status.F);
-        User user4 = new User(4, "殷离", null, 21, "女", "灵蛇岛", "123", "132", BigDecimal.TEN, User.Status.F);
+        User user1 = new User(1L, "赵敏", null, 18, "女", "蒙古", "123", "132", BigDecimal.TEN, User.Status.F);
+        User user2 = new User(2L, "周芷若", null, 19, "女", "峨嵋", "123", "132", BigDecimal.TEN, User.Status.F);
+        User user3 = new User(3L, "小昭", null, 20, "女", "波斯", "123", "132", BigDecimal.TEN, User.Status.F);
+        User user4 = new User(4L, "殷离", null, 21, "女", "灵蛇岛", "123", "132", BigDecimal.TEN, User.Status.F);
         List<User> userList = new ArrayList<>();
         Collections.addAll(userList, user1, user2, user3, user4);
         System.out.println(getFieldValues_(user1));
@@ -314,10 +314,10 @@ public class ReflectUtils {
     @Test
     public void test007() {
         String fieldNames = getFieldNames(User.class, "id", "birthday", "status", "password");//"id", "birthday", "status", "password"
-        User user1 = new User(1, "赵敏", null, 18, "女", "蒙古", "123456", "132", BigDecimal.TEN, User.Status.F);
-        User user2 = new User(2, "周芷若", null, 19, "女", "峨嵋", "123456", "132", BigDecimal.TEN, User.Status.F);
-        User user3 = new User(3, "小昭", null, 20, "女", "波斯", "123456", "132", BigDecimal.TEN, User.Status.F);
-        User user4 = new User(4, "殷离", null, 21, "女", "灵蛇岛", "123456", "132", BigDecimal.TEN, User.Status.F);
+        User user1 = new User(1L, "赵敏", null, 18, "女", "蒙古", "123456", "132", BigDecimal.TEN, User.Status.F);
+        User user2 = new User(2L, "周芷若", null, 19, "女", "峨嵋", "123456", "132", BigDecimal.TEN, User.Status.F);
+        User user3 = new User(3L, "小昭", null, 20, "女", "波斯", "123456", "132", BigDecimal.TEN, User.Status.F);
+        User user4 = new User(4L, "殷离", null, 21, "女", "灵蛇岛", "123456", "132", BigDecimal.TEN, User.Status.F);
         List<User> userList = new ArrayList<>();
         Collections.addAll(userList, user1, user2, user3, user4);
         System.out.println(
@@ -328,7 +328,7 @@ public class ReflectUtils {
 
     @Test
     public void test008() throws Exception {
-        User user = new User(1, "赵敏", null, 18, "女", "蒙古", "123", "132", BigDecimal.TEN, User.Status.F);
+        User user = new User(1L, "赵敏", null, 18, "女", "蒙古", "123", "132", BigDecimal.TEN, User.Status.F);
         PropertyDescriptor pd = new PropertyDescriptor("username", User.class);
         Method readMethod = pd.getReadMethod();
         System.out.println(readMethod.getName());

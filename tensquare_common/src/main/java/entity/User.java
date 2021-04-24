@@ -17,7 +17,7 @@ import java.util.StringJoiner;
 @Document(collection = "user")
 public class User implements Serializable {
     @Id
-    private Integer id;
+    private Long id;
     private String username;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
     private Date birthday;
@@ -32,7 +32,7 @@ public class User implements Serializable {
     public User() {
     }
 
-    public User(Integer id, String username, Date birthday, int age, String sex, String address, String password, String mobile, BigDecimal money) {
+    public User(Long id, String username, Date birthday, int age, String sex, String address, String password, String mobile, BigDecimal money) {
         this.id = id;
         this.username = username;
         this.birthday = birthday;
@@ -57,7 +57,7 @@ public class User implements Serializable {
         this.status = status;
     }
 
-    public User(Integer id, String username, Date birthday, int age, String sex, String address, String password, String mobile, BigDecimal money, Status status) {
+    public User(Long id, String username, Date birthday, int age, String sex, String address, String password, String mobile, BigDecimal money, Status status) {
         this.id = id;
         this.username = username;
         this.birthday = birthday;
@@ -80,85 +80,8 @@ public class User implements Serializable {
 //        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 //        return sdf.format(birthday);
 //    }
-    public BigDecimal getMoney() {
-        return money;
-    }
 
-    public void setMoney(BigDecimal money) {
-        this.money = money;
-    }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public Date getBirthday() {
-        return birthday;
-    }
-
-    public void setBirthday(Date birthday) {
-        this.birthday = birthday;
-    }
-
-    public String getSex() {
-        return sex;
-    }
-
-    public void setSex(String sex) {
-        this.sex = sex;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getMobile() {
-        return mobile;
-    }
-
-    public void setMobile(String mobile) {
-        this.mobile = mobile;
-    }
-
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
 
     @Override
     public String toString() {

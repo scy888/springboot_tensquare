@@ -174,7 +174,7 @@ public class UserDomeController {
         List<User> userList = userDomeDaoJpa.findByAgeOrName(age, name);
         log.info("userList:{}" + userList);
         /** 根据姓名和年龄去重 */
-        userList = userList.stream().distinct()
+        userList = userList.stream()
                 .collect(Collectors.collectingAndThen(
                         Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(user -> user.getName() + ":" + user.getAge()))),
                         ArrayList::new));

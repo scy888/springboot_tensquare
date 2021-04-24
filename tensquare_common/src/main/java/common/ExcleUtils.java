@@ -273,11 +273,11 @@ public class ExcleUtils {
     @Test
     public void testExclePort() throws Exception {
         List<User> userList = Arrays.asList(
-                new User(1, "张无忌", new Date(2020 - 1900, 4 - 1, 1, 2, 18, 27), 20, "男", "明教", "13456", "13297053048", new BigDecimal("128.369")),
-                new User(2, "赵敏", new Date(2020 - 1900, 4 - 1, 11, 12, 15, 27), 19, "女", "蒙古", "13456", "13297053048", new BigDecimal("128.369")),
-                new User(3, "周芷若", new Date(2020 - 1900, 4 - 1, 6, 18, 18, 27), 18, "女", "峨嵋", "13456", "13297053048", new BigDecimal("128.369")),
-                new User(4, "小昭", new Date(2020 - 1900, 4 - 1, 30, 23, 59, 59), 18, "女", "波斯", "13456", "13297053048", new BigDecimal("128.369")),
-                new User(5, "阿离", new Date(2020 - 1900, 4 - 1, 15, 8, 18, 27), 17, "女", "灵蛇岛", "13456", "13297053048", new BigDecimal("128.369")));
+                new User(1L, "张无忌", new Date(2020 - 1900, 4 - 1, 1, 2, 18, 27), 20, "男", "明教", "13456", "13297053048", new BigDecimal("128.369")),
+                new User(2L, "赵敏", new Date(2020 - 1900, 4 - 1, 11, 12, 15, 27), 19, "女", "蒙古", "13456", "13297053048", new BigDecimal("128.369")),
+                new User(3L, "周芷若", new Date(2020 - 1900, 4 - 1, 6, 18, 18, 27), 18, "女", "峨嵋", "13456", "13297053048", new BigDecimal("128.369")),
+                new User(4L, "小昭", new Date(2020 - 1900, 4 - 1, 30, 23, 59, 59), 18, "女", "波斯", "13456", "13297053048", new BigDecimal("128.369")),
+                new User(5L, "阿离", new Date(2020 - 1900, 4 - 1, 15, 8, 18, 27), 17, "女", "灵蛇岛", "13456", "13297053048", new BigDecimal("128.369")));
 
         String[] heards = {"用户id", "姓名", "出生日期", "年龄", "性别", "地址", "密码", "联系方式", "薪资"};
         String[] fields = {"id", "username", "birthday", "age", "sex", "address", "password", "mobile", "money"};
@@ -305,7 +305,7 @@ public class ExcleUtils {
         List<User> userList = new ArrayList<>();
         for (Object[] objects : list) {
             User user = new User();
-            user.setId(new Integer(objects[0].toString()));
+           // user.setId(new Integer(objects[0].toString()));
             user.setUsername(objects[1].toString());
             user.setBirthday(new SimpleDateFormat("yyyy年MM月dd日 HH时mm分ss秒").parse(objects[2].toString()));
             user.setAge(Integer.parseInt(objects[3].toString()));
