@@ -1,9 +1,11 @@
 package com.tensquare.test.dao;
 
 import com.alibaba.fastjson.JSONObject;
+import com.tensquare.test.pojo.PictureFile;
 import com.tensquare.test.pojo.User;
 import com.tensquare.test.pojo.UserDto;
 import common.JacksonUtils;
+import common.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -34,11 +36,11 @@ public class UserDomeDao {
     private JdbcTemplate jdbcTemplate;
 
     public int saveOne(User user) {
-        String sql="insert into tb_user_dto(address,age,birthday,create_date,name," +
+        String sql = "insert into tb_user_dto(address,age,birthday,create_date,name," +
                 "sex,user_pay,status_ment,update_date)values" +
                 "(?,?,?,?,?,?,?,?,?)";
-        Object[] args=new Object[]{user.getAddress(),user.getAge(),user.getBirthday(),new Date(),
-                                   user.getName(),user.getSex(),user.getUserPay(),user.getStatusMent().name(), LocalDateTime.now()};
+        Object[] args = new Object[]{user.getAddress(), user.getAge(), user.getBirthday(), new Date(),
+                user.getName(), user.getSex(), user.getUserPay(), user.getStatusMent().name(), LocalDateTime.now()};
         int update = jdbcTemplate.update(sql, args);
         return update;
     }
@@ -58,8 +60,8 @@ public class UserDomeDao {
 
     public List<User> getList(String sex) {
 
-        String sql="select * from tb_user_dto where sex=?";
-        List<User> userList = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(User.class),sex);
+        String sql = "select * from tb_user_dto where sex=?";
+        List<User> userList = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(User.class), sex);
         List<Map<String, Object>> mapList = jdbcTemplate.queryForList(sql, new Object[]{sex});
         log.info("mapList:{}", JacksonUtils.getInstance().toString(mapList));
         return userList;
@@ -69,34 +71,34 @@ public class UserDomeDao {
         String query = userList.stream().map(user -> {
             return "('" + user.getName() + "'," + "'" + user.getSex() + "')";
         }).collect(Collectors.joining(","));
-        String sql="select * from tb_user_dto where (name,sex) in ("+query+")";
-        return jdbcTemplate.query(sql,new BeanPropertyRowMapper<>(User.class) );
+        String sql = "select * from tb_user_dto where (name,sex) in (" + query + ")";
+        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(User.class));
     }
 
     public List<UserDto> selectUserByNameAndAge(List<UserDto> userDtoList) {
-        String sql="select * from user_dto where (name,age) in(";
-         String value="";
-         List<Object> list=new ArrayList<>();
+        String sql = "select * from user_dto where (name,age) in(";
+        String value = "";
+        List<Object> list = new ArrayList<>();
         for (UserDto userDto : userDtoList) {
-            value+="(?,?),\n";
+            value += "(?,?),\n";
             list.add(userDto.getName());
             list.add(userDto.getAge());
         }
-        value=value.substring(0, value.lastIndexOf(","))+")";
-        log.info("打印sql:{}",sql+value+";");
+        value = value.substring(0, value.lastIndexOf(",")) + ")";
+        log.info("打印sql:{}", sql + value + ";");
         Object[] args = list.toArray(new Object[list.size()]);
-        return jdbcTemplate.query(sql+value+";", new BeanPropertyRowMapper<>(UserDto.class),args );
+        return jdbcTemplate.query(sql + value + ";", new BeanPropertyRowMapper<>(UserDto.class), args);
     }
 
-    public int insertUserDtoList(List<UserDto> userDtoList){
+    public int insertUserDtoList(List<UserDto> userDtoList) {
         /** 批量添加 */
         log.info("userDtoList:{}", JSONObject.toJSONString(userDtoList));
-        String sql="insert into user_dto(name,sex,age,create_date)values"+"\n";
+        String sql = "insert into user_dto(name,sex,age,create_date)values" + "\n";
         String values = userDtoList.stream().map(userDto -> {
             return "(?,?,?,?)";
         }).collect(Collectors.joining(",\n"));
-        log.info("sql语句：{}",sql+values+";");
-        List<Object> list=new ArrayList<>();
+        log.info("sql语句：{}", sql + values + ";");
+        List<Object> list = new ArrayList<>();
         for (UserDto userDto : userDtoList) {
             list.add(userDto.getName());
             list.add(userDto.getSex());
@@ -104,12 +106,12 @@ public class UserDomeDao {
             list.add(userDto.getCreateDate());
         }
         Object[] args = list.toArray(new Object[list.size()]);
-       return jdbcTemplate.update(sql+values+";",args);
+        return jdbcTemplate.update(sql + values + ";", args);
     }
 
-    public int addUserList(List<UserDto> userDtoList){
-        List<Object> list=new ArrayList<>();
-        StringBuffer sb=new StringBuffer();
+    public int addUserList(List<UserDto> userDtoList) {
+        List<Object> list = new ArrayList<>();
+        StringBuffer sb = new StringBuffer();
         sb.append("insert into user_dto(name,sex,age,create_date)values").append("\n");
         for (UserDto userDto : userDtoList) {
             sb.append("(?,?,?,?)").append(",").append("\n");
@@ -119,17 +121,17 @@ public class UserDomeDao {
             list.add(userDto.getCreateDate());
         }
         Object[] args = list.toArray(new Object[list.size()]);
-        sb=sb.deleteCharAt(sb.lastIndexOf(",")).append(";");
-        log.info("sql语句：{}",sb.toString());
-        return jdbcTemplate.update(sb.toString(),args);
+        sb = sb.deleteCharAt(sb.lastIndexOf(",")).append(";");
+        log.info("sql语句：{}", sb.toString());
+        return jdbcTemplate.update(sb.toString(), args);
     }
 
-    public int addList(List<UserDto> userDtoList){
-        List<Object> list=new ArrayList<>();
-        String sql="insert into user_dto(name,sex,age,context,create_date)values"+"\n";
-        String value="";
+    public int addList(List<UserDto> userDtoList) {
+        List<Object> list = new ArrayList<>();
+        String sql = "insert into user_dto(name,sex,age,context,create_date)values" + "\n";
+        String value = "";
         for (UserDto userDto : userDtoList) {
-            value+="(?,?,?,?,?),"+"\n";
+            value += "(?,?,?,?,?)," + "\n";
             list.add(userDto.getName());
             list.add(userDto.getSex());
             list.add(userDto.getAge());
@@ -138,23 +140,35 @@ public class UserDomeDao {
         }
         Object[] args = list.toArray(new Object[list.size()]);
         //value=value.substring(0, value.length()-2);
-        value=value.substring(0,value.lastIndexOf(","));
-        log.info("sql:{}",sql+value+";");
-        return jdbcTemplate.update(sql+value+";",args);
+        value = value.substring(0, value.lastIndexOf(","));
+        log.info("sql:{}", sql + value + ";");
+        return jdbcTemplate.update(sql + value + ";", args);
     }
 
 
     public int saveOrUpadateUsers(List<UserDto> userDtoList) {
-          int num=0;
+        int num = 0;
         for (UserDto userDto : userDtoList) {
-            String sql="insert into user_dto(age,context,create_date,name,sex)values(?,?,?,?,?)" +
+            String sql = "insert into user_dto(age,context,create_date,name,sex)values(?,?,?,?,?)" +
                     "on duplicate key update context=?,create_date=?,sex=?";
-            log.info("新增或修改sql：{}",sql);
-            Object[] arge=new Object[]{userDto.getAge(),userDto.getContext(),userDto.getCreateDate(),
-            userDto.getName(),userDto.getSex(),userDto.getContext(),userDto.getCreateDate(),userDto.getSex()};
+            log.info("新增或修改sql：{}", sql);
+            Object[] arge = new Object[]{userDto.getAge(), userDto.getContext(), userDto.getCreateDate(),
+                    userDto.getName(), userDto.getSex(), userDto.getContext(), userDto.getCreateDate(), userDto.getSex()};
             int update = jdbcTemplate.update(sql, arge);
-            num=+update;
+            num = +update;
         }
         return num;
+    }
+
+    public int addPictureFile(PictureFile pictureFile) throws Exception {
+        String sql = StringUtils.getInsertSql("picture_file", PictureFile.class);
+        Object[] objects = StringUtils.getFieldValue(pictureFile);
+        int update = jdbcTemplate.update(sql, objects);
+        return update;
+    }
+
+    public PictureFile findPictureFileById(String id) {
+        String sql = "select * from picture_file where id=?";
+        return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(PictureFile.class), id);
     }
 }

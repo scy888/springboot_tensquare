@@ -28,15 +28,19 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import utils.IdWorker;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.net.URLDecoder;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -593,4 +597,34 @@ public class UserDomeController {
             return userDtoReq;
         }).collect(Collectors.toList());
     }
+
+    @PostMapping("/addPictureFile")
+    public String addPictureFile(@RequestParam("files") MultipartFile[] mutipartFile) throws Exception {
+        log.info("要上传的图片文件长度:{}", mutipartFile.length);
+        for (MultipartFile multipartFile : mutipartFile) {
+            PictureFile pictureFile = new PictureFile();
+            pictureFile.setId(SnowFlake.getInstance().nextId() + "");
+            pictureFile.setByteArray(multipartFile.getBytes());
+            pictureFile.setDueBillNo(SnowFlake.getInstance().nextId() + "");
+            pictureFile.setCreateTime(LocalDateTime.now());
+            pictureFile.setFileName(multipartFile.getOriginalFilename());
+            userDomeDao.addPictureFile(pictureFile);
+        }
+        return "success";
+    }
+
+    @GetMapping("/viewPictureFile/{id}")
+    public String viewPictureFile(@PathVariable String id, HttpServletResponse response, HttpServletRequest request) throws Exception {
+        PictureFile pictureFile = userDomeDao.findPictureFileById(id);
+        try (ServletOutputStream outputStream = response.getOutputStream()) {
+            outputStream.write(pictureFile.getByteArray());
+            response.setHeader("Content-disposition", "attachment; filename=" + DownloadUtils.encodeFilename(request, pictureFile.getFileName()));
+            outputStream.flush();
+        }
+        return "success";
+    }
 }
+
+
+//MultipartFile
+//response.setHeader("Content-disposition", "attachment; filename=" + res.getFileName());
