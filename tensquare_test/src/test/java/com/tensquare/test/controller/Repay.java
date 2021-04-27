@@ -24,4 +24,8 @@ public class Repay {
     private BigDecimal amount;
     private Integer count;
     private LocalDate batchDate;
+
+    public static void main(String[] args) {
+        System.out.println(888);
+    }
 }

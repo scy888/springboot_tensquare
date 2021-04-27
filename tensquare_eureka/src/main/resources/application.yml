@@ -1,5 +1,7 @@
 server:
-  port: 6868 #服务端口
+  port: 8686 #服务端口
+  servlet:
+    context-path: /eureka
 eureka:
   client:
     service-url: #Eureka客户端与Eureka服务端进行交互的地址

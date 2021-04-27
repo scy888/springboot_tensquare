@@ -1,8 +1,12 @@
 server: 
   port: 9003
+  servlet:
+    context-path: /qa
 spring: 
   application:  
     name: tensquare-qa #指定服务名
+  profiles:
+    active: dev
   datasource:  
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://192.168.25.128:3306/tensquare_qa?characterEncoding=UTF8
@@ -17,7 +21,7 @@ jwt:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:6868/eureka
+      defaultZone: http://localhost:8686/eureka/eureka
   instance:
     prefer-ip-address: true
 

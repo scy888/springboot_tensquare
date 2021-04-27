@@ -57,6 +57,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-activemq</artifactId>
         </dependency>
+
         <!--热部署配置-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -117,4 +118,5 @@
             </snapshots>
         </pluginRepository>
     </pluginRepositories>
+
 </project>

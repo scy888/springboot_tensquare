@@ -16,7 +16,7 @@ import java.util.List;
  * @date: 2020-08-03 21:59:49
  * @describe:
  */
-@FeignClient(name = "tensquare-test",serviceId="userFeignClient",url = "127.0.0.1:9023")
+@FeignClient(name = "tensquare-test",serviceId="userFeignClient",url = "127.0.0.1:9023/test")
 @Component
 public interface UserFeignClient extends UserClient {
 }

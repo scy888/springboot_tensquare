@@ -13,6 +13,7 @@ import com.tensquare.client.UserClient;
 import com.tensquare.req.UserDtoReq;
 import common.SnowFlake;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.impl.conn.LoggingSessionOutputBuffer;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobInstance;
 import org.springframework.batch.core.StepExecution;
@@ -188,4 +189,5 @@ public class BatchController {
         long nextId = getIdWorker22.nextId();
         return nextId + "";
     }
+
 }

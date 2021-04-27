@@ -8,8 +8,6 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
-import java.nio.file.Files;
-
 /**
  * @author: scyang
  * @program: tensquare_parent
