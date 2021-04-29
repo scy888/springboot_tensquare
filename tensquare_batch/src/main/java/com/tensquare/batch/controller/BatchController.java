@@ -24,11 +24,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 import org.springframework.web.bind.annotation.*;
 import utils.IdWorker;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -61,6 +65,8 @@ public class BatchController {
     @Autowired
     @Qualifier(value = "idWorker")
     private IdWorker getIdWorker22;
+    @Autowired
+    private JavaMailSender javaMailSender;
 
     @RequestMapping("/kafka")
     public String hello(@RequestParam String worlds) {
@@ -190,4 +196,15 @@ public class BatchController {
         return nextId + "";
     }
 
+    @GetMapping("/sendMsg")
+    public String sendMsg() throws Exception {
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
+        mimeMessageHelper.setText("shengchongyang", true);
+        mimeMessageHelper.setSubject("shengchongyang");
+        mimeMessageHelper.setFrom("348691356@qq.com");
+        mimeMessageHelper.setTo("348691356@qq.com");
+        javaMailSender.send(mimeMessage);
+        return "success";
+    }
 }
