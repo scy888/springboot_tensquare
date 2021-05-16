@@ -251,9 +251,10 @@ public class RsaUtil {
         String content = "{\"reqData\":{\"ifCar\":\"2\",\"country\":\"CHN\",\"dbBankCode\":\"403100000004\",\"lnRate\":0.000180,\"endDate\":\"2020-06-05\",\"workDuty\":\"3\",\"homeAddr\":\"湖南省怀化市靖州苗族侗族自治县渠阳镇渠阳中路214号\",\"idNo\":\"411321198608288156\",\"sales\":\"01\",\"homeCode\":\"000000\",\"ifCarCred\":\"2\",\"payType\":\"02\",\"isBelowRisk\":\"1\",\"children\":\"2\",\"workCode\":\"000000\",\"vouType\":\"4\",\"cardAmt\":0.00,\"homeTel\":\"13431386064\",\"profession\":\"06\",\"idType\":\"0\",\"authNo\":\"1120040208133512324016\",\"mincome\":25000.00,\"postAddr\":\"湖南省怀化市靖州苗族侗族自治县渠阳镇渠阳中路214号\",\"workTitle\":\"1\",\"ifCard\":\"2\",\"degree\":\"9\",\"ifAgent\":\"02\",\"birth\":\"19860828\",\"ifId\":\"1\",\"workName\":\"地球公司\",\"pactAmt\":1000.00,\"ifPact\":\"0\",\"ifApp\":\"0\",\"edu\":\"20\",\"custType\":\"99\",\"loanDate\":\"2020-04-02\",\"postCode\":\"000000\",\"hasOverdueLoan\":\"0\",\"income\":\"02\",\"appUse\":\"07\",\"riskLevel\":\"P3\",\"zxhomeIncome\":300000.00,\"rpyMethod\":\"03\",\"launder\":\"03\",\"dbAccountName\":\"郑茂栋\",\"phoneNo\":\"13431386064\",\"ifMort\":\"1\",\"loanTime\":\"2020-04-02 15:52:30\",\"marriage\":\"20\",\"idEndDate\":\"2038-08-10\",\"idPreDate\":\"2018-08-10\",\"sex\":\"1\",\"ifRoom\":\"1\",\"appArea\":\"000000\",\"ifLaunder\":\"02\",\"custName\":\"郑茂栋\",\"homeIncome\":\"01\",\"dbBankName\":\"邮储银行\",\"homeArea\":\"000000\",\"homeSts\":\"2\",\"loanTerm\":1,\"trade\":\"26\",\"applyNo\":\"1120040208133512324016\",\"dbBankAccount\":\"6210985770765003240\",\"workType\":\"1\",\"workWay\":\"G\",\"payDay\":15,\"dbOpenBankName\":\"邮储银行\",\"age\":34}}";
 		try {
 			String encryptStr = encrypt(content,publicKey);
-			System.out.println("encryptStr: " + encryptStr);
-			System.out.println(decrypt(encryptStr,  privateKey));
-			
+			System.out.println("encryptStr: \n" + encryptStr);
+            String decrypt = decrypt(encryptStr, privateKey);
+            System.out.println("decrypt: \n" + decrypt);
+
 			String signStr = generateSign(content,  privateKey,  "MD5withRSA");
 			System.out.println("signStr: " + signStr);
 			

@@ -14,7 +14,8 @@ url:
 
   #kafka配置信息
   kafka:
-    bootstrap-servers: 47.112.110.71:9092
+    #bootstrap-servers: 47.112.110.71:9092
+    bootstrap-servers: localhost:9092
     producer:
       # 发生错误后，消息重发的次数。
       retries: 0
@@ -41,9 +42,9 @@ url:
       # 是否自动提交偏移量，默认值是true,为了避免出现重复数据和数据丢失，可以把它设置为false,然后手动提交偏移量
       enable-auto-commit: false
       # 键的反序列化方式
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      key-deserializer: org.apache.kafka.common.serialization.StringSerializer
       # 值的反序列化方式
-      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringSerializer
     listener:
       # 在侦听器容器中运行的线程数。
       concurrency: 10

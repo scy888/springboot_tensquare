@@ -1,9 +1,9 @@
-server: 
+server:
   port: 9024
   servlet:
     context-path: /batch
-spring: 
-  application:  
+spring:
+  application:
     name: tensquare-batch #指定服务名
   profiles:
     active: dev
@@ -19,12 +19,13 @@ spring:
   batch:
     job:
       enabled: false
-  jpa: 
+    initialize-schema: always
+  jpa:
     database: MySQL
     show-sql: true
     hibernate:
       ddl-auto: update
-  #mail:
+    #mail:
     #host: 10.83.0.44
     #port: 25
     #username: umg-sit
@@ -34,7 +35,7 @@ spring:
   mail:
     host: smtp.qq.com
     port: 25
-    username: 348691356@qq.com
+    username: 348691356
     password: rjivwjbadxuxcahf
     default-encoding: utf-8
 
@@ -62,7 +63,7 @@ ribbon:
   MaxAutoRetriesNextServer: 1 #切换实例的重试次数 1
 
   hystrix:
-   command:
-    default:
-      execution:
-       timeout: enabled=false
+    command:
+      default:
+        execution:
+          timeout: enabled=false

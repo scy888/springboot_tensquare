@@ -3,7 +3,6 @@ package com.tensquare.batch.listener;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +16,9 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class KafkaListener {
+    //@org.springframework.kafka.annotation.KafkaListener
     @org.springframework.kafka.annotation.KafkaListener(topics = "hello", groupId = "myGroup")
+
     public void hello(ConsumerRecord<String, Object> consumerRecord, Acknowledgment acknowledgment, Consumer<?, ?> consumer) {
         Object value = consumerRecord.value();
         log.info("获得消息：{}", value);

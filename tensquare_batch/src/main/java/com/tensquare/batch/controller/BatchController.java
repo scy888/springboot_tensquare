@@ -49,7 +49,7 @@ import java.util.*;
 @RequestMapping("/batch")
 public class BatchController {
     @Autowired
-    private KafkaTemplate kafkaTemplate;
+    private KafkaTemplate<String,Object> kafkaTemplate;
     @Autowired
     private JobRegistry jobRegistry;
     @Autowired
@@ -70,7 +70,9 @@ public class BatchController {
 
     @RequestMapping("/kafka")
     public String hello(@RequestParam String worlds) {
+
         ListenableFuture<SendResult<String, Object>> future = kafkaTemplate.send("hello", worlds);
+
         StringBuilder result = new StringBuilder("发送：" + worlds + "，结果：");
         future.addCallback(new ListenableFutureCallback() {
 
