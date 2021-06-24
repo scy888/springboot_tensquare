@@ -537,10 +537,10 @@ public class UserDomeController {
         Integer pageNum = (Integer) map.get("pageNum");
         Integer pageSize = (Integer) map.get("pageSize");
 
-        List<Predicate> predicateList = new ArrayList<>();
         Specification<UserDto> specification = new Specification<UserDto>() {
             @Override
             public Predicate toPredicate(Root<UserDto> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+                List<Predicate> predicateList = new ArrayList<>();
                 if (!StringUtils.isEmpyStr((String) map.get("name"))) {
                     predicateList.add(criteriaBuilder.equal(root.get("name").as(String.class), (String) map.get("name")));
                 }

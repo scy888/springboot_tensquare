@@ -371,6 +371,7 @@ public class BigDecimalUtils {
 
         NumberFormat percentInstance = NumberFormat.getPercentInstance();
         System.out.println(percentInstance.format(0.7869));
+        System.out.println(percentInstance.format(12));
 
     }
 }

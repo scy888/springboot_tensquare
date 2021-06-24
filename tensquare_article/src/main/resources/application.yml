@@ -31,6 +31,7 @@ mybatis:
   type-aliases-package: com.tensquare.article.pojo
   mapper-locations: classpath:com/tensquare/article/dao/*Dao.xml
 
+
 scy: 盛重阳
 option_desc_one: {人民公社: 应城市,李白故居: 安陆市}
 option_desc_two: {羊台山: 龙安区,红树林: 福田区}

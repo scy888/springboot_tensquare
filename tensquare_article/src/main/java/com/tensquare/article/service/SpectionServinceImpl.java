@@ -32,6 +32,7 @@ import org.springframework.web.client.RestTemplate;
 import utils.IdWorker;
 
 import javax.jms.*;
+import javax.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.text.DecimalFormat;
